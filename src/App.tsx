@@ -1,24 +1,24 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import LandingPage from './pages/LandingPage';
-import DocsPage from './pages/DocsPage';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import LandingPage from "./pages/LandingPage";
+import DocsPage from "./pages/DocsPage";
 
-import Introduction from './pages/docs/Introduction';
-import Installation from './pages/docs/Installation';
-import Authentication from './pages/docs/Authentication';
+import Introduction from "./pages/docs/Introduction";
+import Installation from "./pages/docs/Installation";
+import Authentication from "./pages/docs/Authentication";
 
-import AuthLayout from './pages/auth/AuthLayout';
-import Login from './pages/auth/Login';
-import Signup from './pages/auth/Signup';
-import ForgotPassword from './pages/auth/ForgotPassword';
-import VerifyCode from './pages/auth/VerifyCode';
-import ResetPassword from './pages/auth/ResetPassword';
+import AuthLayout from "./pages/auth/AuthLayout";
+import Login from "./pages/auth/Login";
+import Signup from "./pages/auth/Signup";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import VerifyCode from "./pages/auth/VerifyCode";
+import ResetPassword from "./pages/auth/ResetPassword";
 
-import Dashboard from './pages/Dashboard';
-import Overview from './pages/dashboard/Overview';
-import Settings from './pages/dashboard/Settings';
-import Transactions from './pages/dashboard/Transactions';
-import Providers from './pages/dashboard/Providers';
-import Logs from './pages/dashboard/Logs';
+import Dashboard from "./pages/Dashboard";
+import Overview from "./pages/dashboard/Overview";
+import Settings from "./pages/dashboard/Settings";
+import Transactions from "./pages/dashboard/Transactions";
+import Providers from "./pages/dashboard/Providers";
+import Logs from "./pages/dashboard/Logs";
 
 function App() {
   return (
@@ -35,7 +35,10 @@ function App() {
 
         <Route path="/docs" element={<DocsPage />}>
           <Route index element={<Introduction />} />
-          <Route path="introduction" element={<Navigate to="/docs" replace />} />
+          <Route
+            path="introduction"
+            element={<Navigate to="/docs" replace />}
+          />
           <Route path="installation" element={<Installation />} />
           <Route path="authentication" element={<Authentication />} />
         </Route>

@@ -1,134 +1,243 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
-    ArrowRight,
-    Zap,
-    BookOpen,
-    Shield,
-    Menu,
-    X,
-    CreditCard,
-    Webhook
-} from 'lucide-react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+  ArrowRight,
+  Zap,
+  BookOpen,
+  Shield,
+  Menu,
+  X,
+  CreditCard,
+  Webhook,
+} from "lucide-react";
+import { Link, Outlet, useLocation } from "react-router-dom";
 
 function DocsPage() {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const location = useLocation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const location = useLocation();
 
-    const isActive = (path: string) => {
-        return location.pathname === path || (path === '/docs' && location.pathname === '/docs');
-    }
-
+  const isActive = (path: string) => {
     return (
-        <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-blue-500/30 flex flex-col">
-            {/* Navbar */}
-            <header className="sticky top-0 w-full z-50 glass-panel border-b border-slate-200 py-4">
-                <div className="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-                        <button
-                            className="lg:hidden text-slate-600 hover:text-blue-600 cursor-pointer"
-                            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        >
-                            {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                        </button>
-                        <Link to="/" className="flex items-center gap-2 cursor-pointer">
-                            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-md shadow-blue-500/20">
-                                <Zap className="w-5 h-5 text-white" />
-                            </div>
-                            <span className="font-['Outfit'] font-bold text-xl tracking-tight hidden sm:block">PayFlow</span>
-                        </Link>
-                        <span className="hidden sm:block text-slate-300 font-medium">/</span>
-                        <span className="font-medium text-slate-800 truncate">Documentation</span>
-                    </div>
+      location.pathname === path ||
+      (path === "/docs" && location.pathname === "/docs")
+    );
+  };
 
-                    <div className="flex items-center gap-4 shrink-0">
-                        <Link to="/auth/login" className="hidden sm:block text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">
-                            Log in
-                        </Link>
-                        <Link to="/auth/signup" className="relative group inline-flex h-9 items-center justify-center rounded-md bg-black px-4 text-sm font-medium text-white shadow transition-colors hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 cursor-pointer">
-                            <span className="relative z-10 flex items-center gap-1">
-                                Dashboard <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                            </span>
-                        </Link>
-                    </div>
-                </div>
-            </header>
+  return (
+    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-blue-500/30 flex flex-col">
+      {/* Navbar */}
+      <header className="sticky top-0 w-full z-50 glass-panel border-b border-slate-200 py-4">
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+            <button
+              className="lg:hidden text-slate-600 hover:text-blue-600 cursor-pointer"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            >
+              {isSidebarOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+            <Link to="/" className="flex items-center gap-2 cursor-pointer">
+              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-md shadow-blue-500/20">
+                <Zap className="w-5 h-5 text-white" />
+              </div>
+              <span className="font-['Outfit'] font-bold text-xl tracking-tight hidden sm:block">
+                PayFlow
+              </span>
+            </Link>
+            <span className="hidden sm:block text-slate-300 font-medium">
+              /
+            </span>
+            <span className="font-medium text-slate-800 truncate">
+              Documentation
+            </span>
+          </div>
 
-            {/* Main Layout */}
-            <div className="flex-1 max-w-7xl mx-auto w-full px-6 flex relative">
-                {/* Sidebar */}
-                <aside
-                    className={`
+          <div className="flex items-center gap-4 shrink-0">
+            <Link
+              to="/auth/login"
+              className="hidden sm:block text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+            >
+              Log in
+            </Link>
+            <Link
+              to="/auth/signup"
+              className="relative group inline-flex h-9 items-center justify-center rounded-md bg-black px-4 text-sm font-medium text-white shadow transition-colors hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 cursor-pointer"
+            >
+              <span className="relative z-10 flex items-center gap-1">
+                Dashboard{" "}
+                <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Layout */}
+      <div className="flex-1 max-w-7xl mx-auto w-full px-6 flex relative">
+        {/* Sidebar */}
+        <aside
+          className={`
             fixed top-[73px] left-0 h-[calc(100vh-73px)] w-full sm:w-64 bg-white/95 backdrop-blur-md lg:backdrop-blur-none lg:bg-transparent lg:border-none lg:shadow-none lg:sticky
             border-r border-slate-200 overflow-y-auto p-6 z-40 transition-transform duration-300 ease-in-out
-            ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+            ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
           `}
-                >
-                    <nav className="space-y-8" onClick={() => setIsSidebarOpen(false)}>
-                        <div>
-                            <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                                <BookOpen className="w-4 h-4 text-blue-500" /> Getting Started
-                            </h4>
-                            <ul className="space-y-2 border-l border-slate-200 ml-2 pl-4">
-                                <li><Link to="/docs" className={`block text-sm font-medium ${isActive('/docs') || isActive('/docs/introduction') ? 'text-blue-600 cursor-default' : 'text-slate-600 hover:text-blue-600 cursor-pointer'} transition-colors`}>Introduction</Link></li>
-                                <li><Link to="/docs/installation" className={`block text-sm font-medium ${isActive('/docs/installation') ? 'text-blue-600 cursor-default' : 'text-slate-600 hover:text-blue-600 cursor-pointer'} transition-colors`}>Installation</Link></li>
-                                <li><Link to="/docs/authentication" className={`block text-sm font-medium ${isActive('/docs/authentication') ? 'text-blue-600 cursor-default' : 'text-slate-600 hover:text-blue-600 cursor-pointer'} transition-colors`}>Authentication</Link></li>
-                                <li><a href="#" className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Test Keys</a></li>
-                            </ul >
-                        </div >
+        >
+          <nav className="space-y-8" onClick={() => setIsSidebarOpen(false)}>
+            <div>
+              <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-blue-500" /> Getting Started
+              </h4>
+              <ul className="space-y-2 border-l border-slate-200 ml-2 pl-4">
+                <li>
+                  <Link
+                    to="/docs"
+                    className={`block text-sm font-medium ${isActive("/docs") || isActive("/docs/introduction") ? "text-blue-600 cursor-default" : "text-slate-600 hover:text-blue-600 cursor-pointer"} transition-colors`}
+                  >
+                    Introduction
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/docs/installation"
+                    className={`block text-sm font-medium ${isActive("/docs/installation") ? "text-blue-600 cursor-default" : "text-slate-600 hover:text-blue-600 cursor-pointer"} transition-colors`}
+                  >
+                    Installation
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/docs/authentication"
+                    className={`block text-sm font-medium ${isActive("/docs/authentication") ? "text-blue-600 cursor-default" : "text-slate-600 hover:text-blue-600 cursor-pointer"} transition-colors`}
+                  >
+                    Authentication
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+                  >
+                    Test Keys
+                  </a>
+                </li>
+              </ul>
+            </div>
 
-                        <div>
-                            <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                                <CreditCard className="w-4 h-4 text-blue-500" /> Payments API
-                            </h4>
-                            <ul className="space-y-2 border-l border-slate-200 ml-2 pl-4">
-                                <li><a href="#" className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Create a Charge</a></li>
-                                <li><a href="#" className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Refunds</a></li>
-                                <li><a href="#" className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Smart Routing</a></li>
-                                <li><a href="#" className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Error Codes</a></li>
-                            </ul>
-                        </div>
+            <div>
+              <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-blue-500" /> Payments API
+              </h4>
+              <ul className="space-y-2 border-l border-slate-200 ml-2 pl-4">
+                <li>
+                  <a
+                    href="#"
+                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+                  >
+                    Create a Charge
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+                  >
+                    Refunds
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+                  >
+                    Smart Routing
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+                  >
+                    Error Codes
+                  </a>
+                </li>
+              </ul>
+            </div>
 
-                        <div>
-                            <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                                <Webhook className="w-4 h-4 text-blue-500" /> Webhooks
-                            </h4>
-                            <ul className="space-y-2 border-l border-slate-200 ml-2 pl-4">
-                                <li><a href="#" className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Overview</a></li>
-                                <li><a href="#" className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Event Types</a></li>
-                                <li><a href="#" className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Verifying Signatures</a></li>
-                            </ul>
-                        </div>
+            <div>
+              <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                <Webhook className="w-4 h-4 text-blue-500" /> Webhooks
+              </h4>
+              <ul className="space-y-2 border-l border-slate-200 ml-2 pl-4">
+                <li>
+                  <a
+                    href="#"
+                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+                  >
+                    Overview
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+                  >
+                    Event Types
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+                  >
+                    Verifying Signatures
+                  </a>
+                </li>
+              </ul>
+            </div>
 
-                        <div>
-                            <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                                <Shield className="w-4 h-4 text-blue-500" /> Security
-                            </h4>
-                            <ul className="space-y-2 border-l border-slate-200 ml-2 pl-4">
-                                <li><a href="#" className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">PCI Compliance</a></li>
-                                <li><a href="#" className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Data Privacy</a></li>
-                            </ul>
-                        </div>
-                    </nav >
-                </aside >
+            <div>
+              <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                <Shield className="w-4 h-4 text-blue-500" /> Security
+              </h4>
+              <ul className="space-y-2 border-l border-slate-200 ml-2 pl-4">
+                <li>
+                  <a
+                    href="#"
+                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+                  >
+                    PCI Compliance
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+                  >
+                    Data Privacy
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+        </aside>
 
-                {/* Overlay for mobile sidebar */}
-                {
-                    isSidebarOpen && (
-                        <div
-                            className="fixed inset-0 bg-slate-900/50 z-30 lg:hidden backdrop-blur-sm"
-                            onClick={() => setIsSidebarOpen(false)}
-                        ></div>
-                    )
-                }
+        {/* Overlay for mobile sidebar */}
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-slate-900/50 z-30 lg:hidden backdrop-blur-sm"
+            onClick={() => setIsSidebarOpen(false)}
+          ></div>
+        )}
 
-                {/* Main Content Area (Outlet renders the matching child route) */}
-                <main className="flex-1 py-10 px-4 sm:px-6 lg:px-12 max-w-4xl relative overflow-x-hidden">
-                    <Outlet />
-                </main>
-            </div >
-        </div >
-    );
+        {/* Main Content Area (Outlet renders the matching child route) */}
+        <main className="flex-1 py-10 px-4 sm:px-6 lg:px-12 max-w-4xl relative overflow-x-hidden">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
 }
 
 export default DocsPage;
