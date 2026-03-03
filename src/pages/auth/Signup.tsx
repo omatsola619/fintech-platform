@@ -1,4 +1,4 @@
-import { ArrowRight, Lock, Mail, User } from "lucide-react";
+import { ArrowRight, Briefcase, Lock, Mail, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 function Signup() {
@@ -21,19 +21,54 @@ function Signup() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              First Name
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <User className="h-5 w-5 text-slate-400" />
+              </div>
+              <input
+                type="text"
+                required
+                className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors"
+                placeholder="Jane"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Last Name
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <User className="h-5 w-5 text-slate-400" />
+              </div>
+              <input
+                type="text"
+                required
+                className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors"
+                placeholder="Doe"
+              />
+            </div>
+          </div>
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
-            Full Name
+            Business Name
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <User className="h-5 w-5 text-slate-400" />
+              <Briefcase className="h-5 w-5 text-slate-400" />
             </div>
             <input
               type="text"
               required
               className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors"
-              placeholder="Jane Doe"
+              placeholder="Acme Corp"
             />
           </div>
         </div>
