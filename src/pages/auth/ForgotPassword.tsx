@@ -1,16 +1,32 @@
+import { useMutation } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, Mail } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { authService } from "../../services/auth";
 
 function ForgotPassword() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const forgotPasswordMutation = useMutation({
+    mutationFn: (email: string) => authService.forgotPassword({ email }),
+    onSuccess: () => {
+      navigate("/auth/verify", { state: { purpose: "reset", email } });
+    },
+    onError: (err: any) => {
+      const errorMessage =
+        err.response?.data?.message ||
+        err.response?.data?.detail ||
+        "Failed to send reset code. Please try again.";
+      setError(errorMessage);
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, send reset email here.
-    // For flow purposes, navigate to verify code.
-    navigate("/auth/verify", { state: { purpose: "reset", email } });
+    setError(null);
+    forgotPasswordMutation.mutate(email);
   };
 
   return (
@@ -53,12 +69,21 @@ function ForgotPassword() {
           </div>
         </div>
 
+        {error && (
+          <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100">
+            {error}
+          </div>
+        )}
+
         <button
           type="submit"
-          className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm shadow-blue-500/30 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors group cursor-pointer"
+          disabled={!email || forgotPasswordMutation.isPending}
+          className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm shadow-blue-500/30 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors group cursor-pointer"
         >
-          Send reset code
-          <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          {forgotPasswordMutation.isPending ? "Sending..." : "Send reset code"}
+          {!forgotPasswordMutation.isPending && (
+            <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          )}
         </button>
       </form>
     </div>

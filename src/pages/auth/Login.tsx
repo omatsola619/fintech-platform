@@ -1,13 +1,45 @@
+import { useMutation } from "@tanstack/react-query";
 import { ArrowRight, Lock, Mail } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { authService, type LoginPayload } from "../../services/auth";
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const stateMessage = (location.state as { message?: string })?.message;
+
+  const [formData, setFormData] = useState<LoginPayload>({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState<string | null>(null);
+
+  const loginMutation = useMutation({
+    mutationFn: (data: LoginPayload) => authService.login(data),
+    onSuccess: () => {
+      // Navigate to dashboard on successful login
+      navigate("/dashboard");
+    },
+    onError: (err: any) => {
+      // Extract error message from API response if possible
+      const errorMessage =
+        err.response?.data?.message ||
+        err.response?.data?.detail ||
+        "Login failed. Please check your credentials and try again.";
+      setError(errorMessage);
+    },
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Normally handle auth here...
-    navigate("/dashboard");
+    setError(null);
+    loginMutation.mutate(formData);
   };
 
   return (
@@ -21,6 +53,12 @@ function Login() {
         </p>
       </div>
 
+      {stateMessage && (
+        <div className="mb-6 p-4 rounded-xl bg-green-50/80 backdrop-blur-sm text-green-700 text-sm border border-green-200/50 flex flex-col items-center justify-center text-center">
+          <span className="font-semibold">{stateMessage}</span>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -32,6 +70,9 @@ function Login() {
             </div>
             <input
               type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               required
               className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors"
               placeholder="you@company.com"
@@ -57,6 +98,9 @@ function Login() {
             </div>
             <input
               type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               required
               className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors"
               placeholder="••••••••"
@@ -64,12 +108,21 @@ function Login() {
           </div>
         </div>
 
+        {error && (
+          <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100">
+            {error}
+          </div>
+        )}
+
         <button
           type="submit"
-          className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm shadow-blue-500/30 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors group cursor-pointer"
+          disabled={loginMutation.isPending}
+          className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm shadow-blue-500/30 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:bg-slate-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors group cursor-pointer"
         >
-          Sign In
-          <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          {loginMutation.isPending ? "Signing In..." : "Sign In"}
+          {!loginMutation.isPending && (
+            <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          )}
         </button>
       </form>
 

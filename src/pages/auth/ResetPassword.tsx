@@ -1,21 +1,52 @@
+import { useMutation } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, Lock } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { authService, type ResetPasswordPayload } from "../../services/auth";
 
 function ResetPassword() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state as { email?: string; otp?: string } | null;
+  const email = state?.email || "";
+  const otp = state?.otp || "";
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: (data: ResetPasswordPayload) => authService.resetPassword(data),
+    onSuccess: () => {
+      navigate("/auth/login", {
+        state: { message: "Password reset successful. Please login." },
+      });
+    },
+    onError: (err: any) => {
+      const errorMessage =
+        err.response?.data?.message ||
+        err.response?.data?.detail ||
+        "Failed to reset password. Please try again.";
+      setError(errorMessage);
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords don't match");
+    setError(null);
+    if (!email || !otp) {
+      setError("Missing reset information. Please start the process again.");
       return;
     }
-    // Proceed to reset logic
-    navigate("/auth/login", {
-      state: { message: "Password reset successful. Please login." },
+    if (password !== confirmPassword) {
+      setError("Passwords don't match");
+      return;
+    }
+
+    resetPasswordMutation.mutate({
+      email,
+      otp,
+      new_password: password,
     });
   };
 
@@ -80,13 +111,25 @@ function ResetPassword() {
           </div>
         </div>
 
+        {error && (
+          <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100">
+            {error}
+          </div>
+        )}
+
         <button
           type="submit"
-          disabled={!password || password !== confirmPassword}
+          disabled={
+            !password ||
+            password !== confirmPassword ||
+            resetPasswordMutation.isPending
+          }
           className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm shadow-blue-500/30 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all group cursor-pointer"
         >
-          Reset Password
-          <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          {resetPasswordMutation.isPending ? "Resetting..." : "Reset Password"}
+          {!resetPasswordMutation.isPending && (
+            <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          )}
         </button>
       </form>
     </div>

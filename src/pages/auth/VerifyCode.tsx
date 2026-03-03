@@ -1,6 +1,8 @@
+import { useMutation } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { authService, type VerifyOtpPayload } from "../../services/auth";
 
 function VerifyCode() {
   const navigate = useNavigate();
@@ -9,6 +11,33 @@ function VerifyCode() {
 
   const purpose = state?.purpose || "signup";
   const email = state?.email || "your email";
+  const [error, setError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  const verifyOtpMutation = useMutation({
+    mutationFn: (data: VerifyOtpPayload) => authService.verifyOtp(data),
+    onSuccess: (_, variables) => {
+      if (purpose === "reset") {
+        navigate("/auth/reset-password", {
+          state: { email: variables.email, otp: variables.otp },
+        });
+      } else {
+        setSuccessMsg("Verification successful! Redirecting to login...");
+        setTimeout(() => {
+          navigate("/auth/login", {
+            state: { message: "Account successfully verified. Please log in." },
+          });
+        }, 2000);
+      }
+    },
+    onError: (err: any) => {
+      const errorMessage =
+        err.response?.data?.message ||
+        err.response?.data?.detail ||
+        "Invalid code. Please try again.";
+      setError(errorMessage);
+    },
+  });
 
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -65,12 +94,16 @@ function VerifyCode() {
     e.preventDefault();
     const fullCode = code.join("");
     if (fullCode.length !== 6) return;
+    setError(null);
 
-    if (purpose === "reset") {
-      navigate("/auth/reset-password", { state: { valid: true } });
+    if (email !== "your email") {
+      verifyOtpMutation.mutate({
+        email,
+        purpose: "email",
+        otp: fullCode,
+      });
     } else {
-      // Complete signup
-      navigate("/dashboard");
+      setError("No email found to verify. Please try again.");
     }
   };
 
@@ -114,13 +147,27 @@ function VerifyCode() {
           ))}
         </div>
 
+        {error && (
+          <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100 mt-6 text-center">
+            {error}
+          </div>
+        )}
+
+        {successMsg && (
+          <div className="p-3 rounded-lg bg-green-50 text-green-700 text-sm border border-green-200 mt-6 text-center">
+            {successMsg}
+          </div>
+        )}
+
         <button
           type="submit"
-          disabled={code.join("").length !== 6}
-          className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm shadow-blue-500/30 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all group cursor-pointer"
+          disabled={code.join("").length !== 6 || verifyOtpMutation.isPending}
+          className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm shadow-blue-500/30 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all group cursor-pointer mt-8"
         >
-          Verify Code
-          <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          {verifyOtpMutation.isPending ? "Verifying..." : "Verify Code"}
+          {!verifyOtpMutation.isPending && (
+            <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          )}
         </button>
       </form>
 

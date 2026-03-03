@@ -1,12 +1,48 @@
+import { useMutation } from "@tanstack/react-query";
 import { ArrowRight, Briefcase, Lock, Mail, User } from "lucide-react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { authService, type RegisterPayload } from "../../services/auth";
 
 function Signup() {
   const navigate = useNavigate();
 
+  const [formData, setFormData] = useState<RegisterPayload>({
+    first_name: "",
+    last_name: "",
+    business_name: "",
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState<string | null>(null);
+
+  const registerMutation = useMutation({
+    mutationFn: (data: RegisterPayload) => authService.register(data),
+    onSuccess: () => {
+      // Navigate to verification on successful registration
+      navigate("/auth/verify", {
+        state: { purpose: "signup", email: formData.email },
+      });
+    },
+    onError: (err: any) => {
+      // Extract error message from API response if possible
+      const errorMessage =
+        err.response?.data?.message ||
+        err.response?.data?.detail ||
+        "Registration failed. Please try again.";
+      setError(errorMessage);
+    },
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/auth/verify");
+    setError(null);
+    registerMutation.mutate(formData);
   };
 
   return (
@@ -32,6 +68,9 @@ function Signup() {
               </div>
               <input
                 type="text"
+                name="first_name"
+                value={formData.first_name}
+                onChange={handleChange}
                 required
                 className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors"
                 placeholder="Jane"
@@ -48,6 +87,9 @@ function Signup() {
               </div>
               <input
                 type="text"
+                name="last_name"
+                value={formData.last_name}
+                onChange={handleChange}
                 required
                 className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors"
                 placeholder="Doe"
@@ -66,6 +108,9 @@ function Signup() {
             </div>
             <input
               type="text"
+              name="business_name"
+              value={formData.business_name}
+              onChange={handleChange}
               required
               className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors"
               placeholder="Acme Corp"
@@ -83,6 +128,9 @@ function Signup() {
             </div>
             <input
               type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               required
               className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors"
               placeholder="jane@company.com"
@@ -100,6 +148,9 @@ function Signup() {
             </div>
             <input
               type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               required
               className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors"
               placeholder="••••••••"
@@ -110,12 +161,23 @@ function Signup() {
           </p>
         </div>
 
+        {error && (
+          <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100">
+            {error}
+          </div>
+        )}
+
         <button
           type="submit"
-          className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm shadow-black/10 text-sm font-semibold text-white bg-black hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-colors group cursor-pointer"
+          disabled={registerMutation.isPending}
+          className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm shadow-black/10 text-sm font-semibold text-white bg-black hover:bg-slate-800 disabled:bg-slate-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-colors group cursor-pointer"
         >
-          Create Account
-          <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          {registerMutation.isPending
+            ? "Creating account..."
+            : "Create Account"}
+          {!registerMutation.isPending && (
+            <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          )}
         </button>
       </form>
 
