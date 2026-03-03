@@ -1,5 +1,5 @@
+import { ArrowRight, Lock, Mail } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, ArrowRight } from "lucide-react";
 
 function Login() {
   const navigate = useNavigate();

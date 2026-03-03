@@ -1,5 +1,5 @@
+import { Copy, Database, Search, Terminal, X } from "lucide-react";
 import { useState } from "react";
-import { Search, Database, Terminal, Copy, X } from "lucide-react";
 
 const MOCK_LOGS = [
   {

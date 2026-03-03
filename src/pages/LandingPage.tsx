@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
-  Code2,
-  Globe,
-  ShieldCheck,
-  Zap,
   ChevronRight,
-  Terminal,
-  Layers,
+  Code2,
   Fingerprint,
+  Globe,
+  Layers,
+  ShieldCheck,
+  Terminal,
+  Zap,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function LandingPage() {

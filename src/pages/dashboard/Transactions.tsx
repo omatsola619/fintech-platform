@@ -1,17 +1,17 @@
-import { useState } from "react";
 import {
-  Search,
-  Filter,
   ArrowRight,
-  Server,
-  ChevronRight,
-  X,
-  Copy,
   CheckCircle2,
-  Clock,
-  XCircle,
   ChevronLeft,
+  ChevronRight,
+  Clock,
+  Copy,
+  Filter,
+  Search,
+  Server,
+  X,
+  XCircle,
 } from "lucide-react";
+import { useState } from "react";
 
 const MOCK_TRANSACTIONS = [
   {

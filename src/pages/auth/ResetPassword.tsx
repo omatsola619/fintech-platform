@@ -1,6 +1,6 @@
+import { ArrowLeft, ArrowRight, Lock } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Lock, ArrowRight, ArrowLeft } from "lucide-react";
 
 function ResetPassword() {
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 function VerifyCode() {
   const navigate = useNavigate();

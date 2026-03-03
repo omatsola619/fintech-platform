@@ -1,15 +1,15 @@
-import { useState } from "react";
 import {
   Bell,
-  Shield,
-  Key,
-  User,
   Building2,
-  CreditCard as CreditCardIcon,
-  Smartphone,
   CheckCircle2,
+  CreditCard as CreditCardIcon,
+  Key,
   Settings as SettingsIcon,
+  Shield,
+  Smartphone,
+  User,
 } from "lucide-react";
+import { useState } from "react";
 
 function Settings() {
   const [activeTab, setActiveTab] = useState("general");

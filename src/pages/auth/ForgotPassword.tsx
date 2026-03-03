@@ -1,6 +1,6 @@
+import { ArrowLeft, ArrowRight, Mail } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, ArrowRight, ArrowLeft } from "lucide-react";
 
 function ForgotPassword() {
   const navigate = useNavigate();

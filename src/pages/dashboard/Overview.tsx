@@ -1,23 +1,23 @@
 import {
   Activity,
+  ArrowUpRight,
+  CheckCircle2,
+  Clock,
   Play,
   Server,
-  CheckCircle2,
-  XCircle,
-  ArrowUpRight,
-  TrendingUp,
   TrendingDown,
-  Clock,
+  TrendingUp,
+  XCircle,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from "recharts";
 
 const chartData = [

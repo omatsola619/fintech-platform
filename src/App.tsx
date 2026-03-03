@@ -1,24 +1,21 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import LandingPage from "./pages/LandingPage";
-import DocsPage from "./pages/DocsPage";
-
-import Introduction from "./pages/docs/Introduction";
-import Installation from "./pages/docs/Installation";
-import Authentication from "./pages/docs/Authentication";
-
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import AuthLayout from "./pages/auth/AuthLayout";
-import Login from "./pages/auth/Login";
-import Signup from "./pages/auth/Signup";
 import ForgotPassword from "./pages/auth/ForgotPassword";
-import VerifyCode from "./pages/auth/VerifyCode";
+import Login from "./pages/auth/Login";
 import ResetPassword from "./pages/auth/ResetPassword";
-
+import Signup from "./pages/auth/Signup";
+import VerifyCode from "./pages/auth/VerifyCode";
 import Dashboard from "./pages/Dashboard";
+import DocsPage from "./pages/DocsPage";
+import Logs from "./pages/dashboard/Logs";
 import Overview from "./pages/dashboard/Overview";
+import Providers from "./pages/dashboard/Providers";
 import Settings from "./pages/dashboard/Settings";
 import Transactions from "./pages/dashboard/Transactions";
-import Providers from "./pages/dashboard/Providers";
-import Logs from "./pages/dashboard/Logs";
+import Authentication from "./pages/docs/Authentication";
+import Installation from "./pages/docs/Installation";
+import Introduction from "./pages/docs/Introduction";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
   return (

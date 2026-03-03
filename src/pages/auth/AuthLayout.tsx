@@ -1,5 +1,5 @@
+import { ShieldCheck, Zap } from "lucide-react";
 import { Link, Outlet } from "react-router-dom";
-import { Zap, ShieldCheck } from "lucide-react";
 
 function AuthLayout() {
   return (

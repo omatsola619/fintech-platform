@@ -1,4 +1,4 @@
-import { ArrowRight, Code2, Settings, Zap, Terminal } from "lucide-react";
+import { ArrowRight, Code2, Settings, Terminal, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 
 function Introduction() {

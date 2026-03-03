@@ -1,10 +1,10 @@
 import {
-  Server,
-  TrendingUp,
-  TrendingDown,
+  Activity,
   Clock,
   HelpCircle,
-  Activity,
+  Server,
+  TrendingDown,
+  TrendingUp,
 } from "lucide-react";
 
 const PROVIDERS_DATA = [

@@ -1,19 +1,19 @@
-import { useState } from "react";
 import {
-  Zap,
-  Code2,
-  LogOut,
-  ShieldCheck,
-  LayoutDashboard,
-  Settings,
-  Menu,
-  X,
-  Bell,
   Activity,
+  Bell,
   Building2,
+  Code2,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Settings,
+  ShieldCheck,
   Terminal,
+  X,
+  Zap,
 } from "lucide-react";
-import { Link, useNavigate, Outlet, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const navigate = useNavigate();
