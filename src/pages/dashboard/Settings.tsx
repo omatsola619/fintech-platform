@@ -2,16 +2,79 @@ import {
   Bell,
   Building2,
   CreditCard as CreditCardIcon,
+  Eye,
+  EyeOff,
   FileText,
   Key,
+  Plus,
   Settings as SettingsIcon,
   Shield,
+  Trash2,
   User,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 
+type ApiKeyConfig = {
+  provider: string;
+  testType: string;
+  testKey: string;
+  liveType: string;
+  liveKey: string;
+  activeEnvironment: "test" | "live";
+};
+
+const AVAILABLE_PROVIDERS = ["Paystack", "Flutterwave"];
+
 function Settings() {
   const [activeTab, setActiveTab] = useState("general");
+  const [apiKeys, setApiKeys] = useState<ApiKeyConfig[]>([]);
+  const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
+  const [visibleKeys, setVisibleKeys] = useState<Record<string, boolean>>({});
+  const [newKey, setNewKey] = useState<ApiKeyConfig>({
+    provider: "Paystack",
+    testType: "Secret Key",
+    testKey: "",
+    liveType: "Secret Key",
+    liveKey: "",
+    activeEnvironment: "live",
+  });
+
+  const handleAddKey = () => {
+    setApiKeys([...apiKeys, newKey]);
+    setIsApiKeyModalOpen(false);
+    setNewKey({
+      provider: "Paystack",
+      testType: "Secret Key",
+      testKey: "",
+      liveType: "Secret Key",
+      liveKey: "",
+      activeEnvironment: "live",
+    });
+  };
+
+  const handleDeleteKey = (provider: string) => {
+    setApiKeys((prev) => prev.filter((k) => k.provider !== provider));
+  };
+
+  const toggleEnvironment = (provider: string, env: "test" | "live") => {
+    setApiKeys((prev) =>
+      prev.map((k) =>
+        k.provider === provider ? { ...k, activeEnvironment: env } : k,
+      ),
+    );
+  };
+
+  const availableProviders = AVAILABLE_PROVIDERS.filter(
+    (p) => !apiKeys.some((k) => k.provider === p),
+  );
+
+  const toggleKeyVisibility = (keyId: string) => {
+    setVisibleKeys((prev) => ({
+      ...prev,
+      [keyId]: !prev[keyId],
+    }));
+  };
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -335,85 +398,177 @@ function Settings() {
           {activeTab === "apikeys" && (
             <div className="space-y-6">
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="px-6 py-5 border-b border-slate-200">
-                  <h3 className="text-sm font-semibold text-slate-900">
-                    Provider Integrations
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Manage connection status and API keys for supported
-                    providers.
-                  </p>
+                <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-900">
+                      Provider Integrations
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Manage connection status and API keys for supported
+                      providers.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setNewKey((prev) => ({
+                        ...prev,
+                        provider: availableProviders[0] || "",
+                      }));
+                      setIsApiKeyModalOpen(true);
+                    }}
+                    disabled={availableProviders.length === 0}
+                    className={`flex items-center gap-2 px-4 py-2 font-medium rounded-lg transition-colors shadow-sm text-sm ${
+                      availableProviders.length === 0
+                        ? "bg-slate-300 text-slate-500 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700 shadow-blue-500/20 cursor-pointer"
+                    }`}
+                  >
+                    <Plus className="w-4 h-4" /> Add Key
+                  </button>
                 </div>
                 <div className="divide-y divide-slate-100">
-                  {/* Paystack Integration */}
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center border border-slate-200 shrink-0">
-                          <Key className="w-5 h-5 text-blue-600" />
+                  {apiKeys.length === 0 ? (
+                    <div className="p-12 text-center text-slate-500 flex flex-col items-center">
+                      <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                        <Key className="w-6 h-6 text-slate-400" />
+                      </div>
+                      <p className="font-medium text-slate-900 mb-1">
+                        No providers configured
+                      </p>
+                      <p className="text-sm">
+                        Click the Add Key button to integrate a new provider.
+                      </p>
+                    </div>
+                  ) : (
+                    apiKeys.map((config, index) => (
+                      <div key={index} className="p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center border border-slate-200 shrink-0">
+                              <Key className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div>
+                              <h4 className="font-medium text-slate-900">
+                                {config.provider}
+                              </h4>
+                              <div className="flex items-center gap-1.5 mt-0.5">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                <span className="text-xs font-medium text-emerald-700">
+                                  Connected
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            {/* Environment Toggle */}
+                            <div className="flex items-center bg-slate-100 rounded-lg p-1">
+                              <button
+                                onClick={() =>
+                                  toggleEnvironment(config.provider, "test")
+                                }
+                                disabled={!config.testKey}
+                                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
+                                  config.activeEnvironment === "test"
+                                    ? "bg-white text-slate-900 shadow-sm"
+                                    : "text-slate-500 hover:text-slate-700"
+                                } ${!config.testKey ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                              >
+                                Test
+                              </button>
+                              <button
+                                onClick={() =>
+                                  toggleEnvironment(config.provider, "live")
+                                }
+                                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                                  config.activeEnvironment === "live"
+                                    ? "bg-white text-slate-900 shadow-sm"
+                                    : "text-slate-500 hover:text-slate-700"
+                                }`}
+                              >
+                                Live
+                              </button>
+                            </div>
+                            {/* Delete Button */}
+                            <button
+                              onClick={() => handleDeleteKey(config.provider)}
+                              className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                              title="Delete Provider"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="font-medium text-slate-900">
-                            Paystack
-                          </h4>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                            <span className="text-xs font-medium text-emerald-700">
-                              Connected
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 flex flex-col gap-1">
+                            <span className="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">
+                              Test: {config.testType}
                             </span>
+                            <div className="flex items-center justify-between gap-2">
+                              <code className="text-sm text-slate-700 font-mono truncate">
+                                {config.testKey
+                                  ? visibleKeys[`${index}-test`]
+                                    ? config.testKey
+                                    : "•".repeat(16)
+                                  : "Not configured"}
+                              </code>
+                              {config.testKey && (
+                                <button
+                                  onClick={() =>
+                                    toggleKeyVisibility(`${index}-test`)
+                                  }
+                                  className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                                  title={
+                                    visibleKeys[`${index}-test`]
+                                      ? "Hide key"
+                                      : "Show key"
+                                  }
+                                >
+                                  {visibleKeys[`${index}-test`] ? (
+                                    <EyeOff className="w-4 h-4" />
+                                  ) : (
+                                    <Eye className="w-4 h-4" />
+                                  )}
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                          <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 flex flex-col gap-1">
+                            <span className="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">
+                              Live: {config.liveType}
+                            </span>
+                            <div className="flex items-center justify-between gap-2">
+                              <code className="text-sm text-slate-700 font-mono truncate">
+                                {config.liveKey
+                                  ? visibleKeys[`${index}-live`]
+                                    ? config.liveKey
+                                    : "•".repeat(16)
+                                  : "Not configured"}
+                              </code>
+                              {config.liveKey && (
+                                <button
+                                  onClick={() =>
+                                    toggleKeyVisibility(`${index}-live`)
+                                  }
+                                  className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                                  title={
+                                    visibleKeys[`${index}-live`]
+                                      ? "Hide key"
+                                      : "Show key"
+                                  }
+                                >
+                                  {visibleKeys[`${index}-live`] ? (
+                                    <EyeOff className="w-4 h-4" />
+                                  ) : (
+                                    <Eye className="w-4 h-4" />
+                                  )}
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <button className="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors shadow-sm cursor-pointer cursor-not-allowed opacity-60">
-                        Managed by Backend
-                      </button>
-                    </div>
-                    <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">
-                          Secret Key
-                        </span>
-                        <code className="text-sm text-slate-700 font-mono">
-                          sk_live_•••••••••••••••••••••8a4b
-                        </code>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Flutterwave Integration */}
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center border border-slate-200 shrink-0">
-                          <Key className="w-5 h-5 text-blue-600" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-slate-900">
-                            Flutterwave
-                          </h4>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className="w-2 h-2 rounded-full bg-slate-300"></span>
-                            <span className="text-xs font-medium text-slate-500">
-                              Not Connected
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <button className="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors shadow-sm cursor-pointer cursor-not-allowed opacity-60">
-                        Managed by Backend
-                      </button>
-                    </div>
-                    <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">
-                          Secret Key
-                        </span>
-                        <code className="text-sm text-slate-400 font-mono">
-                          Not configured
-                        </code>
-                      </div>
-                    </div>
-                  </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
@@ -485,6 +640,134 @@ function Settings() {
           )}
         </div>
       </div>
+
+      {/* API Key Modal */}
+      {isApiKeyModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-xl animate-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+              <h3 className="font-semibold text-slate-900">
+                Add API Key Configuration
+              </h3>
+              <button
+                onClick={() => setIsApiKeyModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Provider
+                </label>
+                <select
+                  value={newKey.provider}
+                  onChange={(e) =>
+                    setNewKey({ ...newKey, provider: e.target.value })
+                  }
+                  className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm appearance-none"
+                >
+                  {availableProviders.map((provider) => (
+                    <option key={provider} value={provider}>
+                      {provider}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Testing Environment Details */}
+              <div className="space-y-4 p-4 rounded-xl border border-slate-200 bg-slate-50/50">
+                <h4 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-amber-500"></span>{" "}
+                  Testing Environment
+                </h4>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    Key Type
+                  </label>
+                  <select
+                    value={newKey.testType}
+                    onChange={(e) =>
+                      setNewKey({ ...newKey, testType: e.target.value })
+                    }
+                    className="block w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm appearance-none"
+                  >
+                    <option value="Secret Key">Secret Key</option>
+                    <option value="Public Key">Public Key</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    Key Value
+                  </label>
+                  <input
+                    type="text"
+                    value={newKey.testKey}
+                    onChange={(e) =>
+                      setNewKey({ ...newKey, testKey: e.target.value })
+                    }
+                    placeholder="sk_test_..."
+                    className="block w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Live Environment Details */}
+              <div className="space-y-4 p-4 rounded-xl border border-slate-200 bg-slate-50/50">
+                <h4 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>{" "}
+                  Live Environment
+                </h4>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    Key Type
+                  </label>
+                  <select
+                    value={newKey.liveType}
+                    onChange={(e) =>
+                      setNewKey({ ...newKey, liveType: e.target.value })
+                    }
+                    className="block w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm appearance-none"
+                  >
+                    <option value="Secret Key">Secret Key</option>
+                    <option value="Public Key">Public Key</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    Key Value
+                  </label>
+                  <input
+                    type="password"
+                    value={newKey.liveKey}
+                    onChange={(e) =>
+                      setNewKey({ ...newKey, liveKey: e.target.value })
+                    }
+                    placeholder="sk_live_..."
+                    className="block w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3 rounded-b-2xl">
+              <button
+                onClick={() => setIsApiKeyModalOpen(false)}
+                className="px-4 py-2 font-medium text-slate-600 hover:text-slate-900 transition-colors cursor-pointer text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddKey}
+                disabled={!newKey.liveKey}
+                className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm shadow-blue-500/20 text-sm cursor-pointer"
+              >
+                Save Integration
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
