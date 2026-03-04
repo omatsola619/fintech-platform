@@ -30,6 +30,7 @@ function Settings() {
   const [activeTab, setActiveTab] = useState("general");
   const [apiKeys, setApiKeys] = useState<ApiKeyConfig[]>([]);
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
+  const [keyToDelete, setKeyToDelete] = useState<string | null>(null);
   const [visibleKeys, setVisibleKeys] = useState<Record<string, boolean>>({});
   const [newKey, setNewKey] = useState<ApiKeyConfig>({
     provider: "Paystack",
@@ -53,8 +54,11 @@ function Settings() {
     });
   };
 
-  const handleDeleteKey = (provider: string) => {
-    setApiKeys((prev) => prev.filter((k) => k.provider !== provider));
+  const handleDeleteKey = () => {
+    if (keyToDelete) {
+      setApiKeys((prev) => prev.filter((k) => k.provider !== keyToDelete));
+      setKeyToDelete(null);
+    }
   };
 
   const toggleEnvironment = (provider: string, env: "test" | "live") => {
@@ -372,8 +376,7 @@ function Settings() {
           {activeTab !== "general" &&
             activeTab !== "business" &&
             activeTab !== "kyc" &&
-            activeTab !== "apikeys" &&
-            activeTab !== "notifications" && (
+            activeTab !== "apikeys" && (
               <div className="h-64 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center p-6 bg-slate-50/50">
                 <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
                   <SettingsIcon className="w-6 h-6 text-slate-400" />
@@ -382,11 +385,15 @@ function Settings() {
                   {activeTab} Settings
                 </h3>
                 <p className="text-sm text-slate-500 max-w-sm">
-                  {activeTab === "billing" || activeTab === "security"
+                  {activeTab === "billing" ||
+                  activeTab === "security" ||
+                  activeTab === "notifications"
                     ? "We are currently building out this module. Check back later for updates!"
                     : "These configuration options would be connected to the backend API via your data provider."}
                 </p>
-                {(activeTab === "billing" || activeTab === "security") && (
+                {(activeTab === "billing" ||
+                  activeTab === "security" ||
+                  activeTab === "notifications") && (
                   <span className="mt-4 px-3 py-1 bg-blue-50 text-blue-600 border border-blue-200 text-xs font-semibold rounded-full uppercase tracking-wider">
                     Coming Soon
                   </span>
@@ -490,7 +497,7 @@ function Settings() {
                             </div>
                             {/* Delete Button */}
                             <button
-                              onClick={() => handleDeleteKey(config.provider)}
+                              onClick={() => setKeyToDelete(config.provider)}
                               className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                               title="Delete Provider"
                             >
@@ -569,71 +576,6 @@ function Settings() {
                       </div>
                     ))
                   )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Notifications Tab (Basic Alert Toggle MVP) */}
-          {activeTab === "notifications" && (
-            <div className="space-y-6">
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="px-6 py-5 border-b border-slate-200">
-                  <h3 className="text-sm font-semibold text-slate-900">
-                    Alert Preferences
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Configure automated notifications for provider degradation.
-                  </p>
-                </div>
-                <div className="p-6 space-y-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex gap-4">
-                      <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center shrink-0">
-                        <Bell className="w-5 h-5 text-amber-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-slate-900">
-                          Success Rate Alerts
-                        </p>
-                        <p className="text-xs text-slate-500 mt-0.5">
-                          Receive an email if a provider's success rate falls
-                          below the threshold.
-                        </p>
-                      </div>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer shrink-0 mt-1">
-                      <input
-                        type="checkbox"
-                        className="sr-only peer"
-                        defaultChecked
-                      />
-                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                  </div>
-
-                  <div className="pt-4 border-t border-slate-100 flex items-center gap-4">
-                    <label className="text-sm font-medium text-slate-700 whitespace-nowrap">
-                      Alert Threshold (%)
-                    </label>
-                    <div className="relative w-32">
-                      <input
-                        type="number"
-                        defaultValue="85"
-                        min="0"
-                        max="100"
-                        className="w-full pl-3 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm text-slate-900 outline-none transition-colors"
-                      />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">
-                        %
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end">
-                  <button className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/20 text-sm cursor-pointer">
-                    Save configuration
-                  </button>
                 </div>
               </div>
             </div>
@@ -764,6 +706,40 @@ function Settings() {
               >
                 Save Integration
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Delete Confirmation Modal */}
+      {keyToDelete && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-xl animate-in zoom-in-95 duration-200">
+            <div className="p-6 text-center">
+              <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4">
+                <Trash2 className="w-6 h-6" />
+              </div>
+              <h3 className="font-semibold text-slate-900 mb-1">
+                Remove Integration
+              </h3>
+              <p className="text-sm text-slate-500 mb-6">
+                Are you sure you want to remove the{" "}
+                <span className="font-semibold">{keyToDelete}</span>{" "}
+                integration? You can re-add it later.
+              </p>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setKeyToDelete(null)}
+                  className="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors cursor-pointer text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteKey}
+                  className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg shadow-sm shadow-red-500/20 transition-colors cursor-pointer text-sm"
+                >
+                  Remove Key
+                </button>
+              </div>
             </div>
           </div>
         </div>

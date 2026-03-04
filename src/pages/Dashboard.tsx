@@ -168,15 +168,6 @@ function Dashboard() {
 
           {/* Environment Toggle */}
           <div className="ml-auto flex items-center gap-4 sm:gap-6">
-            <div className="hidden sm:flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-full px-3 py-1.5 cursor-pointer hover:bg-slate-100 transition-colors">
-              <span className="text-xs font-medium text-slate-600">
-                Viewing test data
-              </span>
-              <div className="w-8 h-4 bg-amber-500 rounded-full flex items-center p-0.5 justify-end">
-                <div className="w-3 h-3 bg-white rounded-full shadow-sm"></div>
-              </div>
-            </div>
-
             <button className="text-slate-400 hover:text-slate-600 transition-colors relative cursor-pointer">
               <Bell className="w-5 h-5" />
               <span className="absolute top-0 right-0 w-2 h-2 bg-blue-600 rounded-full border border-white"></span>
