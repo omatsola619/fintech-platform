@@ -15,6 +15,7 @@ import Overview from "./pages/dashboard/Overview";
 import Providers from "./pages/dashboard/Providers";
 import Settings from "./pages/dashboard/Settings";
 import Transactions from "./pages/dashboard/Transactions";
+import MyApiKey from "./pages/dashboard/MyApiKey";
 import DocsPage from "./pages/DocsPage";
 import Authentication from "./pages/docs/Authentication";
 import Installation from "./pages/docs/Installation";
@@ -60,6 +61,7 @@ function App() {
               <Route path="providers" element={<Providers />} />
               <Route path="logs" element={<Logs />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="api-keys" element={<MyApiKey />} />
             </Route>
 
             <Route path="/docs" element={<DocsPage />}>

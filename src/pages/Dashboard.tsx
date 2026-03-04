@@ -126,12 +126,13 @@ function Dashboard() {
               >
                 <Code2 className="w-5 h-5 text-slate-400" /> Documentation
               </Link>
-              <a
-                href="#"
-                className="flex items-center gap-3 px-3 py-2 text-slate-600 font-medium rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer"
+              <Link
+                to="/dashboard/api-keys"
+                onClick={() => setIsSidebarOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2 ${isActive("/dashboard/api-keys") ? "bg-slate-100 text-blue-600 font-medium" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"} rounded-lg transition-colors cursor-pointer`}
               >
-                <ShieldCheck className="w-5 h-5 text-slate-400" /> API Keys
-              </a>
+                <ShieldCheck className={`w-5 h-5 ${isActive("/dashboard/api-keys") ? "text-blue-600" : "text-slate-400"}`} /> My API Key
+              </Link>
             </nav>
           </div>
         </div>
