@@ -14,10 +14,12 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const isActive = (path: string) => {
@@ -28,7 +30,8 @@ function Dashboard() {
   };
 
   const handleLogout = () => {
-    navigate("/");
+    logout();
+    navigate("/auth/login");
   };
 
   return (

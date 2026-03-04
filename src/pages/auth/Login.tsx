@@ -1,12 +1,14 @@
 import { useMutation } from "@tanstack/react-query";
-import { ArrowRight, Lock, Mail } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import { authService, type LoginPayload } from "../../services/auth";
 
 function Login() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { login } = useAuth();
   const stateMessage = (location.state as { message?: string })?.message;
 
   const [formData, setFormData] = useState<LoginPayload>({
@@ -14,11 +16,15 @@ function Login() {
     password: "",
   });
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const loginMutation = useMutation({
     mutationFn: (data: LoginPayload) => authService.login(data),
-    onSuccess: () => {
-      // Navigate to dashboard on successful login
+    onSuccess: (data) => {
+      // Store token depending on your backend schema, falling back to a dummy identifier just in case
+      const token =
+        data?.access || data?.token || data?.access_token || "authenticated";
+      login(token);
       navigate("/dashboard");
     },
     onError: (err: any) => {
@@ -97,14 +103,25 @@ function Login() {
               <Lock className="h-5 w-5 text-slate-400" />
             </div>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleChange}
               required
-              className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors"
+              className="block w-full pl-10 pr-12 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors"
               placeholder="••••••••"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+            >
+              {showPassword ? (
+                <EyeOff className="h-5 w-5" />
+              ) : (
+                <Eye className="h-5 w-5" />
+              )}
+            </button>
           </div>
         </div>
 

@@ -99,7 +99,7 @@ function VerifyCode() {
     if (email !== "your email") {
       verifyOtpMutation.mutate({
         email,
-        purpose: "email",
+        purpose: purpose === "reset" ? "password" : "email",
         otp: fullCode,
       });
     } else {

@@ -1,6 +1,7 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { queryClient } from "./lib/react-query";
 import AuthLayout from "./pages/auth/AuthLayout";
 import ForgotPassword from "./pages/auth/ForgotPassword";
@@ -9,53 +10,88 @@ import ResetPassword from "./pages/auth/ResetPassword";
 import Signup from "./pages/auth/Signup";
 import VerifyCode from "./pages/auth/VerifyCode";
 import Dashboard from "./pages/Dashboard";
-import DocsPage from "./pages/DocsPage";
 import Logs from "./pages/dashboard/Logs";
 import Overview from "./pages/dashboard/Overview";
 import Providers from "./pages/dashboard/Providers";
 import Settings from "./pages/dashboard/Settings";
 import Transactions from "./pages/dashboard/Transactions";
+import DocsPage from "./pages/DocsPage";
 import Authentication from "./pages/docs/Authentication";
 import Installation from "./pages/docs/Installation";
 import Introduction from "./pages/docs/Introduction";
 import LandingPage from "./pages/LandingPage";
 
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated } = useAuth();
+  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+};
+
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/auth/login" replace />;
+  return <>{children}</>;
+};
+
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/dashboard" element={<Dashboard />}>
-            <Route index element={<Overview />} />
-            <Route path="transactions" element={<Transactions />} />
-            <Route path="providers" element={<Providers />} />
-            <Route path="logs" element={<Logs />} />
-            <Route path="settings" element={<Settings />} />
-          </Route>
-
-          <Route path="/docs" element={<DocsPage />}>
-            <Route index element={<Introduction />} />
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Routes>
             <Route
-              path="introduction"
-              element={<Navigate to="/docs" replace />}
+              path="/"
+              element={
+                <PublicRoute>
+                  <LandingPage />
+                </PublicRoute>
+              }
             />
-            <Route path="installation" element={<Installation />} />
-            <Route path="authentication" element={<Authentication />} />
-          </Route>
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            >
+              <Route index element={<Overview />} />
+              <Route path="transactions" element={<Transactions />} />
+              <Route path="providers" element={<Providers />} />
+              <Route path="logs" element={<Logs />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
 
-          <Route path="/auth" element={<AuthLayout />}>
-            <Route index element={<Navigate to="login" replace />} />
-            <Route path="login" element={<Login />} />
-            <Route path="signup" element={<Signup />} />
-            <Route path="forgot-password" element={<ForgotPassword />} />
-            <Route path="verify" element={<VerifyCode />} />
-            <Route path="reset-password" element={<ResetPassword />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+            <Route path="/docs" element={<DocsPage />}>
+              <Route index element={<Introduction />} />
+              <Route
+                path="introduction"
+                element={<Navigate to="/docs" replace />}
+              />
+              <Route path="installation" element={<Installation />} />
+              <Route path="authentication" element={<Authentication />} />
+            </Route>
+
+            <Route
+              path="/auth"
+              element={
+                <PublicRoute>
+                  <AuthLayout />
+                </PublicRoute>
+              }
+            >
+              <Route index element={<Navigate to="login" replace />} />
+              <Route path="login" element={<Login />} />
+              <Route path="signup" element={<Signup />} />
+              <Route path="forgot-password" element={<ForgotPassword />} />
+              <Route path="verify" element={<VerifyCode />} />
+              <Route path="reset-password" element={<ResetPassword />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </AuthProvider>
   );
 }
 
