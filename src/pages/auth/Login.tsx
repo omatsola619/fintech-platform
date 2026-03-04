@@ -21,10 +21,16 @@ function Login() {
   const loginMutation = useMutation({
     mutationFn: (data: LoginPayload) => authService.login(data),
     onSuccess: (data) => {
-      // Store token depending on your backend schema, falling back to a dummy identifier just in case
+      // Store token depending on your backend schema, falling back to a dummy identifier
       const token =
         data?.access || data?.token || data?.access_token || "authenticated";
-      login(token);
+
+      const fullName =
+        data?.full_name ||
+        data?.user?.full_name ||
+        data?.user?.first_name ||
+        "";
+      login(token, fullName);
       navigate("/dashboard");
     },
     onError: (err: any) => {
@@ -45,6 +51,12 @@ function Login() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (!formData.password || formData.password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
+
     loginMutation.mutate(formData);
   };
 

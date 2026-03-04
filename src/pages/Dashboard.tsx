@@ -19,7 +19,7 @@ import { useAuth } from "../contexts/AuthContext";
 function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useAuth();
+  const { logout, userName } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const isActive = (path: string) => {
@@ -27,6 +27,15 @@ function Dashboard() {
       location.pathname === path ||
       (path === "/dashboard" && location.pathname === "/dashboard")
     );
+  };
+
+  const getInitials = (name: string) => {
+    if (!name) return "UU";
+    const parts = name.trim().split(" ").filter(Boolean);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
   };
 
   const handleLogout = () => {
@@ -174,7 +183,7 @@ function Dashboard() {
             </button>
 
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-sm font-semibold cursor-pointer shadow-sm">
-              JD
+              {getInitials(userName)}
             </div>
           </div>
         </header>
