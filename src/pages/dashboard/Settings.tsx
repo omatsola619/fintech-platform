@@ -30,6 +30,7 @@ type EnvModal = {
   provider: string;
   environment: "sandbox" | "live";
   secretKey: string;
+  originalKey: string;
   isEdit: boolean;
 };
 
@@ -40,6 +41,7 @@ const DEFAULT_ENV_MODAL: EnvModal = {
   provider: AVAILABLE_PROVIDERS[0],
   environment: "sandbox",
   secretKey: "",
+  originalKey: "",
   isEdit: false,
 };
 
@@ -151,6 +153,7 @@ function Settings() {
       provider,
       environment,
       secretKey: existingKey || "",
+      originalKey: existingKey || "",
       isEdit: !!existingKey,
     });
   };
@@ -800,6 +803,11 @@ function Settings() {
                   className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
                   autoFocus
                 />
+                {envModal.isEdit && (
+                  <p className="mt-2 text-xs text-slate-400">
+                    Clear the field and enter a new key. Key must be more than 10 characters.
+                  </p>
+                )}
               </div>
             </div>
 
@@ -812,7 +820,12 @@ function Settings() {
               </button>
               <button
                 onClick={handleSaveEnvKey}
-                disabled={!envModal.secretKey.trim() || isSettingUpProvider}
+                disabled={
+                  isSettingUpProvider ||
+                  (envModal.isEdit
+                    ? envModal.secretKey === envModal.originalKey || envModal.secretKey.length <= 10
+                    : !envModal.secretKey.trim())
+                }
                 className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm shadow-blue-500/20 text-sm flex items-center gap-2"
               >
                 {isSettingUpProvider ? (
