@@ -751,20 +751,6 @@ function Settings() {
                 </h4>
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Public Key
-                  </label>
-                  <input
-                    type="text"
-                    value={newKey.testPublicKey}
-                    onChange={(e) =>
-                      setNewKey({ ...newKey, testPublicKey: e.target.value })
-                    }
-                    placeholder="pk_test_..."
-                    className="block w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
                     Secret Key
                   </label>
                   <input
@@ -785,20 +771,6 @@ function Settings() {
                   <span className="w-2 h-2 rounded-full bg-emerald-500"></span>{" "}
                   Live Environment
                 </h4>
-                <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Public Key
-                  </label>
-                  <input
-                    type="text"
-                    value={newKey.livePublicKey}
-                    onChange={(e) =>
-                      setNewKey({ ...newKey, livePublicKey: e.target.value })
-                    }
-                    placeholder="pk_live_..."
-                    className="block w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
-                  />
-                </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">
                     Secret Key
