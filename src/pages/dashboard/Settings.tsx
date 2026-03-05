@@ -36,6 +36,7 @@ type EnvModal = {
   secretKey: string;
   originalKey: string;
   isEdit: boolean;
+  isFixed?: boolean;
 };
 
 const AVAILABLE_PROVIDERS = ["Paystack", "Flutterwave"];
@@ -48,6 +49,7 @@ const DEFAULT_ENV_MODAL: EnvModal = {
   secretKey: "",
   originalKey: "",
   isEdit: false,
+  isFixed: false,
 };
 
 function Settings() {
@@ -207,7 +209,8 @@ function Settings() {
   const openEnvModal = (
     provider: string,
     environment: "sandbox" | "live",
-    existingKey?: string
+    existingKey?: string,
+    isFixed?: boolean
   ) => {
     setEnvModal({
       open: true,
@@ -216,6 +219,7 @@ function Settings() {
       secretKey: existingKey || "",
       originalKey: existingKey || "",
       isEdit: !!existingKey,
+      isFixed: !!isFixed,
     });
   };
 
@@ -641,7 +645,7 @@ function Settings() {
                         disabled={apiKeys.length >= AVAILABLE_PROVIDERS.length}
                         className="flex items-center gap-2 px-4 py-2 font-medium rounded-lg transition-colors shadow-sm text-sm bg-blue-600 text-white hover:bg-blue-700 shadow-blue-500/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <Plus className="w-4 h-4" /> Add Key
+                        <Plus className="w-4 h-4" /> Add Provider
                       </button>
                     </div>
                     <div className="divide-y divide-slate-100">
@@ -714,7 +718,9 @@ function Settings() {
                                       onClick={() =>
                                         openEnvModal(
                                           config.provider,
-                                          "sandbox"
+                                          "sandbox",
+                                          undefined,
+                                          true
                                         )
                                       }
                                       className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
@@ -762,7 +768,9 @@ function Settings() {
                                       onClick={() =>
                                         openEnvModal(
                                           config.provider,
-                                          "live"
+                                          "live",
+                                          undefined,
+                                          true
                                         )
                                       }
                                       className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
@@ -808,7 +816,9 @@ function Settings() {
                 <h3 className="font-semibold text-slate-900">
                   {envModal.isEdit
                     ? `Edit ${envModal.environment === "sandbox" ? "Sandbox" : "Live"} Key — ${envModal.provider}`
-                    : "Add API Key"}
+                    : envModal.isFixed
+                      ? `Add ${envModal.environment === "sandbox" ? "Sandbox" : "Live"} Key — ${envModal.provider}`
+                      : "Add Provider"}
                 </h3>
                 {envModal.isEdit && (
                   <p className="text-xs text-slate-500 mt-0.5">The new key will replace the existing one.</p>
@@ -826,7 +836,7 @@ function Settings() {
               {/* Provider selector */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Provider</label>
-                {envModal.isEdit ? (
+                {envModal.isEdit || envModal.isFixed ? (
                   <div className="flex items-center gap-2 px-3 py-2.5 border border-slate-200 rounded-xl bg-slate-100 text-slate-700 text-sm">
                     <Key className="w-4 h-4 text-blue-600" />
                     <span className="font-medium">{envModal.provider}</span>
@@ -855,7 +865,7 @@ function Settings() {
               {/* Environment */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Environment</label>
-                {envModal.isEdit ? (
+                {envModal.isEdit || envModal.isFixed ? (
                   <div
                     className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${envModal.environment === "sandbox"
                       ? "bg-amber-100 text-amber-700"
