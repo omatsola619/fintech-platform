@@ -177,11 +177,10 @@ function Dashboard() {
           <div className="ml-auto flex items-center gap-4 sm:gap-6">
             <div className="hidden sm:flex items-center gap-3 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200">
               <span
-                className={`text-xs font-semibold transition-colors ${
-                  activeEnvironment === "test"
+                className={`text-xs font-semibold transition-colors ${activeEnvironment === "test"
                     ? "text-amber-600"
                     : "text-slate-400"
-                }`}
+                  }`}
               >
                 Test
               </span>
@@ -191,33 +190,24 @@ function Dashboard() {
                     activeEnvironment === "live" ? "test" : "live",
                   )
                 }
-                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                  activeEnvironment === "live"
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${activeEnvironment === "live"
                     ? "bg-emerald-500"
                     : "bg-amber-500"
-                }`}
+                  }`}
               >
                 <span className="sr-only">Toggle environment</span>
                 <span
-                  className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform ${
-                    activeEnvironment === "live"
-                      ? "translate-x-4.5" // use 4.5 for w-9 h-5 inner w-3.5 h-3.5
-                      : "translate-x-0.5"
-                  }`}
-                  style={{
-                    transform:
-                      activeEnvironment === "live"
-                        ? "translateX(18px)"
-                        : "translateX(2px)",
-                  }}
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${activeEnvironment === "live"
+                      ? "translate-x-6" // 24px (24 + 16 = 40. 44 - 40 = 4px margin right)
+                      : "translate-x-1" // 4px margin left
+                    }`}
                 />
               </button>
               <span
-                className={`text-xs font-semibold transition-colors ${
-                  activeEnvironment === "live"
+                className={`text-xs font-semibold transition-colors ${activeEnvironment === "live"
                     ? "text-emerald-600"
                     : "text-slate-400"
-                }`}
+                  }`}
               >
                 Live
               </span>

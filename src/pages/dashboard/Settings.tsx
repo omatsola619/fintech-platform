@@ -217,11 +217,10 @@ function Settings() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap cursor-pointer
-                                    ${
-                                      activeTab === tab.id
-                                        ? "bg-blue-50 text-blue-700"
-                                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                                    }
+                                    ${activeTab === tab.id
+                    ? "bg-blue-50 text-blue-700"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  }
                                 `}
               >
                 <TabIcon
@@ -510,18 +509,18 @@ function Settings() {
                     </h3>
                     <p className="text-sm text-slate-500 max-w-sm">
                       {activeTab === "billing" ||
-                      activeTab === "security" ||
-                      activeTab === "notifications"
+                        activeTab === "security" ||
+                        activeTab === "notifications"
                         ? "We are currently building out this module. Check back later for updates!"
                         : "These configuration options would be connected to the backend API via your data provider."}
                     </p>
                     {(activeTab === "billing" ||
                       activeTab === "security" ||
                       activeTab === "notifications") && (
-                      <span className="mt-4 px-3 py-1 bg-blue-50 text-blue-600 border border-blue-200 text-xs font-semibold rounded-full uppercase tracking-wider">
-                        Coming Soon
-                      </span>
-                    )}
+                        <span className="mt-4 px-3 py-1 bg-blue-50 text-blue-600 border border-blue-200 text-xs font-semibold rounded-full uppercase tracking-wider">
+                          Coming Soon
+                        </span>
+                      )}
                   </div>
                 )}
 
@@ -592,11 +591,9 @@ function Settings() {
                               <div className="flex items-center gap-3">
                                 {/* Delete Button */}
                                 <button
-                                  onClick={() =>
-                                    setKeyToDelete(config.provider)
-                                  }
-                                  className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                                  title="Delete Provider"
+                                  disabled
+                                  className="p-2 text-slate-300 cursor-not-allowed rounded-lg"
+                                  title="Delete Provider (Coming Soon)"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
@@ -609,7 +606,7 @@ function Settings() {
                                 </span>
                                 <div>
                                   {config.testPublicKey ||
-                                  config.testSecretKey ? (
+                                    config.testSecretKey ? (
                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
                                       <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                                       Active
@@ -628,7 +625,7 @@ function Settings() {
                                 </span>
                                 <div>
                                   {config.livePublicKey ||
-                                  config.liveSecretKey ? (
+                                    config.liveSecretKey ? (
                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
                                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                                       Active
