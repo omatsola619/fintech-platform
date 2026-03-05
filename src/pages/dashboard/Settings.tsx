@@ -2,6 +2,8 @@ import {
   Bell,
   Building2,
   CreditCard as CreditCardIcon,
+  Eye,
+  EyeOff,
   FileText,
   Key,
   Pencil,
@@ -52,6 +54,7 @@ function Settings() {
   const [apiKeys, setApiKeys] = useState<ApiKeyConfig[]>([]);
   const [envModal, setEnvModal] = useState<EnvModal>(DEFAULT_ENV_MODAL);
   const [keyToDelete, setKeyToDelete] = useState<string | null>(null);
+  const [showKey, setShowKey] = useState(false);
 
   const { data: settingsResponse, isLoading } = useQuery({
     queryKey: ["settings"],
@@ -158,7 +161,10 @@ function Settings() {
     });
   };
 
-  const closeEnvModal = () => setEnvModal(DEFAULT_ENV_MODAL);
+  const closeEnvModal = () => {
+    setEnvModal(DEFAULT_ENV_MODAL);
+    setShowKey(false);
+  };
 
   const handleSaveEnvKey = async () => {
     const merchantId =
@@ -757,14 +763,28 @@ function Settings() {
             </div>
 
             <div className="p-6 space-y-5">
-              {/* Provider selector — only shown when not pre-locked from a card button */}
+              {/* Provider selector */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Provider</label>
-                <div className="flex items-center gap-2 px-3 py-2.5 border border-slate-200 rounded-xl bg-slate-100 text-slate-700 text-sm">
-                  <Key className="w-4 h-4 text-blue-600" />
-                  <span className="font-medium">{envModal.provider}</span>
-                  <span className="ml-auto text-xs text-slate-400">Locked</span>
-                </div>
+                {envModal.isEdit ? (
+                  <div className="flex items-center gap-2 px-3 py-2.5 border border-slate-200 rounded-xl bg-slate-100 text-slate-700 text-sm">
+                    <Key className="w-4 h-4 text-blue-600" />
+                    <span className="font-medium">{envModal.provider}</span>
+                    <span className="ml-auto text-xs text-slate-400">Locked</span>
+                  </div>
+                ) : (
+                  <select
+                    value={envModal.provider}
+                    onChange={(e) =>
+                      setEnvModal({ ...envModal, provider: e.target.value })
+                    }
+                    className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors text-sm appearance-none cursor-pointer"
+                  >
+                    {AVAILABLE_PROVIDERS.map((p) => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               {/* Environment badge */}
@@ -791,18 +811,49 @@ function Settings() {
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Secret Key
                 </label>
-                <input
-                  type={envModal.environment === "live" ? "password" : "text"}
-                  value={envModal.secretKey}
-                  onChange={(e) =>
-                    setEnvModal({ ...envModal, secretKey: e.target.value })
-                  }
-                  placeholder={
-                    envModal.environment === "sandbox" ? "sk_test_..." : "sk_live_..."
-                  }
-                  className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
-                  autoFocus
-                />
+                <div className="relative">
+                  <input
+                    type={showKey ? "text" : "password"}
+                    value={envModal.secretKey}
+                    onKeyDown={(e) => {
+                      // If the field still holds the original masked value,
+                      // clear it entirely on the first backspace/delete or printable key
+                      if (
+                        envModal.isEdit &&
+                        envModal.secretKey === envModal.originalKey
+                      ) {
+                        if (
+                          e.key === "Backspace" ||
+                          e.key === "Delete" ||
+                          e.key.length === 1
+                        ) {
+                          e.preventDefault();
+                          setEnvModal({ ...envModal, secretKey: "" });
+                        }
+                      }
+                    }}
+                    onChange={(e) =>
+                      setEnvModal({ ...envModal, secretKey: e.target.value })
+                    }
+                    placeholder={
+                      envModal.environment === "sandbox" ? "sk_test_..." : "sk_live_..."
+                    }
+                    className="block w-full px-3 py-2.5 pr-10 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowKey(!showKey)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                    tabIndex={-1}
+                  >
+                    {showKey ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
                 {envModal.isEdit && (
                   <p className="mt-2 text-xs text-slate-400">
                     Clear the field and enter a new key. Key must be more than 10 characters.
