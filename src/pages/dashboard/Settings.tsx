@@ -25,23 +25,31 @@ type ApiKeyConfig = {
   liveSecretKey: string;
 };
 
+type EnvModal = {
+  open: boolean;
+  provider: string;
+  environment: "sandbox" | "live";
+  secretKey: string;
+  isEdit: boolean;
+};
+
 const AVAILABLE_PROVIDERS = ["Paystack", "Flutterwave"];
+
+const DEFAULT_ENV_MODAL: EnvModal = {
+  open: false,
+  provider: AVAILABLE_PROVIDERS[0],
+  environment: "sandbox",
+  secretKey: "",
+  isEdit: false,
+};
 
 function Settings() {
   const queryClient = useQueryClient();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState(location.state?.tab || "general");
   const [apiKeys, setApiKeys] = useState<ApiKeyConfig[]>([]);
-  const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [envModal, setEnvModal] = useState<EnvModal>(DEFAULT_ENV_MODAL);
   const [keyToDelete, setKeyToDelete] = useState<string | null>(null);
-  const [newKey, setNewKey] = useState<ApiKeyConfig>({
-    provider: "Paystack",
-    testPublicKey: "",
-    testSecretKey: "",
-    livePublicKey: "",
-    liveSecretKey: "",
-  });
 
   const { data: settingsResponse, isLoading } = useQuery({
     queryKey: ["settings"],
@@ -133,54 +141,39 @@ function Settings() {
       },
     });
 
-  const handleEditKey = (config: ApiKeyConfig) => {
-    setNewKey({ ...config });
-    setIsEditMode(true);
-    setIsApiKeyModalOpen(true);
+  const openEnvModal = (
+    provider: string,
+    environment: "sandbox" | "live",
+    existingKey?: string
+  ) => {
+    setEnvModal({
+      open: true,
+      provider,
+      environment,
+      secretKey: existingKey || "",
+      isEdit: !!existingKey,
+    });
   };
 
-  const handleAddKey = async () => {
+  const closeEnvModal = () => setEnvModal(DEFAULT_ENV_MODAL);
+
+  const handleSaveEnvKey = async () => {
     const merchantId =
       merchant?.merchant_id ||
       settingsData?.merchant_id ||
       "165714267";
     try {
-      if (newKey.testPublicKey || newKey.testSecretKey) {
-        await setupProvider({
-          merchant_id: merchantId.toString(),
-          environment: "sandbox",
-          provider: newKey.provider.toLowerCase(),
-          credential_type: "api_key",
-          credentials: {
-            public_key: newKey.testPublicKey || "",
-            secret_key: newKey.testSecretKey || "",
-          },
-        });
-      }
-
-      if (newKey.livePublicKey || newKey.liveSecretKey) {
-        await setupProvider({
-          merchant_id: merchantId.toString(),
-          environment: "live",
-          provider: newKey.provider.toLowerCase(),
-          credential_type: "api_key",
-          credentials: {
-            public_key: newKey.livePublicKey || "",
-            secret_key: newKey.liveSecretKey || "",
-          },
-        });
-      }
-
-      await queryClient.invalidateQueries({ queryKey: ["settings"] });
-
-      setIsApiKeyModalOpen(false);
-      setNewKey({
-        provider: "Paystack",
-        testPublicKey: "",
-        testSecretKey: "",
-        livePublicKey: "",
-        liveSecretKey: "",
+      await setupProvider({
+        merchant_id: merchantId.toString(),
+        environment: envModal.environment,
+        provider: envModal.provider.toLowerCase(),
+        credential_type: "api_key",
+        credentials: {
+          secret_key: envModal.secretKey,
+        },
       });
+      await queryClient.invalidateQueries({ queryKey: ["settings"] });
+      closeEnvModal();
     } catch (error) {
       console.error("Failed to setup provider:", error);
     }
@@ -574,17 +567,9 @@ function Settings() {
                         </p>
                       </div>
                       <button
-                        onClick={() => {
-                          setNewKey({
-                            provider: AVAILABLE_PROVIDERS[0],
-                            testPublicKey: "",
-                            testSecretKey: "",
-                            livePublicKey: "",
-                            liveSecretKey: "",
-                          });
-                          setIsEditMode(false);
-                          setIsApiKeyModalOpen(true);
-                        }}
+                        onClick={() =>
+                          openEnvModal(AVAILABLE_PROVIDERS[0], "sandbox")
+                        }
                         className="flex items-center gap-2 px-4 py-2 font-medium rounded-lg transition-colors shadow-sm text-sm bg-blue-600 text-white hover:bg-blue-700 shadow-blue-500/20 cursor-pointer"
                       >
                         <Plus className="w-4 h-4" /> Add Key
@@ -607,33 +592,24 @@ function Settings() {
                       ) : (
                         apiKeys.map((config, index) => (
                           <div key={index} className="p-6">
-                            <div className="flex items-center justify-between mb-4">
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center border border-slate-200 shrink-0">
-                                  <Key className="w-5 h-5 text-blue-600" />
-                                </div>
-                                <div>
-                                  <h4 className="font-medium text-slate-900">
-                                    {config.provider}
-                                  </h4>
-                                  <div className="flex items-center gap-1.5 mt-0.5">
-                                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                                    <span className="text-xs font-medium text-emerald-700">
-                                      Connected
-                                    </span>
-                                  </div>
+                            {/* Provider Header */}
+                            <div className="flex items-center gap-3 mb-5">
+                              <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center border border-slate-200 shrink-0">
+                                <Key className="w-5 h-5 text-blue-600" />
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-slate-900">
+                                  {config.provider}
+                                </h4>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                  <span className="text-xs font-medium text-emerald-700">
+                                    Connected
+                                  </span>
                                 </div>
                               </div>
-                              <div className="flex items-center gap-2">
-                                {/* Edit Button */}
-                                <button
-                                  onClick={() => handleEditKey(config)}
-                                  className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
-                                  title="Edit Provider Keys"
-                                >
-                                  <Pencil className="w-4 h-4" />
-                                </button>
-                                {/* Delete Button */}
+                              {/* Top-right delete (coming soon) */}
+                              <div className="ml-auto">
                                 <button
                                   disabled
                                   className="p-2 text-slate-300 cursor-not-allowed rounded-lg"
@@ -643,14 +619,43 @@ function Settings() {
                                 </button>
                               </div>
                             </div>
+
+                            {/* Sandbox tile */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col justify-center gap-3">
-                                <span className="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">
-                                  Sandbox Environment
-                                </span>
+                              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col gap-3">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">
+                                    Sandbox Environment
+                                  </span>
+                                  {config.testSecretKey ? (
+                                    <button
+                                      onClick={() =>
+                                        openEnvModal(
+                                          config.provider,
+                                          "sandbox",
+                                          config.testSecretKey
+                                        )
+                                      }
+                                      className="flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-blue-600 transition-colors cursor-pointer"
+                                    >
+                                      <Pencil className="w-3 h-3" /> Edit
+                                    </button>
+                                  ) : (
+                                    <button
+                                      onClick={() =>
+                                        openEnvModal(
+                                          config.provider,
+                                          "sandbox"
+                                        )
+                                      }
+                                      className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
+                                    >
+                                      <Plus className="w-3 h-3" /> Add
+                                    </button>
+                                  )}
+                                </div>
                                 <div>
-                                  {config.testPublicKey ||
-                                    config.testSecretKey ? (
+                                  {config.testSecretKey ? (
                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
                                       <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                                       Active
@@ -663,13 +668,42 @@ function Settings() {
                                   )}
                                 </div>
                               </div>
-                              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col justify-center gap-3">
-                                <span className="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">
-                                  Live Environment
-                                </span>
+
+                              {/* Live tile */}
+                              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col gap-3">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">
+                                    Live Environment
+                                  </span>
+                                  {config.liveSecretKey ? (
+                                    <button
+                                      onClick={() =>
+                                        openEnvModal(
+                                          config.provider,
+                                          "live",
+                                          config.liveSecretKey
+                                        )
+                                      }
+                                      className="flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-blue-600 transition-colors cursor-pointer"
+                                    >
+                                      <Pencil className="w-3 h-3" /> Edit
+                                    </button>
+                                  ) : (
+                                    <button
+                                      onClick={() =>
+                                        openEnvModal(
+                                          config.provider,
+                                          "live"
+                                        )
+                                      }
+                                      className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
+                                    >
+                                      <Plus className="w-3 h-3" /> Add
+                                    </button>
+                                  )}
+                                </div>
                                 <div>
-                                  {config.livePublicKey ||
-                                    config.liveSecretKey ? (
+                                  {config.liveSecretKey ? (
                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
                                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                                       Active
@@ -695,125 +729,101 @@ function Settings() {
         </div>
       </div>
 
-      {/* API Key Modal */}
-      {isApiKeyModalOpen && (
+      {/* Environment Key Modal */}
+      {envModal.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-xl animate-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-xl animate-in zoom-in-95 duration-200">
+            {/* Modal Header */}
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-slate-900">
-                  {isEditMode ? `Edit ${newKey.provider} Integration` : "Add API Key Configuration"}
+                  {envModal.isEdit ? "Edit" : "Add"}{" "}
+                  {envModal.environment === "sandbox" ? "Sandbox" : "Live"}{" "}
+                  Key — {envModal.provider}
                 </h3>
-                {isEditMode && (
-                  <p className="text-xs text-slate-500 mt-0.5">New keys will replace the existing ones.</p>
+                {envModal.isEdit && (
+                  <p className="text-xs text-slate-500 mt-0.5">The new key will replace the existing one.</p>
                 )}
               </div>
               <button
-                onClick={() => setIsApiKeyModalOpen(false)}
+                onClick={closeEnvModal}
                 className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+
+            <div className="p-6 space-y-5">
+              {/* Provider selector — only shown when not pre-locked from a card button */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Provider</label>
+                <div className="flex items-center gap-2 px-3 py-2.5 border border-slate-200 rounded-xl bg-slate-100 text-slate-700 text-sm">
+                  <Key className="w-4 h-4 text-blue-600" />
+                  <span className="font-medium">{envModal.provider}</span>
+                  <span className="ml-auto text-xs text-slate-400">Locked</span>
+                </div>
+              </div>
+
+              {/* Environment badge */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Environment</label>
+                <div
+                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${envModal.environment === "sandbox"
+                    ? "bg-amber-100 text-amber-700"
+                    : "bg-emerald-100 text-emerald-700"
+                    }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${envModal.environment === "sandbox"
+                      ? "bg-amber-500"
+                      : "bg-emerald-500"
+                      }`}
+                  />
+                  {envModal.environment === "sandbox" ? "Sandbox" : "Live"}
+                </div>
+              </div>
+
+              {/* Secret key input */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Provider
+                  Secret Key
                 </label>
-                {isEditMode ? (
-                  <div className="flex items-center gap-2 px-3 py-2.5 border border-slate-200 rounded-xl bg-slate-100 text-slate-700 sm:text-sm">
-                    <Key className="w-4 h-4 text-blue-600" />
-                    <span className="font-medium">{newKey.provider}</span>
-                    <span className="ml-auto text-xs text-slate-400">Locked</span>
-                  </div>
-                ) : (
-                  <select
-                    value={newKey.provider}
-                    onChange={(e) =>
-                      setNewKey({ ...newKey, provider: e.target.value })
-                    }
-                    className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm appearance-none"
-                  >
-                    {AVAILABLE_PROVIDERS.map((provider) => (
-                      <option key={provider} value={provider}>
-                        {provider}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </div>
-
-              {/* Sandbox Environment Details */}
-              <div className="space-y-4 p-4 rounded-xl border border-slate-200 bg-slate-50/50">
-                <h4 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-amber-500"></span>{" "}
-                  Sandbox Environment
-                </h4>
-                <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Secret Key
-                  </label>
-                  <input
-                    type="text"
-                    value={newKey.testSecretKey}
-                    onChange={(e) =>
-                      setNewKey({ ...newKey, testSecretKey: e.target.value })
-                    }
-                    placeholder="sk_test_..."
-                    className="block w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
-                  />
-                </div>
-              </div>
-
-              {/* Live Environment Details */}
-              <div className="space-y-4 p-4 rounded-xl border border-slate-200 bg-slate-50/50">
-                <h4 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>{" "}
-                  Live Environment
-                </h4>
-                <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Secret Key
-                  </label>
-                  <input
-                    type="password"
-                    value={newKey.liveSecretKey}
-                    onChange={(e) =>
-                      setNewKey({ ...newKey, liveSecretKey: e.target.value })
-                    }
-                    placeholder="sk_live_..."
-                    className="block w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
-                  />
-                </div>
+                <input
+                  type={envModal.environment === "live" ? "password" : "text"}
+                  value={envModal.secretKey}
+                  onChange={(e) =>
+                    setEnvModal({ ...envModal, secretKey: e.target.value })
+                  }
+                  placeholder={
+                    envModal.environment === "sandbox" ? "sk_test_..." : "sk_live_..."
+                  }
+                  className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
+                  autoFocus
+                />
               </div>
             </div>
+
             <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3 rounded-b-2xl">
               <button
-                onClick={() => setIsApiKeyModalOpen(false)}
+                onClick={closeEnvModal}
                 className="px-4 py-2 font-medium text-slate-600 hover:text-slate-900 transition-colors cursor-pointer text-sm"
               >
                 Cancel
               </button>
               <button
-                onClick={handleAddKey}
-                disabled={
-                  (!newKey.testPublicKey &&
-                    !newKey.testSecretKey &&
-                    !newKey.livePublicKey &&
-                    !newKey.liveSecretKey) ||
-                  isSettingUpProvider
-                }
+                onClick={handleSaveEnvKey}
+                disabled={!envModal.secretKey.trim() || isSettingUpProvider}
                 className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm shadow-blue-500/20 text-sm flex items-center gap-2"
               >
                 {isSettingUpProvider ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{" "}
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     Saving...
                   </>
-                ) : isEditMode ? (
-                  "Update Integration"
+                ) : envModal.isEdit ? (
+                  "Update Key"
                 ) : (
-                  "Save Integration"
+                  "Save Key"
                 )}
               </button>
             </div>
