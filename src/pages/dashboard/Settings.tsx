@@ -78,7 +78,7 @@ function Settings() {
 
       clients.forEach((client: any) => {
         const isTest =
-          client.environment === "Sandbox" ||
+          client.environment?.toLowerCase() === "sandbox" ||
           client.environment?.toLowerCase() === "test";
         const providers = client.providers || [];
 
