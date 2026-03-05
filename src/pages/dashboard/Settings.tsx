@@ -2,8 +2,6 @@ import {
   Bell,
   Building2,
   CreditCard as CreditCardIcon,
-  Eye,
-  EyeOff,
   FileText,
   Key,
   Plus,
@@ -13,41 +11,39 @@ import {
   User,
   X,
 } from "lucide-react";
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 
 type ApiKeyConfig = {
   provider: string;
-  testType: string;
-  testKey: string;
-  liveType: string;
-  liveKey: string;
-  activeEnvironment: "test" | "live";
+  testPublicKey: string;
+  testSecretKey: string;
+  livePublicKey: string;
+  liveSecretKey: string;
 };
 
 const AVAILABLE_PROVIDERS = ["Paystack", "Flutterwave"];
 
 function Settings() {
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("general");
   const [apiKeys, setApiKeys] = useState<ApiKeyConfig[]>([]);
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [keyToDelete, setKeyToDelete] = useState<string | null>(null);
-  const [visibleKeys, setVisibleKeys] = useState<Record<string, boolean>>({});
   const [newKey, setNewKey] = useState<ApiKeyConfig>({
     provider: "Paystack",
-    testType: "Secret Key",
-    testKey: "",
-    liveType: "Secret Key",
-    liveKey: "",
-    activeEnvironment: "live",
+    testPublicKey: "",
+    testSecretKey: "",
+    livePublicKey: "",
+    liveSecretKey: "",
   });
 
   const { data: settingsResponse, isLoading } = useQuery({
     queryKey: ["settings"],
     queryFn: async () => {
       const token = localStorage.getItem("authToken");
-      const response = await api.get("/accounts/auth/settings/", {
+      const response = await api.get("/accounts/user/details/", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -57,28 +53,130 @@ function Settings() {
     },
   });
 
-
   const settingsRaw = settingsResponse?.data || settingsResponse || {};
   const settingsData = settingsRaw?.user || settingsRaw;
 
   console.log("=== SETTINGS DATA ===", settingsData);
   console.log("=== PROFILE ===", settingsData?.profile);
 
-  const firstName = settingsData?.profile?.first_name || settingsData?.first_name || "";
-  const lastName = settingsData?.profile?.last_name || settingsData?.last_name || "";
-  const emailAddress = settingsData?.profile?.email || settingsData?.email || "";
+  const firstName =
+    settingsData?.profile?.first_name || settingsData?.first_name || "";
+  const lastName =
+    settingsData?.profile?.last_name || settingsData?.last_name || "";
+  const emailAddress =
+    settingsData?.profile?.email || settingsData?.email || "";
 
-  const handleAddKey = () => {
-    setApiKeys([...apiKeys, newKey]);
-    setIsApiKeyModalOpen(false);
-    setNewKey({
-      provider: "Paystack",
-      testType: "Secret Key",
-      testKey: "",
-      liveType: "Secret Key",
-      liveKey: "",
-      activeEnvironment: "live",
+  useEffect(() => {
+    // Navigate directly to data > merchants > api_clients
+    const data = settingsResponse?.data || settingsResponse;
+    const merchants = data?.merchants;
+    const merchant = Array.isArray(merchants) ? merchants[0] : merchants;
+    const clients = merchant?.api_clients || [];
+
+    if (clients && Array.isArray(clients) && clients.length > 0) {
+      const providerMap = new Map<string, ApiKeyConfig>();
+
+      clients.forEach((client: any) => {
+        const isTest =
+          client.environment === "Sandbox" ||
+          client.environment?.toLowerCase() === "test";
+        const providers = client.providers || [];
+
+        providers.forEach((p: any) => {
+          if (!p || !p.provider) return;
+          const providerName =
+            p.provider.charAt(0).toUpperCase() +
+            p.provider.slice(1).toLowerCase();
+
+          if (!providerMap.has(providerName)) {
+            providerMap.set(providerName, {
+              provider: providerName,
+              testPublicKey: "",
+              testSecretKey: "",
+              livePublicKey: "",
+              liveSecretKey: "",
+            });
+          }
+
+          const config = providerMap.get(providerName)!;
+          // Set to masked dots if provider exists, showing it's configured.
+          if (isTest) {
+            config.testPublicKey = "••••••••••••••••";
+            config.testSecretKey = "••••••••••••••••";
+          } else {
+            config.livePublicKey = "••••••••••••••••";
+            config.liveSecretKey = "••••••••••••••••";
+          }
+        });
+      });
+
+      setApiKeys(Array.from(providerMap.values()));
+    }
+  }, [settingsResponse]);
+
+  const { mutateAsync: setupProvider, isPending: isSettingUpProvider } =
+    useMutation({
+      mutationFn: async (payload: any) => {
+        const token = localStorage.getItem("authToken");
+        const response = await api.post(
+          "/api/client-provider/setup/",
+          payload,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+        return response.data;
+      },
     });
+
+  const handleAddKey = async () => {
+    const merchants = settingsRaw?.merchants;
+    const merchantId =
+      (Array.isArray(merchants)
+        ? merchants[0]?.merchant_id
+        : merchants?.merchant_id) ||
+      settingsData?.merchant_id ||
+      "165714267";
+    try {
+      if (newKey.testPublicKey || newKey.testSecretKey) {
+        await setupProvider({
+          merchant_id: merchantId.toString(),
+          environment: "sandbox",
+          provider: newKey.provider.toLowerCase(),
+          credential_type: "api_key",
+          credentials: {
+            public_key: newKey.testPublicKey || "",
+            secret_key: newKey.testSecretKey || "",
+          },
+        });
+      }
+
+      if (newKey.livePublicKey || newKey.liveSecretKey) {
+        await setupProvider({
+          merchant_id: merchantId.toString(),
+          environment: "live",
+          provider: newKey.provider.toLowerCase(),
+          credential_type: "api_key",
+          credentials: {
+            public_key: newKey.livePublicKey || "",
+            secret_key: newKey.liveSecretKey || "",
+          },
+        });
+      }
+
+      await queryClient.invalidateQueries({ queryKey: ["settings"] });
+
+      setIsApiKeyModalOpen(false);
+      setNewKey({
+        provider: "Paystack",
+        testPublicKey: "",
+        testSecretKey: "",
+        livePublicKey: "",
+        liveSecretKey: "",
+      });
+    } catch (error) {
+      console.error("Failed to setup provider:", error);
+    }
   };
 
   const handleDeleteKey = () => {
@@ -86,25 +184,6 @@ function Settings() {
       setApiKeys((prev) => prev.filter((k) => k.provider !== keyToDelete));
       setKeyToDelete(null);
     }
-  };
-
-  const toggleEnvironment = (provider: string, env: "test" | "live") => {
-    setApiKeys((prev) =>
-      prev.map((k) =>
-        k.provider === provider ? { ...k, activeEnvironment: env } : k,
-      ),
-    );
-  };
-
-  const availableProviders = AVAILABLE_PROVIDERS.filter(
-    (p) => !apiKeys.some((k) => k.provider === p),
-  );
-
-  const toggleKeyVisibility = (keyId: string) => {
-    setVisibleKeys((prev) => ({
-      ...prev,
-      [keyId]: !prev[keyId],
-    }));
   };
 
   return (
@@ -126,10 +205,10 @@ function Settings() {
           {[
             { id: "general", label: "General", icon: User },
             { id: "business", label: "Business Profile", icon: Building2 },
+            { id: "apikeys", label: "Providers", icon: Key },
             { id: "kyc", label: "KYC Documents", icon: FileText },
             { id: "billing", label: "Billing Plans", icon: CreditCardIcon },
             { id: "security", label: "Security", icon: Shield },
-            { id: "apikeys", label: "API Keys", icon: Key },
             { id: "notifications", label: "Notifications", icon: Bell },
           ].map((tab) => {
             const TabIcon = tab.icon;
@@ -138,10 +217,11 @@ function Settings() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap cursor-pointer
-                                    ${activeTab === tab.id
-                    ? "bg-blue-50 text-blue-700"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                  }
+                                    ${
+                                      activeTab === tab.id
+                                        ? "bg-blue-50 text-blue-700"
+                                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                                    }
                                 `}
               >
                 <TabIcon
@@ -430,18 +510,18 @@ function Settings() {
                     </h3>
                     <p className="text-sm text-slate-500 max-w-sm">
                       {activeTab === "billing" ||
-                        activeTab === "security" ||
-                        activeTab === "notifications"
+                      activeTab === "security" ||
+                      activeTab === "notifications"
                         ? "We are currently building out this module. Check back later for updates!"
                         : "These configuration options would be connected to the backend API via your data provider."}
                     </p>
                     {(activeTab === "billing" ||
                       activeTab === "security" ||
                       activeTab === "notifications") && (
-                        <span className="mt-4 px-3 py-1 bg-blue-50 text-blue-600 border border-blue-200 text-xs font-semibold rounded-full uppercase tracking-wider">
-                          Coming Soon
-                        </span>
-                      )}
+                      <span className="mt-4 px-3 py-1 bg-blue-50 text-blue-600 border border-blue-200 text-xs font-semibold rounded-full uppercase tracking-wider">
+                        Coming Soon
+                      </span>
+                    )}
                   </div>
                 )}
 
@@ -461,17 +541,16 @@ function Settings() {
                       </div>
                       <button
                         onClick={() => {
-                          setNewKey((prev) => ({
-                            ...prev,
-                            provider: availableProviders[0] || "",
-                          }));
+                          setNewKey({
+                            provider: AVAILABLE_PROVIDERS[0],
+                            testPublicKey: "",
+                            testSecretKey: "",
+                            livePublicKey: "",
+                            liveSecretKey: "",
+                          });
                           setIsApiKeyModalOpen(true);
                         }}
-                        disabled={availableProviders.length === 0}
-                        className={`flex items-center gap-2 px-4 py-2 font-medium rounded-lg transition-colors shadow-sm text-sm ${availableProviders.length === 0
-                          ? "bg-slate-300 text-slate-500 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700 shadow-blue-500/20 cursor-pointer"
-                          }`}
+                        className="flex items-center gap-2 px-4 py-2 font-medium rounded-lg transition-colors shadow-sm text-sm bg-blue-600 text-white hover:bg-blue-700 shadow-blue-500/20 cursor-pointer"
                       >
                         <Plus className="w-4 h-4" /> Add Key
                       </button>
@@ -511,32 +590,6 @@ function Settings() {
                                 </div>
                               </div>
                               <div className="flex items-center gap-3">
-                                {/* Environment Toggle */}
-                                <div className="flex items-center bg-slate-100 rounded-lg p-1">
-                                  <button
-                                    onClick={() =>
-                                      toggleEnvironment(config.provider, "test")
-                                    }
-                                    disabled={!config.testKey}
-                                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${config.activeEnvironment === "test"
-                                      ? "bg-white text-slate-900 shadow-sm"
-                                      : "text-slate-500 hover:text-slate-700"
-                                      } ${!config.testKey ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-                                  >
-                                    Test
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      toggleEnvironment(config.provider, "live")
-                                    }
-                                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${config.activeEnvironment === "live"
-                                      ? "bg-white text-slate-900 shadow-sm"
-                                      : "text-slate-500 hover:text-slate-700"
-                                      }`}
-                                  >
-                                    Live
-                                  </button>
-                                </div>
                                 {/* Delete Button */}
                                 <button
                                   onClick={() =>
@@ -550,69 +603,41 @@ function Settings() {
                               </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 flex flex-col gap-1">
+                              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col justify-center gap-3">
                                 <span className="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">
-                                  Test: {config.testType}
+                                  Sandbox Environment
                                 </span>
-                                <div className="flex items-center justify-between gap-2">
-                                  <code className="text-sm text-slate-700 font-mono truncate">
-                                    {config.testKey
-                                      ? visibleKeys[`${index}-test`]
-                                        ? config.testKey
-                                        : "•".repeat(16)
-                                      : "Not configured"}
-                                  </code>
-                                  {config.testKey && (
-                                    <button
-                                      onClick={() =>
-                                        toggleKeyVisibility(`${index}-test`)
-                                      }
-                                      className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
-                                      title={
-                                        visibleKeys[`${index}-test`]
-                                          ? "Hide key"
-                                          : "Show key"
-                                      }
-                                    >
-                                      {visibleKeys[`${index}-test`] ? (
-                                        <EyeOff className="w-4 h-4" />
-                                      ) : (
-                                        <Eye className="w-4 h-4" />
-                                      )}
-                                    </button>
+                                <div>
+                                  {config.testPublicKey ||
+                                  config.testSecretKey ? (
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                      Active
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-200 text-slate-600 text-xs font-medium">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                      Not Configured
+                                    </span>
                                   )}
                                 </div>
                               </div>
-                              <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 flex flex-col gap-1">
+                              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col justify-center gap-3">
                                 <span className="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">
-                                  Live: {config.liveType}
+                                  Live Environment
                                 </span>
-                                <div className="flex items-center justify-between gap-2">
-                                  <code className="text-sm text-slate-700 font-mono truncate">
-                                    {config.liveKey
-                                      ? visibleKeys[`${index}-live`]
-                                        ? config.liveKey
-                                        : "•".repeat(16)
-                                      : "Not configured"}
-                                  </code>
-                                  {config.liveKey && (
-                                    <button
-                                      onClick={() =>
-                                        toggleKeyVisibility(`${index}-live`)
-                                      }
-                                      className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
-                                      title={
-                                        visibleKeys[`${index}-live`]
-                                          ? "Hide key"
-                                          : "Show key"
-                                      }
-                                    >
-                                      {visibleKeys[`${index}-live`] ? (
-                                        <EyeOff className="w-4 h-4" />
-                                      ) : (
-                                        <Eye className="w-4 h-4" />
-                                      )}
-                                    </button>
+                                <div>
+                                  {config.livePublicKey ||
+                                  config.liveSecretKey ? (
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                      Active
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-200 text-slate-600 text-xs font-medium">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                      Not Configured
+                                    </span>
                                   )}
                                 </div>
                               </div>
@@ -656,7 +681,7 @@ function Settings() {
                   }
                   className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm appearance-none"
                 >
-                  {availableProviders.map((provider) => (
+                  {AVAILABLE_PROVIDERS.map((provider) => (
                     <option key={provider} value={provider}>
                       {provider}
                     </option>
@@ -664,36 +689,35 @@ function Settings() {
                 </select>
               </div>
 
-              {/* Testing Environment Details */}
+              {/* Sandbox Environment Details */}
               <div className="space-y-4 p-4 rounded-xl border border-slate-200 bg-slate-50/50">
                 <h4 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-amber-500"></span>{" "}
-                  Testing Environment
+                  Sandbox Environment
                 </h4>
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Key Type
-                  </label>
-                  <select
-                    value={newKey.testType}
-                    onChange={(e) =>
-                      setNewKey({ ...newKey, testType: e.target.value })
-                    }
-                    className="block w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm appearance-none"
-                  >
-                    <option value="Secret Key">Secret Key</option>
-                    <option value="Public Key">Public Key</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Key Value
+                    Public Key
                   </label>
                   <input
                     type="text"
-                    value={newKey.testKey}
+                    value={newKey.testPublicKey}
                     onChange={(e) =>
-                      setNewKey({ ...newKey, testKey: e.target.value })
+                      setNewKey({ ...newKey, testPublicKey: e.target.value })
+                    }
+                    placeholder="pk_test_..."
+                    className="block w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    Secret Key
+                  </label>
+                  <input
+                    type="text"
+                    value={newKey.testSecretKey}
+                    onChange={(e) =>
+                      setNewKey({ ...newKey, testSecretKey: e.target.value })
                     }
                     placeholder="sk_test_..."
                     className="block w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
@@ -709,28 +733,27 @@ function Settings() {
                 </h4>
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Key Type
+                    Public Key
                   </label>
-                  <select
-                    value={newKey.liveType}
+                  <input
+                    type="text"
+                    value={newKey.livePublicKey}
                     onChange={(e) =>
-                      setNewKey({ ...newKey, liveType: e.target.value })
+                      setNewKey({ ...newKey, livePublicKey: e.target.value })
                     }
-                    className="block w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm appearance-none"
-                  >
-                    <option value="Secret Key">Secret Key</option>
-                    <option value="Public Key">Public Key</option>
-                  </select>
+                    placeholder="pk_live_..."
+                    className="block w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
+                  />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Key Value
+                    Secret Key
                   </label>
                   <input
                     type="password"
-                    value={newKey.liveKey}
+                    value={newKey.liveSecretKey}
                     onChange={(e) =>
-                      setNewKey({ ...newKey, liveKey: e.target.value })
+                      setNewKey({ ...newKey, liveSecretKey: e.target.value })
                     }
                     placeholder="sk_live_..."
                     className="block w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
@@ -747,10 +770,23 @@ function Settings() {
               </button>
               <button
                 onClick={handleAddKey}
-                disabled={!newKey.liveKey}
-                className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm shadow-blue-500/20 text-sm cursor-pointer"
+                disabled={
+                  (!newKey.testPublicKey &&
+                    !newKey.testSecretKey &&
+                    !newKey.livePublicKey &&
+                    !newKey.liveSecretKey) ||
+                  isSettingUpProvider
+                }
+                className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm shadow-blue-500/20 text-sm flex items-center gap-2"
               >
-                Save Integration
+                {isSettingUpProvider ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{" "}
+                    Saving...
+                  </>
+                ) : (
+                  "Save Integration"
+                )}
               </button>
             </div>
           </div>

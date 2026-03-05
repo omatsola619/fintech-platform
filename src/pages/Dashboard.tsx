@@ -21,6 +21,9 @@ function Dashboard() {
   const location = useLocation();
   const { logout, userName } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activeEnvironment, setActiveEnvironment] = useState<"test" | "live">(
+    "live",
+  );
 
   const isActive = (path: string) => {
     return (
@@ -131,7 +134,10 @@ function Dashboard() {
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center gap-3 px-3 py-2 ${isActive("/dashboard/api-keys") ? "bg-slate-100 text-blue-600 font-medium" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"} rounded-lg transition-colors cursor-pointer`}
               >
-                <ShieldCheck className={`w-5 h-5 ${isActive("/dashboard/api-keys") ? "text-blue-600" : "text-slate-400"}`} /> My API Key
+                <ShieldCheck
+                  className={`w-5 h-5 ${isActive("/dashboard/api-keys") ? "text-blue-600" : "text-slate-400"}`}
+                />{" "}
+                My API Key
               </Link>
             </nav>
           </div>
@@ -167,8 +173,56 @@ function Dashboard() {
             <Menu className="w-6 h-6" />
           </button>
 
-          {/* Environment Toggle */}
+          {/* Environment Toggle and Profile */}
           <div className="ml-auto flex items-center gap-4 sm:gap-6">
+            <div className="hidden sm:flex items-center gap-3 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200">
+              <span
+                className={`text-xs font-semibold transition-colors ${
+                  activeEnvironment === "test"
+                    ? "text-amber-600"
+                    : "text-slate-400"
+                }`}
+              >
+                Test
+              </span>
+              <button
+                onClick={() =>
+                  setActiveEnvironment(
+                    activeEnvironment === "live" ? "test" : "live",
+                  )
+                }
+                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  activeEnvironment === "live"
+                    ? "bg-emerald-500"
+                    : "bg-amber-500"
+                }`}
+              >
+                <span className="sr-only">Toggle environment</span>
+                <span
+                  className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform ${
+                    activeEnvironment === "live"
+                      ? "translate-x-4.5" // use 4.5 for w-9 h-5 inner w-3.5 h-3.5
+                      : "translate-x-0.5"
+                  }`}
+                  style={{
+                    transform:
+                      activeEnvironment === "live"
+                        ? "translateX(18px)"
+                        : "translateX(2px)",
+                  }}
+                />
+              </button>
+              <span
+                className={`text-xs font-semibold transition-colors ${
+                  activeEnvironment === "live"
+                    ? "text-emerald-600"
+                    : "text-slate-400"
+                }`}
+              >
+                Live
+              </span>
+            </div>
+
             <button className="text-slate-400 hover:text-slate-600 transition-colors relative cursor-pointer">
               <Bell className="w-5 h-5" />
               <span className="absolute top-0 right-0 w-2 h-2 bg-blue-600 rounded-full border border-white"></span>
