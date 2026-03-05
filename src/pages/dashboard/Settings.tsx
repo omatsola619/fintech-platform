@@ -4,6 +4,7 @@ import {
   CreditCard as CreditCardIcon,
   FileText,
   Key,
+  Pencil,
   Plus,
   Settings as SettingsIcon,
   Shield,
@@ -32,6 +33,7 @@ function Settings() {
   const [activeTab, setActiveTab] = useState(location.state?.tab || "general");
   const [apiKeys, setApiKeys] = useState<ApiKeyConfig[]>([]);
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [keyToDelete, setKeyToDelete] = useState<string | null>(null);
   const [newKey, setNewKey] = useState<ApiKeyConfig>({
     provider: "Paystack",
@@ -130,6 +132,12 @@ function Settings() {
         return response.data;
       },
     });
+
+  const handleEditKey = (config: ApiKeyConfig) => {
+    setNewKey({ ...config });
+    setIsEditMode(true);
+    setIsApiKeyModalOpen(true);
+  };
 
   const handleAddKey = async () => {
     const merchantId =
@@ -574,6 +582,7 @@ function Settings() {
                             livePublicKey: "",
                             liveSecretKey: "",
                           });
+                          setIsEditMode(false);
                           setIsApiKeyModalOpen(true);
                         }}
                         className="flex items-center gap-2 px-4 py-2 font-medium rounded-lg transition-colors shadow-sm text-sm bg-blue-600 text-white hover:bg-blue-700 shadow-blue-500/20 cursor-pointer"
@@ -615,7 +624,15 @@ function Settings() {
                                   </div>
                                 </div>
                               </div>
-                              <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-2">
+                                {/* Edit Button */}
+                                <button
+                                  onClick={() => handleEditKey(config)}
+                                  className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                                  title="Edit Provider Keys"
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                </button>
                                 {/* Delete Button */}
                                 <button
                                   disabled
@@ -683,9 +700,14 @@ function Settings() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-xl animate-in zoom-in-95 duration-200">
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-              <h3 className="font-semibold text-slate-900">
-                Add API Key Configuration
-              </h3>
+              <div>
+                <h3 className="font-semibold text-slate-900">
+                  {isEditMode ? `Edit ${newKey.provider} Integration` : "Add API Key Configuration"}
+                </h3>
+                {isEditMode && (
+                  <p className="text-xs text-slate-500 mt-0.5">New keys will replace the existing ones.</p>
+                )}
+              </div>
               <button
                 onClick={() => setIsApiKeyModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
@@ -698,19 +720,27 @@ function Settings() {
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Provider
                 </label>
-                <select
-                  value={newKey.provider}
-                  onChange={(e) =>
-                    setNewKey({ ...newKey, provider: e.target.value })
-                  }
-                  className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm appearance-none"
-                >
-                  {AVAILABLE_PROVIDERS.map((provider) => (
-                    <option key={provider} value={provider}>
-                      {provider}
-                    </option>
-                  ))}
-                </select>
+                {isEditMode ? (
+                  <div className="flex items-center gap-2 px-3 py-2.5 border border-slate-200 rounded-xl bg-slate-100 text-slate-700 sm:text-sm">
+                    <Key className="w-4 h-4 text-blue-600" />
+                    <span className="font-medium">{newKey.provider}</span>
+                    <span className="ml-auto text-xs text-slate-400">Locked</span>
+                  </div>
+                ) : (
+                  <select
+                    value={newKey.provider}
+                    onChange={(e) =>
+                      setNewKey({ ...newKey, provider: e.target.value })
+                    }
+                    className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm appearance-none"
+                  >
+                    {AVAILABLE_PROVIDERS.map((provider) => (
+                      <option key={provider} value={provider}>
+                        {provider}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               {/* Sandbox Environment Details */}
@@ -808,6 +838,8 @@ function Settings() {
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{" "}
                     Saving...
                   </>
+                ) : isEditMode ? (
+                  "Update Integration"
                 ) : (
                   "Save Integration"
                 )}
