@@ -1,6 +1,7 @@
 import {
   Bell,
   Building2,
+  CheckCircle,
   CreditCard as CreditCardIcon,
   Eye,
   EyeOff,
@@ -55,6 +56,18 @@ function Settings() {
   const [envModal, setEnvModal] = useState<EnvModal>(DEFAULT_ENV_MODAL);
   const [keyToDelete, setKeyToDelete] = useState<string | null>(null);
   const [showKey, setShowKey] = useState(false);
+  const [businessForm, setBusinessForm] = useState({
+    business_name: "",
+    business_email: "",
+    business_phone: "",
+    merchant_type: "ecommerce",
+    website: "",
+    address: "",
+    country: "",
+    state: "",
+    registration_number: "",
+  });
+  const [businessSaveStatus, setBusinessSaveStatus] = useState<"idle" | "success" | "error">("idle");
 
   const { data: settingsResponse, isLoading } = useQuery({
     queryKey: ["settings"],
@@ -85,6 +98,23 @@ function Settings() {
     settingsData?.profile?.last_name || settingsData?.last_name || "";
   const emailAddress =
     settingsData?.profile?.email || settingsData?.email || "";
+
+  useEffect(() => {
+    // Populate businessForm from loaded merchant data
+    if (merchant) {
+      setBusinessForm({
+        business_name: merchant.business_name || "",
+        business_email: merchant.business_email || merchant.email || "",
+        business_phone: merchant.business_phone || merchant.phone || "",
+        merchant_type: merchant.merchant_type || "ecommerce",
+        website: merchant.website || "",
+        address: merchant.address || "",
+        country: merchant.country || "",
+        state: merchant.state || merchant.state_province || "",
+        registration_number: merchant.registration_number || "",
+      });
+    }
+  }, [settingsResponse]);
 
   useEffect(() => {
     // Navigate directly to data > merchants > api_clients
@@ -143,6 +173,32 @@ function Settings() {
           },
         );
         return response.data;
+      },
+    });
+
+  const { mutateAsync: updateMerchant, isPending: isUpdatingBusiness } =
+    useMutation({
+      mutationFn: async (payload: typeof businessForm) => {
+        const token = localStorage.getItem("authToken");
+        const merchantId =
+          merchant?.merchant_id ||
+          settingsData?.merchant_id ||
+          "";
+        const response = await api.patch(
+          `/v1/merchants/merchant/${merchantId}/update/`,
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } },
+        );
+        return response.data;
+      },
+      onSuccess: () => {
+        setBusinessSaveStatus("success");
+        queryClient.invalidateQueries({ queryKey: ["settings"] });
+        setTimeout(() => setBusinessSaveStatus("idle"), 3000);
+      },
+      onError: () => {
+        setBusinessSaveStatus("error");
+        setTimeout(() => setBusinessSaveStatus("idle"), 3000);
       },
     });
 
@@ -311,7 +367,6 @@ function Settings() {
                 </div>
               )}
 
-              {/* Empty State for other tabs */}
               {/* Business Profile Tab Content */}
               {activeTab === "business" && (
                 <div className="space-y-6">
@@ -333,11 +388,8 @@ function Settings() {
                           </label>
                           <input
                             type="text"
-                            defaultValue={
-                              merchant?.business_name ||
-                              settingsData?.business_name ||
-                              ""
-                            }
+                            value={businessForm.business_name}
+                            onChange={(e) => setBusinessForm({ ...businessForm, business_name: e.target.value })}
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -347,13 +399,8 @@ function Settings() {
                           </label>
                           <input
                             type="email"
-                            defaultValue={
-                              merchant?.business_email ||
-                              merchant?.email ||
-                              settingsData?.business_email ||
-                              settingsData?.email ||
-                              ""
-                            }
+                            value={businessForm.business_email}
+                            onChange={(e) => setBusinessForm({ ...businessForm, business_email: e.target.value })}
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -363,13 +410,8 @@ function Settings() {
                           </label>
                           <input
                             type="tel"
-                            defaultValue={
-                              merchant?.business_phone ||
-                              merchant?.phone ||
-                              settingsData?.business_phone ||
-                              settingsData?.phone ||
-                              ""
-                            }
+                            value={businessForm.business_phone}
+                            onChange={(e) => setBusinessForm({ ...businessForm, business_phone: e.target.value })}
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -378,16 +420,14 @@ function Settings() {
                             Merchant Type
                           </label>
                           <select
-                            defaultValue={
-                              merchant?.merchant_type ||
-                              settingsData?.merchant_type ||
-                              "ecommerce"
-                            }
-                            className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm appearance-none"
+                            value={businessForm.merchant_type}
+                            onChange={(e) => setBusinessForm({ ...businessForm, merchant_type: e.target.value })}
+                            className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm appearance-none cursor-pointer"
                           >
                             <option value="ecommerce">E-commerce</option>
                             <option value="saas">SaaS</option>
                             <option value="marketplace">Marketplace</option>
+                            <option value="llc">LLC</option>
                             <option value="other">Other</option>
                           </select>
                         </div>
@@ -397,9 +437,8 @@ function Settings() {
                           </label>
                           <input
                             type="url"
-                            defaultValue={
-                              merchant?.website || settingsData?.website || ""
-                            }
+                            value={businessForm.website}
+                            onChange={(e) => setBusinessForm({ ...businessForm, website: e.target.value })}
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -409,11 +448,8 @@ function Settings() {
                           </label>
                           <input
                             type="text"
-                            defaultValue={
-                              merchant?.registration_number ||
-                              settingsData?.registration_number ||
-                              ""
-                            }
+                            value={businessForm.registration_number}
+                            onChange={(e) => setBusinessForm({ ...businessForm, registration_number: e.target.value })}
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -423,9 +459,8 @@ function Settings() {
                           </label>
                           <input
                             type="text"
-                            defaultValue={
-                              merchant?.address || settingsData?.address || ""
-                            }
+                            value={businessForm.address}
+                            onChange={(e) => setBusinessForm({ ...businessForm, address: e.target.value })}
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -435,9 +470,8 @@ function Settings() {
                           </label>
                           <input
                             type="text"
-                            defaultValue={
-                              merchant?.country || settingsData?.country || ""
-                            }
+                            value={businessForm.country}
+                            onChange={(e) => setBusinessForm({ ...businessForm, country: e.target.value })}
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -447,23 +481,42 @@ function Settings() {
                           </label>
                           <input
                             type="text"
-                            defaultValue={
-                              merchant?.state ||
-                              merchant?.state_province ||
-                              settingsData?.state ||
-                              settingsData?.state_province ||
-                              ""
-                            }
+                            value={businessForm.state}
+                            onChange={(e) => setBusinessForm({ ...businessForm, state: e.target.value })}
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
                       </div>
                     </div>
 
-                    <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end">
-                      <button className="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/20 text-sm cursor-pointer">
-                        Save changes
-                      </button>
+                    <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-4">
+                      {businessSaveStatus === "success" && (
+                        <span className="flex items-center gap-1.5 text-sm text-emerald-600 font-medium">
+                          <CheckCircle className="w-4 h-4" />
+                          Changes saved successfully
+                        </span>
+                      )}
+                      {businessSaveStatus === "error" && (
+                        <span className="text-sm text-red-600 font-medium">
+                          Failed to save. Please try again.
+                        </span>
+                      )}
+                      <div className="ml-auto">
+                        <button
+                          onClick={() => updateMerchant(businessForm)}
+                          disabled={isUpdatingBusiness}
+                          className="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm shadow-blue-500/20 text-sm flex items-center gap-2 cursor-pointer"
+                        >
+                          {isUpdatingBusiness ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                              Saving...
+                            </>
+                          ) : (
+                            "Save changes"
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -576,10 +629,15 @@ function Settings() {
                         </p>
                       </div>
                       <button
-                        onClick={() =>
-                          openEnvModal(AVAILABLE_PROVIDERS[0], "sandbox")
-                        }
-                        className="flex items-center gap-2 px-4 py-2 font-medium rounded-lg transition-colors shadow-sm text-sm bg-blue-600 text-white hover:bg-blue-700 shadow-blue-500/20 cursor-pointer"
+                        onClick={() => {
+                          const configuredProviders = apiKeys.map((k) => k.provider);
+                          const firstUnconfigured =
+                            AVAILABLE_PROVIDERS.find((p) => !configuredProviders.includes(p)) ||
+                            AVAILABLE_PROVIDERS[0];
+                          openEnvModal(firstUnconfigured, "sandbox");
+                        }}
+                        disabled={apiKeys.length >= AVAILABLE_PROVIDERS.length}
+                        className="flex items-center gap-2 px-4 py-2 font-medium rounded-lg transition-colors shadow-sm text-sm bg-blue-600 text-white hover:bg-blue-700 shadow-blue-500/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <Plus className="w-4 h-4" /> Add Key
                       </button>
@@ -746,9 +804,9 @@ function Settings() {
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-slate-900">
-                  {envModal.isEdit ? "Edit" : "Add"}{" "}
-                  {envModal.environment === "sandbox" ? "Sandbox" : "Live"}{" "}
-                  Key — {envModal.provider}
+                  {envModal.isEdit
+                    ? `Edit ${envModal.environment === "sandbox" ? "Sandbox" : "Live"} Key — ${envModal.provider}`
+                    : "Add API Key"}
                 </h3>
                 {envModal.isEdit && (
                   <p className="text-xs text-slate-500 mt-0.5">The new key will replace the existing one.</p>
@@ -780,30 +838,46 @@ function Settings() {
                     }
                     className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors text-sm appearance-none cursor-pointer"
                   >
-                    {AVAILABLE_PROVIDERS.map((p) => (
-                      <option key={p} value={p}>{p}</option>
-                    ))}
+                    {AVAILABLE_PROVIDERS.map((p) => {
+                      const alreadyAdded = apiKeys.some((k) => k.provider === p);
+                      return (
+                        <option key={p} value={p} disabled={alreadyAdded}>
+                          {p}{alreadyAdded ? " (already added)" : ""}
+                        </option>
+                      );
+                    })}
                   </select>
                 )}
               </div>
 
-              {/* Environment badge */}
+              {/* Environment */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Environment</label>
-                <div
-                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${envModal.environment === "sandbox"
-                    ? "bg-amber-100 text-amber-700"
-                    : "bg-emerald-100 text-emerald-700"
-                    }`}
-                >
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full ${envModal.environment === "sandbox"
-                      ? "bg-amber-500"
-                      : "bg-emerald-500"
+                {envModal.isEdit ? (
+                  <div
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${envModal.environment === "sandbox"
+                        ? "bg-amber-100 text-amber-700"
+                        : "bg-emerald-100 text-emerald-700"
                       }`}
-                  />
-                  {envModal.environment === "sandbox" ? "Sandbox" : "Live"}
-                </div>
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ${envModal.environment === "sandbox" ? "bg-amber-500" : "bg-emerald-500"
+                        }`}
+                    />
+                    {envModal.environment === "sandbox" ? "Sandbox" : "Live"}
+                  </div>
+                ) : (
+                  <select
+                    value={envModal.environment}
+                    onChange={(e) =>
+                      setEnvModal({ ...envModal, environment: e.target.value as "sandbox" | "live" })
+                    }
+                    className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors text-sm appearance-none cursor-pointer"
+                  >
+                    <option value="sandbox">🟡 Sandbox (Test)</option>
+                    <option value="live">🟢 Live (Production)</option>
+                  </select>
+                )}
               </div>
 
               {/* Secret key input */}
