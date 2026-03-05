@@ -19,7 +19,7 @@ import { useAuth } from "../contexts/AuthContext";
 function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout, userName } = useAuth();
+  const { logout, userName, kycStatus } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeEnvironment, setActiveEnvironment] = useState<"test" | "live">(
     "live",
@@ -223,6 +223,21 @@ function Dashboard() {
             </div>
           </div>
         </header>
+
+        {kycStatus === "pending" && (
+          <div className="bg-blue-600 px-4 py-3 text-white text-sm flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 shadow-sm z-20 shrink-0">
+            <span className="text-center font-medium">
+              Your account is pending verification. Please complete your KYC to unlock all features.
+            </span>
+            <Link
+              to="/dashboard/settings"
+              state={{ tab: "kyc" }}
+              className="bg-white text-blue-600 px-4 py-1.5 rounded-full font-semibold hover:bg-blue-50 transition-colors text-xs whitespace-nowrap shadow-sm flex-shrink-0"
+            >
+              Complete KYC
+            </Link>
+          </div>
+        )}
 
         {/* Dashboard Scrollable Body */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">

@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 
@@ -27,7 +28,8 @@ const AVAILABLE_PROVIDERS = ["Paystack", "Flutterwave"];
 
 function Settings() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState("general");
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState(location.state?.tab || "general");
   const [apiKeys, setApiKeys] = useState<ApiKeyConfig[]>([]);
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [keyToDelete, setKeyToDelete] = useState<string | null>(null);
@@ -56,6 +58,9 @@ function Settings() {
   const settingsRaw = settingsResponse?.data || settingsResponse || {};
   const settingsData = settingsRaw?.user || settingsRaw;
 
+  const merchantsData = settingsRaw?.merchants;
+  const merchant = Array.isArray(merchantsData) ? merchantsData[0] : merchantsData;
+
   console.log("=== SETTINGS DATA ===", settingsData);
   console.log("=== PROFILE ===", settingsData?.profile);
 
@@ -68,9 +73,6 @@ function Settings() {
 
   useEffect(() => {
     // Navigate directly to data > merchants > api_clients
-    const data = settingsResponse?.data || settingsResponse;
-    const merchants = data?.merchants;
-    const merchant = Array.isArray(merchants) ? merchants[0] : merchants;
     const clients = merchant?.api_clients || [];
 
     if (clients && Array.isArray(clients) && clients.length > 0) {
@@ -130,11 +132,8 @@ function Settings() {
     });
 
   const handleAddKey = async () => {
-    const merchants = settingsRaw?.merchants;
     const merchantId =
-      (Array.isArray(merchants)
-        ? merchants[0]?.merchant_id
-        : merchants?.merchant_id) ||
+      merchant?.merchant_id ||
       settingsData?.merchant_id ||
       "165714267";
     try {
@@ -324,7 +323,11 @@ function Settings() {
                           </label>
                           <input
                             type="text"
-                            defaultValue={settingsData.business_name || ""}
+                            defaultValue={
+                              merchant?.business_name ||
+                              settingsData?.business_name ||
+                              ""
+                            }
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -334,7 +337,13 @@ function Settings() {
                           </label>
                           <input
                             type="email"
-                            defaultValue={settingsData.business_email || ""}
+                            defaultValue={
+                              merchant?.business_email ||
+                              merchant?.email ||
+                              settingsData?.business_email ||
+                              settingsData?.email ||
+                              ""
+                            }
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -344,7 +353,13 @@ function Settings() {
                           </label>
                           <input
                             type="tel"
-                            defaultValue={settingsData.business_phone || ""}
+                            defaultValue={
+                              merchant?.business_phone ||
+                              merchant?.phone ||
+                              settingsData?.business_phone ||
+                              settingsData?.phone ||
+                              ""
+                            }
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -354,7 +369,9 @@ function Settings() {
                           </label>
                           <select
                             defaultValue={
-                              settingsData.merchant_type || "ecommerce"
+                              merchant?.merchant_type ||
+                              settingsData?.merchant_type ||
+                              "ecommerce"
                             }
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm appearance-none"
                           >
@@ -370,7 +387,9 @@ function Settings() {
                           </label>
                           <input
                             type="url"
-                            defaultValue={settingsData.website || ""}
+                            defaultValue={
+                              merchant?.website || settingsData?.website || ""
+                            }
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -381,7 +400,9 @@ function Settings() {
                           <input
                             type="text"
                             defaultValue={
-                              settingsData.registration_number || ""
+                              merchant?.registration_number ||
+                              settingsData?.registration_number ||
+                              ""
                             }
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
@@ -392,7 +413,9 @@ function Settings() {
                           </label>
                           <input
                             type="text"
-                            defaultValue={settingsData.address || ""}
+                            defaultValue={
+                              merchant?.address || settingsData?.address || ""
+                            }
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -402,7 +425,9 @@ function Settings() {
                           </label>
                           <input
                             type="text"
-                            defaultValue={settingsData.country || ""}
+                            defaultValue={
+                              merchant?.country || settingsData?.country || ""
+                            }
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -413,8 +438,10 @@ function Settings() {
                           <input
                             type="text"
                             defaultValue={
-                              settingsData.state ||
-                              settingsData.state_province ||
+                              merchant?.state ||
+                              merchant?.state_province ||
+                              settingsData?.state ||
+                              settingsData?.state_province ||
                               ""
                             }
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"

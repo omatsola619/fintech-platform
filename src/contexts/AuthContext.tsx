@@ -3,7 +3,8 @@ import { type ReactNode, createContext, useContext, useState } from "react";
 interface AuthContextType {
   isAuthenticated: boolean;
   userName: string;
-  login: (token: string, name?: string) => void;
+  kycStatus: string;
+  login: (token: string, name?: string, kycStatus?: string) => void;
   logout: () => void;
 }
 
@@ -16,12 +17,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [userName, setUserName] = useState<string>(() => {
     return localStorage.getItem("userName") || "";
   });
+  const [kycStatus, setKycStatus] = useState<string>(() => {
+    return localStorage.getItem("kycStatus") || "";
+  });
 
-  const login = (token: string, name?: string) => {
+  const login = (token: string, name?: string, kycStatus?: string) => {
     localStorage.setItem("authToken", token);
     if (name) {
       localStorage.setItem("userName", name);
       setUserName(name);
+    }
+    if (kycStatus) {
+      localStorage.setItem("kycStatus", kycStatus);
+      setKycStatus(kycStatus);
     }
     setIsAuthenticated(true);
   };
@@ -29,12 +37,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userName");
+    localStorage.removeItem("kycStatus");
     setIsAuthenticated(false);
     setUserName("");
+    setKycStatus("");
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userName, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, userName, kycStatus, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

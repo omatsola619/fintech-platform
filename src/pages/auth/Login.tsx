@@ -30,7 +30,10 @@ function Login() {
         data?.user?.full_name ||
         data?.user?.first_name ||
         "";
-      login(token, fullName);
+
+      const kycStatus = data?.kyc_status || data?.user?.kyc_status || "pending";
+
+      login(token, fullName, kycStatus);
       navigate("/dashboard");
     },
     onError: (err: any) => {
