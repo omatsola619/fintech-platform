@@ -19,6 +19,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../lib/api";
+import { COUNTRIES } from "../../data/countries";
 
 type ApiKeyConfig = {
   provider: string;
@@ -38,6 +39,7 @@ type EnvModal = {
 };
 
 const AVAILABLE_PROVIDERS = ["Paystack", "Flutterwave"];
+
 
 const DEFAULT_ENV_MODAL: EnvModal = {
   open: false,
@@ -60,7 +62,7 @@ function Settings() {
     business_name: "",
     business_email: "",
     business_phone: "",
-    merchant_type: "ecommerce",
+    business_type: "",
     website: "",
     address: "",
     country: "",
@@ -106,7 +108,7 @@ function Settings() {
         business_name: merchant.business_name || "",
         business_email: merchant.business_email || merchant.email || "",
         business_phone: merchant.business_phone || merchant.phone || "",
-        merchant_type: merchant.merchant_type || "ecommerce",
+        business_type: merchant.merchant_type || merchant.business_type || "",
         website: merchant.website || "",
         address: merchant.address || "",
         country: merchant.country || "",
@@ -181,11 +183,11 @@ function Settings() {
       mutationFn: async (payload: typeof businessForm) => {
         const token = localStorage.getItem("authToken");
         const merchantId =
-          merchant?.merchant_id ||
-          settingsData?.merchant_id ||
+          merchant?.id ||
+          settingsData?.id ||
           "";
         const response = await api.patch(
-          `/v1/merchants/merchant/${merchantId}/update/`,
+          `/merchants/merchant/${merchantId}/update/`,
           payload,
           { headers: { Authorization: `Bearer ${token}` } },
         );
@@ -417,19 +419,15 @@ function Settings() {
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Merchant Type
+                            Business Type
                           </label>
-                          <select
-                            value={businessForm.merchant_type}
-                            onChange={(e) => setBusinessForm({ ...businessForm, merchant_type: e.target.value })}
-                            className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm appearance-none cursor-pointer"
-                          >
-                            <option value="ecommerce">E-commerce</option>
-                            <option value="saas">SaaS</option>
-                            <option value="marketplace">Marketplace</option>
-                            <option value="llc">LLC</option>
-                            <option value="other">Other</option>
-                          </select>
+                          <input
+                            type="text"
+                            value={businessForm.business_type}
+                            onChange={(e) => setBusinessForm({ ...businessForm, business_type: e.target.value })}
+                            placeholder="e.g. E-commerce, SaaS, LLC..."
+                            className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
+                          />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -468,12 +466,16 @@ function Settings() {
                           <label className="block text-sm font-medium text-slate-700 mb-2">
                             Country
                           </label>
-                          <input
-                            type="text"
+                          <select
                             value={businessForm.country}
                             onChange={(e) => setBusinessForm({ ...businessForm, country: e.target.value })}
-                            className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
-                          />
+                            className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm appearance-none cursor-pointer"
+                          >
+                            <option value="">Select a country...</option>
+                            {COUNTRIES.map((c) => (
+                              <option key={c} value={c}>{c}</option>
+                            ))}
+                          </select>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -856,8 +858,8 @@ function Settings() {
                 {envModal.isEdit ? (
                   <div
                     className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${envModal.environment === "sandbox"
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-emerald-100 text-emerald-700"
+                      ? "bg-amber-100 text-amber-700"
+                      : "bg-emerald-100 text-emerald-700"
                       }`}
                   >
                     <span
