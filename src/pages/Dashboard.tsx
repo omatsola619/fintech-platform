@@ -20,11 +20,8 @@ import { api } from "../lib/api";
 function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout, userName, kycStatus, merchantMode } = useAuth();
+  const { logout, userName, kycStatus, merchantMode, updateMerchantMode } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeEnvironment, setActiveEnvironment] = useState<"test" | "live">(
-    (merchantMode as "test" | "live") || "test",
-  );
   const [isTogglingMode, setIsTogglingMode] = useState(false);
   const [showKycPopup, setShowKycPopup] = useState(false);
 
@@ -50,18 +47,18 @@ function Dashboard() {
   };
 
   const handleToggleMode = async () => {
-    const currentMode = activeEnvironment;
-    const nextMode = currentMode === "test" ? "live" : "test";
+    const nextMode = merchantMode === "test" ? "live" : "test";
     const wantsLive = nextMode === "live";
 
     setIsTogglingMode(true);
-    setActiveEnvironment(nextMode);
+    // Optimistic UI update via Context
+    updateMerchantMode(nextMode);
 
     if (wantsLive && (kycStatus === "pending" || !kycStatus)) {
       // Simulate network request before showing popup
       setTimeout(() => {
         setIsTogglingMode(false);
-        setActiveEnvironment("test");
+        updateMerchantMode("test");
         setShowKycPopup(true);
       }, 800);
       return;
@@ -75,10 +72,11 @@ function Dashboard() {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      // Mode transitioned successfully
+      // Mode transitioned successfully on the server
     } catch (error) {
       console.error("Failed to toggle mode:", error);
-      setActiveEnvironment(currentMode);
+      // Revert if API call fails
+      updateMerchantMode(merchantMode);
     } finally {
       setIsTogglingMode(false);
     }
@@ -246,7 +244,7 @@ function Dashboard() {
           <div className="ml-auto flex items-center gap-4 sm:gap-6">
             <div className="flex items-center gap-2 sm:gap-3 bg-slate-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-slate-200">
               <span
-                className={`text-[10px] sm:text-xs font-semibold transition-colors ${activeEnvironment === "test"
+                className={`text-[10px] sm:text-xs font-semibold transition-colors ${merchantMode === "test"
                   ? "text-amber-600"
                   : "text-slate-400"
                   }`}
@@ -256,14 +254,14 @@ function Dashboard() {
               <button
                 onClick={handleToggleMode}
                 disabled={isTogglingMode}
-                className={`relative inline-flex h-5 w-9 sm:h-6 sm:w-11 items-center rounded-full transition-colors ${isTogglingMode ? "cursor-wait opacity-80" : "cursor-pointer"} focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${activeEnvironment === "live"
+                className={`relative inline-flex h-5 w-9 sm:h-6 sm:w-11 items-center rounded-full transition-colors ${isTogglingMode ? "cursor-wait opacity-80" : "cursor-pointer"} focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${merchantMode === "live"
                   ? "bg-emerald-500"
                   : "bg-amber-500"
                   }`}
               >
                 <span className="sr-only">Toggle environment</span>
                 <span
-                  className={`flex h-3 w-3 sm:h-4 sm:w-4 transform rounded-full bg-white shadow-sm transition-transform items-center justify-center ${activeEnvironment === "live"
+                  className={`flex h-3 w-3 sm:h-4 sm:w-4 transform rounded-full bg-white shadow-sm transition-transform items-center justify-center ${merchantMode === "live"
                     ? "translate-x-5 sm:translate-x-6"
                     : "translate-x-1"
                     }`}
@@ -274,7 +272,7 @@ function Dashboard() {
                 </span>
               </button>
               <span
-                className={`text-[10px] sm:text-xs font-semibold transition-colors ${activeEnvironment === "live"
+                className={`text-[10px] sm:text-xs font-semibold transition-colors ${merchantMode === "live"
                   ? "text-emerald-600"
                   : "text-slate-400"
                   }`}

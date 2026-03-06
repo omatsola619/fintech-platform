@@ -7,6 +7,7 @@ interface AuthContextType {
   merchantMode: string;
   login: (token: string, name?: string, kycStatus?: string, merchantMode?: string) => void;
   logout: () => void;
+  updateMerchantMode: (mode: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -42,6 +43,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(true);
   };
 
+  const updateMerchantMode = (mode: string) => {
+    localStorage.setItem("merchantMode", mode);
+    setMerchantMode(mode);
+  };
+
   const logout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userName");
@@ -54,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userName, kycStatus, merchantMode, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, userName, kycStatus, merchantMode, login, logout, updateMerchantMode }}>
       {children}
     </AuthContext.Provider>
   );
