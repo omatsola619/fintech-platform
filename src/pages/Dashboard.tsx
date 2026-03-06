@@ -15,6 +15,7 @@ import {
 import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { api } from "../lib/api";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -22,8 +23,10 @@ function Dashboard() {
   const { logout, userName, kycStatus } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeEnvironment, setActiveEnvironment] = useState<"test" | "live">(
-    "live",
+    "test",
   );
+  const [isTogglingMode, setIsTogglingMode] = useState(false);
+  const [showKycPopup, setShowKycPopup] = useState(false);
 
   const isActive = (path: string) => {
     return (
@@ -46,6 +49,41 @@ function Dashboard() {
     navigate("/auth/login");
   };
 
+  const handleToggleMode = async () => {
+    const currentMode = activeEnvironment;
+    const nextMode = currentMode === "test" ? "live" : "test";
+    const wantsLive = nextMode === "live";
+
+    setIsTogglingMode(true);
+    setActiveEnvironment(nextMode);
+
+    if (wantsLive && (kycStatus === "pending" || !kycStatus)) {
+      // Simulate network request before showing popup
+      setTimeout(() => {
+        setIsTogglingMode(false);
+        setActiveEnvironment("test");
+        setShowKycPopup(true);
+      }, 800);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("authToken");
+      // Use PATCH since it's commonly used for partial updates, or POST if needed.
+      await api.patch("/merchants/switch/toggle-merchant-mode/", {
+        live_mode: wantsLive,
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Mode transitioned successfully
+    } catch (error) {
+      console.error("Failed to toggle mode:", error);
+      setActiveEnvironment(currentMode);
+    } finally {
+      setIsTogglingMode(false);
+    }
+  };
+
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-500/30 overflow-hidden">
       {/* Mobile Sidebar Overlay */}
@@ -54,6 +92,37 @@ function Dashboard() {
           className="fixed inset-0 bg-slate-900/50 z-40 lg:hidden backdrop-blur-sm"
           onClick={() => setIsSidebarOpen(false)}
         ></div>
+      )}
+
+      {/* KYC Popup */}
+      {showKycPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 text-center animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <ShieldCheck className="w-6 h-6 text-amber-600" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Verification Required</h3>
+            <p className="text-sm text-slate-500 mb-6">
+              Please complete your KYC verification to toggle to live mode.
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => setShowKycPopup(false)}
+                className="px-4 py-2 bg-slate-100 text-slate-700 font-medium rounded-lg hover:bg-slate-200 transition-colors cursor-pointer text-sm"
+              >
+                Cancel
+              </button>
+              <Link
+                to="/dashboard/settings"
+                state={{ tab: "kyc" }}
+                onClick={() => setShowKycPopup(false)}
+                className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm cursor-pointer text-sm"
+              >
+                Complete KYC
+              </Link>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Sidebar Navigation */}
@@ -175,38 +244,39 @@ function Dashboard() {
 
           {/* Environment Toggle and Profile */}
           <div className="ml-auto flex items-center gap-4 sm:gap-6">
-            <div className="hidden sm:flex items-center gap-3 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200">
+            <div className="flex items-center gap-2 sm:gap-3 bg-slate-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-slate-200">
               <span
-                className={`text-xs font-semibold transition-colors ${activeEnvironment === "test"
-                    ? "text-amber-600"
-                    : "text-slate-400"
+                className={`text-[10px] sm:text-xs font-semibold transition-colors ${activeEnvironment === "test"
+                  ? "text-amber-600"
+                  : "text-slate-400"
                   }`}
               >
                 Test
               </span>
               <button
-                onClick={() =>
-                  setActiveEnvironment(
-                    activeEnvironment === "live" ? "test" : "live",
-                  )
-                }
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${activeEnvironment === "live"
-                    ? "bg-emerald-500"
-                    : "bg-amber-500"
+                onClick={handleToggleMode}
+                disabled={isTogglingMode}
+                className={`relative inline-flex h-5 w-9 sm:h-6 sm:w-11 items-center rounded-full transition-colors ${isTogglingMode ? "cursor-wait opacity-80" : "cursor-pointer"} focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${activeEnvironment === "live"
+                  ? "bg-emerald-500"
+                  : "bg-amber-500"
                   }`}
               >
                 <span className="sr-only">Toggle environment</span>
                 <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${activeEnvironment === "live"
-                      ? "translate-x-6" // 24px (24 + 16 = 40. 44 - 40 = 4px margin right)
-                      : "translate-x-1" // 4px margin left
+                  className={`flex h-3 w-3 sm:h-4 sm:w-4 transform rounded-full bg-white shadow-sm transition-transform items-center justify-center ${activeEnvironment === "live"
+                    ? "translate-x-5 sm:translate-x-6"
+                    : "translate-x-1"
                     }`}
-                />
+                >
+                  {isTogglingMode && (
+                    <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 border border-slate-200 border-t-slate-500 rounded-full animate-spin" />
+                  )}
+                </span>
               </button>
               <span
-                className={`text-xs font-semibold transition-colors ${activeEnvironment === "live"
-                    ? "text-emerald-600"
-                    : "text-slate-400"
+                className={`text-[10px] sm:text-xs font-semibold transition-colors ${activeEnvironment === "live"
+                  ? "text-emerald-600"
+                  : "text-slate-400"
                   }`}
               >
                 Live
@@ -225,14 +295,15 @@ function Dashboard() {
         </header>
 
         {kycStatus === "pending" && (
-          <div className="bg-blue-600 px-4 py-3 text-white text-sm flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 shadow-sm z-20 shrink-0">
-            <span className="text-center font-medium">
-              Your account is pending verification. Please complete your KYC to unlock all features.
+          <div className="bg-blue-600 px-3 py-2 sm:px-4 sm:py-3 text-white text-[11px] sm:text-sm flex flex-row items-center justify-between sm:justify-center gap-2 sm:gap-4 shadow-sm z-20 shrink-0">
+            <span className="font-medium truncate sm:whitespace-normal">
+              <span className="hidden sm:inline">Your account is pending verification. Please complete your KYC to unlock all features.</span>
+              <span className="sm:hidden">KYC pending. Unlock features.</span>
             </span>
             <Link
               to="/dashboard/settings"
               state={{ tab: "kyc" }}
-              className="bg-white text-blue-600 px-4 py-1.5 rounded-full font-semibold hover:bg-blue-50 transition-colors text-xs whitespace-nowrap shadow-sm flex-shrink-0"
+              className="bg-white text-blue-600 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full font-semibold hover:bg-blue-50 transition-colors text-[10px] sm:text-xs whitespace-nowrap shadow-sm flex-shrink-0"
             >
               Complete KYC
             </Link>

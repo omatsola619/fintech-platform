@@ -396,6 +396,7 @@ function Settings() {
                             type="text"
                             value={businessForm.business_name}
                             onChange={(e) => setBusinessForm({ ...businessForm, business_name: e.target.value })}
+                            placeholder="Enter your business name"
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -407,6 +408,7 @@ function Settings() {
                             type="email"
                             value={businessForm.business_email}
                             onChange={(e) => setBusinessForm({ ...businessForm, business_email: e.target.value })}
+                            placeholder="Enter your business email"
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -418,6 +420,7 @@ function Settings() {
                             type="tel"
                             value={businessForm.business_phone}
                             onChange={(e) => setBusinessForm({ ...businessForm, business_phone: e.target.value })}
+                            placeholder="Enter your business phone number"
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -441,6 +444,7 @@ function Settings() {
                             type="url"
                             value={businessForm.website}
                             onChange={(e) => setBusinessForm({ ...businessForm, website: e.target.value })}
+                            placeholder="https://yourwebsite.com"
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -452,6 +456,7 @@ function Settings() {
                             type="text"
                             value={businessForm.registration_number}
                             onChange={(e) => setBusinessForm({ ...businessForm, registration_number: e.target.value })}
+                            placeholder="Enter your registration number"
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -463,6 +468,7 @@ function Settings() {
                             type="text"
                             value={businessForm.address}
                             onChange={(e) => setBusinessForm({ ...businessForm, address: e.target.value })}
+                            placeholder="Enter your business address"
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -489,6 +495,7 @@ function Settings() {
                             type="text"
                             value={businessForm.state}
                             onChange={(e) => setBusinessForm({ ...businessForm, state: e.target.value })}
+                            placeholder="Enter your state or province"
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
                         </div>
@@ -630,8 +637,7 @@ function Settings() {
                           Provider Integrations
                         </h3>
                         <p className="text-xs text-slate-500 mt-1">
-                          Manage connection status and API keys for supported
-                          providers.
+                          Your API keys are highly encrypted, very safe, and secure.
                         </p>
                       </div>
                       <button
