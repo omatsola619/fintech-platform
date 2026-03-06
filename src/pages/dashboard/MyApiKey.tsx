@@ -1,17 +1,45 @@
-import { CheckCircle2, Copy, Eye, EyeOff, Key, Shield, ShieldAlert } from "lucide-react";
+import { CheckCircle2, Copy, Eye, EyeOff, Key, Shield, ShieldAlert, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "../../lib/api";
 
 function MyApiKey() {
   const [showLiveSecret, setShowLiveSecret] = useState(false);
   const [showTestSecret, setShowTestSecret] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
-  // Mock platform API keys given to user (to be replaced with API data)
+  const { data: settingsResponse, isLoading } = useQuery({
+    queryKey: ["settings"],
+    queryFn: async () => {
+      const token = localStorage.getItem("authToken");
+      const response = await api.get("/accounts/user/details/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    },
+  });
+
+  const settingsRaw = settingsResponse?.data || settingsResponse || {};
+  const merchantsData = settingsRaw?.merchants;
+  const merchant = Array.isArray(merchantsData) ? merchantsData[0] : merchantsData;
+  const apiClients = merchant?.api_clients || [];
+
+  const liveClient = apiClients.find(
+    (c: any) => c.environment?.toLowerCase() === "live"
+  );
+  const testClient = apiClients.find(
+    (c: any) =>
+      c.environment?.toLowerCase() === "sandbox" ||
+      c.environment?.toLowerCase() === "test"
+  );
+
   const apiKeys = {
-    livePublicKey: "mock_pk_live_8f3a2b4cd9e1r7t5y6u3i0o2p4a5s6d7f8g9h0j1",
-    liveSecretKey: "mock_sk_live_1k2l3z4x5c6v7b8n9m0a1s2d3f4g5h6j7k8l9",
-    testPublicKey: "mock_pk_test_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s",
-    testSecretKey: "mock_sk_test_z9y8x7w6v5u4t3s2r1q0p9o8n7m6l5k4j3h2g",
+    livePublicKey: liveClient?.client_public_key || "",
+    liveSecretKey: liveClient?.client_secret_key || "",
+    testPublicKey: testClient?.client_public_key || "",
+    testSecretKey: testClient?.client_secret_key || "",
   };
 
   const copyToClipboard = (text: string, id: string) => {
@@ -91,51 +119,57 @@ function MyApiKey() {
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Live Mode Keys */}
-        <div className="bg-white rounded-2xl border border-emerald-200 shadow-sm overflow-hidden flex flex-col">
-          <div className="px-6 py-5 border-b border-emerald-100 flex items-center gap-3 bg-emerald-50/50">
-            <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center border border-emerald-200 shrink-0">
-              <Shield className="w-5 h-5 text-emerald-600" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-slate-900">Live Mode</h3>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase tracking-wider">Active</span>
-              </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Keys for processing real transactions. Keep your secret key safe.
-              </p>
-            </div>
-          </div>
-          <div className="p-6 flex-1">
-            {renderKeyField("Public Key", apiKeys.livePublicKey, "live_public", false, true)}
-            {renderKeyField("Secret Key", apiKeys.liveSecretKey, "live_secret", true, showLiveSecret, () => setShowLiveSecret(!showLiveSecret))}
-          </div>
+      {isLoading ? (
+        <div className="flex items-center justify-center p-12 bg-white rounded-2xl border border-slate-200">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
         </div>
+      ) : (
+        <div className="grid lg:grid-cols-2 gap-6">
+          {/* Live Mode Keys */}
+          <div className="bg-white rounded-2xl border border-emerald-200 shadow-sm overflow-hidden flex flex-col">
+            <div className="px-6 py-5 border-b border-emerald-100 flex items-center gap-3 bg-emerald-50/50">
+              <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center border border-emerald-200 shrink-0">
+                <Shield className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-slate-900">Live Mode</h3>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase tracking-wider">Active</span>
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Keys for processing real transactions. Keep your secret key safe.
+                </p>
+              </div>
+            </div>
+            <div className="p-6 flex-1">
+              {renderKeyField("Public Key", apiKeys.livePublicKey, "live_public", false, true)}
+              {renderKeyField("Secret Key", apiKeys.liveSecretKey, "live_secret", true, showLiveSecret, () => setShowLiveSecret(!showLiveSecret))}
+            </div>
+          </div>
 
-        {/* Test Mode Keys */}
-        <div className="bg-white rounded-2xl border border-amber-200 shadow-sm overflow-hidden flex flex-col">
-          <div className="px-6 py-5 border-b border-amber-100 flex items-center gap-3 bg-amber-50/50">
-            <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center border border-amber-200 shrink-0">
-              <ShieldAlert className="w-5 h-5 text-amber-600" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-slate-900">Test Mode</h3>
-                <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold uppercase tracking-wider">Sandbox</span>
+          {/* Test Mode Keys */}
+          <div className="bg-white rounded-2xl border border-amber-200 shadow-sm overflow-hidden flex flex-col">
+            <div className="px-6 py-5 border-b border-amber-100 flex items-center gap-3 bg-amber-50/50">
+              <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center border border-amber-200 shrink-0">
+                <ShieldAlert className="w-5 h-5 text-amber-600" />
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Keys for testing your integration. No real money is moved.
-              </p>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-slate-900">Test Mode</h3>
+                  <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold uppercase tracking-wider">Sandbox</span>
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Keys for testing your integration. No real money is moved.
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="p-6 flex-1">
-            {renderKeyField("Public Key", apiKeys.testPublicKey, "test_public", false, true)}
-            {renderKeyField("Secret Key", apiKeys.testSecretKey, "test_secret", true, showTestSecret, () => setShowTestSecret(!showTestSecret))}
+            <div className="p-6 flex-1">
+              {renderKeyField("Public Key", apiKeys.testPublicKey, "test_public", false, true)}
+              {renderKeyField("Secret Key", apiKeys.testSecretKey, "test_secret", true, showTestSecret, () => setShowTestSecret(!showTestSecret))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6 flex items-start gap-4">
         <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center shrink-0">
