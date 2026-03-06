@@ -33,7 +33,10 @@ function Login() {
 
       const kycStatus = data?.kyc_status || data?.user?.kyc_status || "pending";
 
-      login(token, fullName, kycStatus);
+      const rawMerchantMode = data?.merchant_mode || data?.user?.merchant_mode || "sandbox";
+      const merchantMode = rawMerchantMode === "live" ? "live" : "test";
+
+      login(token, fullName, kycStatus, merchantMode);
       navigate("/dashboard");
     },
     onError: (err: any) => {

@@ -20,10 +20,10 @@ import { api } from "../lib/api";
 function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout, userName, kycStatus } = useAuth();
+  const { logout, userName, kycStatus, merchantMode } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeEnvironment, setActiveEnvironment] = useState<"test" | "live">(
-    "test",
+    (merchantMode as "test" | "live") || "test",
   );
   const [isTogglingMode, setIsTogglingMode] = useState(false);
   const [showKycPopup, setShowKycPopup] = useState(false);

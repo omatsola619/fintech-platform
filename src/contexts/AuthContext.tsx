@@ -4,7 +4,8 @@ interface AuthContextType {
   isAuthenticated: boolean;
   userName: string;
   kycStatus: string;
-  login: (token: string, name?: string, kycStatus?: string) => void;
+  merchantMode: string;
+  login: (token: string, name?: string, kycStatus?: string, merchantMode?: string) => void;
   logout: () => void;
 }
 
@@ -20,8 +21,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [kycStatus, setKycStatus] = useState<string>(() => {
     return localStorage.getItem("kycStatus") || "";
   });
+  const [merchantMode, setMerchantMode] = useState<string>(() => {
+    return localStorage.getItem("merchantMode") || "test";
+  });
 
-  const login = (token: string, name?: string, kycStatus?: string) => {
+  const login = (token: string, name?: string, kycStatus?: string, merchantMode?: string) => {
     localStorage.setItem("authToken", token);
     if (name) {
       localStorage.setItem("userName", name);
@@ -31,6 +35,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("kycStatus", kycStatus);
       setKycStatus(kycStatus);
     }
+    if (merchantMode) {
+      localStorage.setItem("merchantMode", merchantMode);
+      setMerchantMode(merchantMode);
+    }
     setIsAuthenticated(true);
   };
 
@@ -38,13 +46,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userName");
     localStorage.removeItem("kycStatus");
+    localStorage.removeItem("merchantMode");
     setIsAuthenticated(false);
     setUserName("");
     setKycStatus("");
+    setMerchantMode("test");
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userName, kycStatus, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, userName, kycStatus, merchantMode, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
