@@ -959,9 +959,8 @@ function Settings() {
                 onClick={handleSaveEnvKey}
                 disabled={
                   isSettingUpProvider ||
-                  (envModal.isEdit
-                    ? envModal.secretKey === envModal.originalKey || envModal.secretKey.length <= 10
-                    : !envModal.secretKey.trim())
+                  envModal.secretKey.length < 10 ||
+                  (envModal.isEdit && envModal.secretKey === envModal.originalKey)
                 }
                 className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm shadow-blue-500/20 text-sm flex items-center gap-2"
               >
