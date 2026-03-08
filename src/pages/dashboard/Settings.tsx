@@ -539,60 +539,53 @@ function Settings() {
               {activeTab === "kyc" && (
                 <div className="space-y-6">
                   <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                    <div className="px-6 py-5 border-b border-slate-200">
-                      <h3 className="text-sm font-semibold text-slate-900">
-                        KYC Documents
-                      </h3>
-                      <p className="text-xs text-slate-500 mt-1">
-                        Upload necessary documents to verify your business.
-                      </p>
-                    </div>
-
-                    <div className="p-6">
-                      <div className="space-y-6 max-w-lg">
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Document Type
-                          </label>
-                          <select className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm appearance-none">
-                            <option value="incorporation">
-                              Certificate of Incorporation
-                            </option>
-                            <option value="memorandum">
-                              Memorandum of Association
-                            </option>
-                            <option value="id_card">Director's ID Card</option>
-                            <option value="utility_bill">Utility Bill</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Upload Document
-                          </label>
-                          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer">
-                            <div className="space-y-1 text-center">
-                              <FileText className="mx-auto h-12 w-12 text-slate-300" />
-                              <div className="flex text-sm text-slate-600 justify-center mt-4">
-                                <label className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                                  <span>Upload a file</span>
-                                  <input type="file" className="sr-only" />
-                                </label>
-                                <p className="pl-1">or drag and drop</p>
-                              </div>
-                              <p className="text-xs text-slate-500 mt-1">
-                                PNG, JPG, PDF up to 10MB
-                              </p>
-                            </div>
-                          </div>
-                        </div>
+                    <div className="px-6 py-5 border-b border-slate-100 flex items-center gap-3 bg-slate-50/60">
+                      <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center border border-indigo-200 shrink-0">
+                        <FileText className="w-5 h-5 text-indigo-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-slate-900">KYC Documents</h3>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          Business verification &amp; compliance documents.
+                        </p>
                       </div>
                     </div>
 
-                    <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end">
-                      <button className="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/20 text-sm cursor-pointer">
-                        Upload Document
-                      </button>
+                    <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
+                      {/* Animated icon stack */}
+                      <div className="relative mb-8">
+                        <div className="w-20 h-20 rounded-2xl bg-indigo-50 border-2 border-indigo-100 flex items-center justify-center shadow-md">
+                          <FileText className="w-9 h-9 text-indigo-400" />
+                        </div>
+                        <span className="absolute -top-2 -right-2 flex h-6 w-6">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-50"></span>
+                          <span className="relative inline-flex rounded-full h-6 w-6 bg-indigo-500 items-center justify-center">
+                            <span className="text-white text-[9px] font-bold">!</span>
+                          </span>
+                        </span>
+                      </div>
+
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-600 text-[10px] font-bold uppercase tracking-widest mb-4">
+                        Coming Soon
+                      </span>
+
+                      <h4 className="text-lg font-bold text-slate-900 mb-2">
+                        KYC Verification is on its way
+                      </h4>
+                      <p className="text-sm text-slate-500 max-w-sm leading-relaxed">
+                        We're building a seamless document verification flow. You'll soon be able to upload your business documents right here to unlock live payments.
+                      </p>
+
+                      <div className="mt-8 grid grid-cols-3 gap-4 w-full max-w-sm">
+                        {["Certificate of Incorporation", "Director's ID", "Utility Bill"].map((doc) => (
+                          <div key={doc} className="flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                            <div className="w-8 h-8 rounded-lg bg-slate-200 flex items-center justify-center">
+                              <FileText className="w-4 h-4 text-slate-400" />
+                            </div>
+                            <span className="text-[10px] font-medium text-slate-500 text-center leading-tight">{doc}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
