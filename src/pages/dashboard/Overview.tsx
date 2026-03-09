@@ -8,7 +8,10 @@ import {
   TrendingDown,
   TrendingUp,
   XCircle,
+  Loader2,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "../../lib/api";
 import { Link, useNavigate } from "react-router-dom";
 import {
   CartesianGrid,
@@ -32,6 +35,42 @@ const chartData = [
 
 function Overview() {
   const navigate = useNavigate();
+
+  const { data: overviewResponse, isLoading } = useQuery({
+    queryKey: ["overview"],
+    queryFn: async () => {
+      const token = localStorage.getItem("authToken");
+      const response = await api.get("/analytics/overview/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    },
+  });
+
+  const overviewData = overviewResponse?.data || {
+    transactions: {
+      total_transactions: 0,
+      successful_transactions: 0,
+      failed_transactions: 0,
+      success_rate: "0%",
+      total_value: 0
+    },
+    provider_performance: [],
+    provider_success_graph: []
+  };
+
+  const { transactions, provider_performance, provider_success_graph } = overviewData;
+  const displayedChartData = provider_success_graph?.length ? provider_success_graph : chartData;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-12 h-[60vh]">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
@@ -58,36 +97,36 @@ function Overview() {
         {[
           {
             label: "Total Transactions",
-            value: "4,204",
-            trend: "+12.5%",
+            value: transactions.total_transactions?.toLocaleString() || "0",
+            trend: "+0%",
             color: "text-emerald-600",
             up: true,
           },
           {
             label: "Successful tx",
-            value: "3,892",
-            trend: "+10.2%",
+            value: transactions.successful_transactions?.toLocaleString() || "0",
+            trend: "+0%",
             color: "text-emerald-600",
             up: true,
           },
           {
             label: "Failed tx",
-            value: "312",
-            trend: "-2.1%",
+            value: transactions.failed_transactions?.toLocaleString() || "0",
+            trend: "-0%",
             color: "text-emerald-600",
             up: false,
           },
           {
             label: "Success Rate",
-            value: "92.5%",
-            trend: "+1.5%",
+            value: transactions.success_rate || "0%",
+            trend: "+0%",
             color: "text-blue-600",
             up: true,
           },
           {
             label: "Total Value",
-            value: "$124,500",
-            trend: "+8.4%",
+            value: `$${transactions.total_value?.toLocaleString() || "0"}`,
+            trend: "+0%",
             color: "text-emerald-600",
             up: true,
           },
@@ -131,7 +170,7 @@ function Overview() {
           <div className="flex-1 w-full relative">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
-                data={chartData}
+                data={displayedChartData}
                 margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
               >
                 <CartesianGrid
@@ -198,38 +237,22 @@ function Overview() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {[
-                  {
-                    name: "Paystack",
-                    tx: "2,904",
-                    rate: 94,
-                    latency: "210ms",
-                    status: "Healthy",
-                  },
-                  {
-                    name: "Flutterwave",
-                    tx: "1,300",
-                    rate: 88,
-                    latency: "400ms",
-                    status: "Degraded",
-                  },
-                  {
-                    name: "Stripe",
-                    tx: "0",
-                    rate: 0,
-                    latency: "-",
-                    status: "Inactive",
-                  },
-                ].map((provider, idx) => {
+                {provider_performance?.length > 0 ? provider_performance.map((provider: any, idx: number) => {
                   let statusColor = "bg-emerald-100 text-emerald-700";
                   let StatusIcon = CheckCircle2;
-                  if (provider.rate > 0 && provider.rate <= 90) {
+
+                  // Ensure fallbacks for properties that might miss from real API structure
+                  const rate = provider.rate || provider.success_rate || 0;
+                  const name = provider.name || provider.provider_name || "Unknown";
+                  const tx = provider.tx || provider.total_transactions || 0;
+
+                  if (rate > 0 && rate <= 90) {
                     statusColor = "bg-amber-100 text-amber-700";
                     StatusIcon = Clock;
-                  } else if (provider.rate < 75 && provider.rate > 0) {
+                  } else if (rate < 75 && rate > 0) {
                     statusColor = "bg-red-100 text-red-700";
                     StatusIcon = XCircle;
-                  } else if (provider.rate === 0) {
+                  } else if (rate === 0) {
                     statusColor = "bg-slate-100 text-slate-600";
                     StatusIcon = Play;
                   }
@@ -240,13 +263,13 @@ function Overview() {
                       className="hover:bg-slate-50 transition-colors"
                     >
                       <td className="px-4 py-3 font-medium text-slate-900">
-                        {provider.name}
+                        {name}
                       </td>
                       <td className="px-4 py-3 text-right text-slate-600">
-                        {provider.tx}
+                        {tx.toLocaleString()}
                       </td>
                       <td className="px-4 py-3 text-right font-medium text-slate-900">
-                        {provider.rate > 0 ? `${provider.rate}%` : "-"}
+                        {rate > 0 ? `${rate}%` : "-"}
                       </td>
                       <td className="px-4 py-3 pb-3 text-center flex justify-center mt-1">
                         <div
@@ -257,7 +280,13 @@ function Overview() {
                       </td>
                     </tr>
                   );
-                })}
+                }) : (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-8 text-center text-slate-500 text-sm">
+                      No provider data available.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
