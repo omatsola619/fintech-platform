@@ -10,6 +10,7 @@ import {
   XCircle,
   Loader2,
 } from "lucide-react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 import { Link, useNavigate } from "react-router-dom";
@@ -35,12 +36,13 @@ const chartData = [
 
 function Overview() {
   const navigate = useNavigate();
+  const [period, setPeriod] = useState("today");
 
   const { data: overviewResponse, isLoading } = useQuery({
-    queryKey: ["overview"],
+    queryKey: ["overview", period],
     queryFn: async () => {
       const token = localStorage.getItem("authToken");
-      const response = await api.get("/analytics/overview/", {
+      const response = await api.get(`/analytics/overview/?period=${period}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -85,9 +87,13 @@ function Overview() {
           </p>
         </div>
         <div className="flex gap-3">
-          <select className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option>Today</option>
-            <option>Last 7 Days</option>
+          <select
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+            className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+          >
+            <option value="today">Today</option>
+            <option value="7d">Last 7 Days</option>
           </select>
         </div>
       </div>

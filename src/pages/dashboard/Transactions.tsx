@@ -5,7 +5,6 @@ import {
   ChevronRight,
   Clock,
   Copy,
-  Filter,
   Search,
   Server,
   X,
@@ -18,6 +17,9 @@ import { api } from "../../lib/api";
 
 function Transactions() {
   const [selectedTx, setSelectedTx] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedProvider, setSelectedProvider] = useState("All Providers");
+  const [selectedStatus, setSelectedStatus] = useState("All Statuses");
 
   const { data: transactionsResponse, isLoading } = useQuery({
     queryKey: ["transactions"],
@@ -33,6 +35,23 @@ function Transactions() {
   });
 
   const transactions = transactionsResponse?.data || [];
+
+  const filteredTransactions = transactions.filter((tx: any) => {
+    const matchesSearch =
+      tx.transaction_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tx.reference?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tx.customer_email?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const provider = (tx.final_provider || tx.preferred_provider || "").toLowerCase();
+    const providerFilter = selectedProvider.toLowerCase();
+    const matchesProvider = selectedProvider === "All Providers" || provider === providerFilter;
+
+    const status = (tx.status || "").toLowerCase();
+    const statusFilter = selectedStatus.toLowerCase();
+    const matchesStatus = selectedStatus === "All Statuses" || status === statusFilter;
+
+    return matchesSearch && matchesProvider && matchesStatus;
+  });
 
   const formatCurrency = (amount: string, currency: string) => {
     const num = parseFloat(amount || "0");
@@ -71,7 +90,7 @@ function Transactions() {
       );
     return (
       <span className="inline-flex items-center gap-1 text-[10px] font-bold tracking-wider text-amber-700 bg-amber-100 px-2 py-0.5 rounded uppercase">
-        <Clock className="w-3 h-3" /> {status ? status.charAt(0).toUpperCase() + status.slice(1) : "Processing"}
+        <Clock className="w-3 h-3" /> {status ? status.charAt(0).toUpperCase() + status.slice(1) : "Pending"}
       </span>
     );
   };
@@ -95,24 +114,31 @@ function Transactions() {
             <input
               type="text"
               placeholder="Search by reference..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
           </div>
           <div className="flex gap-2">
-            <select className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-              <option>All Providers</option>
-              <option>Paystack</option>
-              <option>Flutterwave</option>
+            <select
+              value={selectedProvider}
+              onChange={(e) => setSelectedProvider(e.target.value)}
+              className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+            >
+              <option value="All Providers">All Providers</option>
+              <option value="Paystack">Paystack</option>
+              <option value="Flutterwave">Flutterwave</option>
             </select>
-            <select className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-              <option>All Statuses</option>
-              <option>Success</option>
-              <option>Failed</option>
-              <option>Processing</option>
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+            >
+              <option value="All Statuses">All Statuses</option>
+              <option value="Success">Success</option>
+              <option value="Failed">Failed</option>
+              <option value="Pending">Pending</option>
             </select>
-            <button className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors shadow-sm cursor-pointer flex items-center gap-2">
-              <Filter className="w-4 h-4" /> Filters
-            </button>
           </div>
         </div>
       </div>
@@ -139,7 +165,7 @@ function Transactions() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {transactions.length > 0 ? transactions.map((tx: any) => (
+                {filteredTransactions.length > 0 ? filteredTransactions.map((tx: any) => (
                   <tr
                     key={tx.id}
                     className="hover:bg-slate-50 transition-colors group"
@@ -186,7 +212,7 @@ function Transactions() {
         </div>
         <div className="bg-slate-50 border-t border-slate-200 p-3 px-6 flex items-center justify-between shrink-0">
           <span className="text-xs text-slate-500">
-            Showing 1 to 7 of 4,204 transactions
+            Showing {filteredTransactions.length} of {transactions.length} transactions
           </span>
           <div className="flex items-center gap-2">
             <button
@@ -202,17 +228,17 @@ function Transactions() {
         </div>
       </div>
 
-      {/* Transaction Detail Drawer Overlay */}
+      {/* Transaction Detail Modal Overlay */}
       {selectedTx && (
-        <div className="absolute inset-0 z-50 flex overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity"
+            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"
             onClick={() => setSelectedTx(null)}
           />
 
-          {/* Slide-over */}
-          <div className="absolute top-0 right-0 h-full w-full sm:w-[500px] bg-white shadow-2xl border-l border-slate-200 flex flex-col transform transition-transform duration-300 translate-x-0 animate-in slide-in-from-right">
+          {/* Modal */}
+          <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200 overflow-hidden">
             {/* Header */}
             <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
               <div>
