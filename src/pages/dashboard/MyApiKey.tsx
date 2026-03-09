@@ -1,5 +1,5 @@
 import { CheckCircle2, Copy, Eye, EyeOff, Key, Shield, ShieldAlert, Loader2, Webhook, RefreshCw, AlertTriangle, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 
@@ -7,9 +7,12 @@ function MyApiKey() {
   const [showLiveSecret, setShowLiveSecret] = useState(false);
   const [showTestSecret, setShowTestSecret] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const [webhookUrl, setWebhookUrl] = useState("");
-  const [webhookSaved, setWebhookSaved] = useState(false);
-  const [webhookSaving, setWebhookSaving] = useState(false);
+  const [webhookUrlLive, setWebhookUrlLive] = useState("");
+  const [webhookUrlTest, setWebhookUrlTest] = useState("");
+  const [webhookSavedLive, setWebhookSavedLive] = useState(false);
+  const [webhookSavedTest, setWebhookSavedTest] = useState(false);
+  const [webhookSavingLive, setWebhookSavingLive] = useState(false);
+  const [webhookSavingTest, setWebhookSavingTest] = useState(false);
   const [regeneratingKey, setRegeneratingKey] = useState<"live" | "test" | null>(null);
   const [confirmRegenerateModal, setConfirmRegenerateModal] = useState<"live" | "test" | null>(null);
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
@@ -49,25 +52,70 @@ function MyApiKey() {
     testSecretKey: testClient?.client_secret_key || "",
   };
 
+  useEffect(() => {
+    if (liveClient?.webhook_url) setWebhookUrlLive(liveClient.webhook_url);
+    if (testClient?.webhook_url) setWebhookUrlTest(testClient.webhook_url);
+  }, [liveClient?.webhook_url, testClient?.webhook_url]);
+
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopiedKey(id);
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
-  const saveWebhook = async () => {
-    if (!webhookUrl.trim()) return;
-    setWebhookSaving(true);
-    // Simulate API call – replace with your actual mutation/api call
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-    setWebhookSaving(false);
-    setWebhookSaved(true);
-    setTimeout(() => setWebhookSaved(false), 3000);
-  };
-
   const showNotification = (type: 'success' | 'error', message: string) => {
     setNotification({ type, message });
     setTimeout(() => setNotification(null), 4000);
+  };
+
+  const updateWebhookMutation = useMutation({
+    mutationFn: async ({ clientId, url }: { clientId: string; url: string }) => {
+      const token = localStorage.getItem("authToken");
+      const response = await api.patch(`/api/client/${clientId}/webhook-url/`, {
+        webhook_url: url
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["settings"] });
+    }
+  });
+
+  const saveWebhook = async (env: "live" | "test") => {
+    const url = env === "live" ? webhookUrlLive : webhookUrlTest;
+    const clientId = env === "live" ? liveClient?.id : testClient?.id;
+
+    if (!url.trim() || !clientId) {
+      if (!clientId) {
+        showNotification("error", `Error: ${env === "live" ? "Live" : "Test"} Client ID not found`);
+      }
+      return;
+    }
+
+    if (env === "live") setWebhookSavingLive(true);
+    else setWebhookSavingTest(true);
+
+    try {
+      await updateWebhookMutation.mutateAsync({ clientId, url });
+
+      if (env === "live") {
+        setWebhookSavedLive(true);
+        setTimeout(() => setWebhookSavedLive(false), 3000);
+        showNotification("success", "Live webhook URL updated successfully");
+      } else {
+        setWebhookSavedTest(true);
+        setTimeout(() => setWebhookSavedTest(false), 3000);
+        showNotification("success", "Test webhook URL updated successfully");
+      }
+    } catch (error) {
+      console.error("Failed to save webhook:", error);
+      showNotification("error", "Error saving webhook URL");
+    } finally {
+      if (env === "live") setWebhookSavingLive(false);
+      else setWebhookSavingTest(false);
+    }
   };
 
   const handleRegenerate = async (env: "live" | "test") => {
@@ -269,42 +317,90 @@ function MyApiKey() {
           </div>
         </div>
         <div className="p-6">
-          <label htmlFor="webhook-url" className="block text-sm font-medium text-slate-700 mb-2">
-            Webhook URL
-          </label>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <input
-                id="webhook-url"
-                type="url"
-                value={webhookUrl}
-                onChange={(e) => setWebhookUrl(e.target.value)}
-                placeholder="https://yourdomain.com/webhooks/payflow"
-                className="block w-full pl-4 pr-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all placeholder:text-slate-400"
-              />
+          {/* Live Webhook */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-2">
+              <label htmlFor="webhook-url-live" className="block text-sm font-medium text-slate-700">
+                Live Webhook URL
+              </label>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase tracking-wider">Active</span>
             </div>
-            <button
-              onClick={saveWebhook}
-              disabled={webhookSaving || !webhookUrl.trim()}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98] sm:w-auto w-full shadow-sm cursor-pointer"
-            >
-              {webhookSaving ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Saving…</span>
-                </>
-              ) : webhookSaved ? (
-                <>
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Saved!</span>
-                </>
-              ) : (
-                <span>Save Webhook</span>
-              )}
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <input
+                  id="webhook-url-live"
+                  type="url"
+                  value={webhookUrlLive}
+                  onChange={(e) => setWebhookUrlLive(e.target.value)}
+                  placeholder="https://yourdomain.com/webhooks/payflow/live"
+                  className="block w-full pl-4 pr-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all placeholder:text-slate-400"
+                />
+              </div>
+              <button
+                onClick={() => saveWebhook("live")}
+                disabled={webhookSavingLive || !webhookUrlLive.trim()}
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98] sm:w-auto w-full shadow-sm cursor-pointer"
+              >
+                {webhookSavingLive ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Saving…</span>
+                  </>
+                ) : webhookSavedLive ? (
+                  <>
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Saved!</span>
+                  </>
+                ) : (
+                  <span>Save Live Webhook</span>
+                )}
+              </button>
+            </div>
           </div>
-          <p className="text-xs text-slate-500 mt-3">
-            We'll send POST requests with event payloads to this URL. Make sure your endpoint returns a <code className="bg-slate-100 px-1 py-0.5 rounded font-mono">200</code> status to acknowledge receipt.
+
+          {/* Test Webhook */}
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <label htmlFor="webhook-url-test" className="block text-sm font-medium text-slate-700">
+                Test Webhook URL
+              </label>
+              <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold uppercase tracking-wider">Sandbox</span>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <input
+                  id="webhook-url-test"
+                  type="url"
+                  value={webhookUrlTest}
+                  onChange={(e) => setWebhookUrlTest(e.target.value)}
+                  placeholder="https://yourdomain.com/webhooks/payflow/test"
+                  className="block w-full pl-4 pr-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all placeholder:text-slate-400"
+                />
+              </div>
+              <button
+                onClick={() => saveWebhook("test")}
+                disabled={webhookSavingTest || !webhookUrlTest.trim()}
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-amber-600 text-white font-medium rounded-xl hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98] sm:w-auto w-full shadow-sm cursor-pointer"
+              >
+                {webhookSavingTest ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Saving…</span>
+                  </>
+                ) : webhookSavedTest ? (
+                  <>
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Saved!</span>
+                  </>
+                ) : (
+                  <span>Save Test Webhook</span>
+                )}
+              </button>
+            </div>
+          </div>
+
+          <p className="text-xs text-slate-500 mt-4 pt-4 border-t border-slate-100">
+            We'll send POST requests with event payloads to these URLs. Make sure your endpoints return a <code className="bg-slate-100 px-1 py-0.5 rounded font-mono">200</code> status to acknowledge receipt.
           </p>
         </div>
       </div>
