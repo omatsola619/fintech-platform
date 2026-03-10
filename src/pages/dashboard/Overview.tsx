@@ -3,14 +3,12 @@ import {
   ArrowUpRight,
   CheckCircle2,
   Clock,
-  Play,
   Server,
   TrendingDown,
   TrendingUp,
   XCircle,
   Loader2,
 } from "lucide-react";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 import { Link, useNavigate } from "react-router-dom";
@@ -35,14 +33,14 @@ const chartData = [
 ];
 
 function Overview() {
+  console.log("🔥 Overview component rerendered! Checking logs...");
   const navigate = useNavigate();
-  const [period, setPeriod] = useState("today");
 
-  const { data: overviewResponse, isLoading } = useQuery({
-    queryKey: ["overview", period],
+  const { data: overviewResponse, isLoading, error, isError } = useQuery({
+    queryKey: ["overview"],
     queryFn: async () => {
       const token = localStorage.getItem("authToken");
-      const response = await api.get(`/analytics/overview/?period=${period}`, {
+      const response = await api.get(`/analytics/overview/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -51,7 +49,9 @@ function Overview() {
     },
   });
 
-  const overviewData = overviewResponse?.data || {
+  console.log("Raw API Response (overviewResponse):", overviewResponse);
+
+  const overviewData = overviewResponse?.data || overviewResponse || {
     transactions: {
       total_transactions: 0,
       successful_transactions: 0,
@@ -65,6 +65,13 @@ function Overview() {
 
   const { transactions, provider_performance, provider_success_graph } = overviewData;
   const displayedChartData = provider_success_graph?.length ? provider_success_graph : chartData;
+
+  console.log("Raw API Response (overviewResponse):", overviewResponse);
+  console.log("Extracted overviewData:", overviewData);
+  console.log("Extracted provider_performance:", provider_performance);
+  if (isError) {
+    console.error("API Error fetching overview:", error);
+  }
 
   if (isLoading) {
     return (
@@ -85,16 +92,6 @@ function Overview() {
           <p className="text-slate-600 text-sm sm:text-base">
             Quick health snapshot of your payment operations.
           </p>
-        </div>
-        <div className="flex gap-3">
-          <select
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
-            className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-          >
-            <option value="today">Today</option>
-            <option value="7d">Last 7 Days</option>
-          </select>
         </div>
       </div>
 
@@ -131,7 +128,7 @@ function Overview() {
           },
           {
             label: "Total Value",
-            value: `$${transactions.total_value?.toLocaleString() || "0"}`,
+            value: `₦${transactions.total_value?.toLocaleString() || "0"}`,
             trend: "+0%",
             color: "text-emerald-600",
             up: true,
@@ -170,7 +167,6 @@ function Overview() {
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-semibold text-slate-900 flex items-center gap-2">
               <Activity className="w-5 h-5 text-blue-500" /> Success Rate Trend
-              (Today)
             </h3>
           </div>
           <div className="flex-1 w-full relative">
@@ -244,23 +240,20 @@ function Overview() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {provider_performance?.length > 0 ? provider_performance.map((provider: any, idx: number) => {
-                  let statusColor = "bg-emerald-100 text-emerald-700";
+                  const name = provider.provider || provider.provider_name || provider.name || "Unknown";
+                  const tx = provider.total_transactions ?? provider.tx ?? 0;
+                  const sr = provider.success_rate || provider.rate || "-";
+                  const status = (provider.status || "good").toLowerCase();
+
+                  let statusTextColor = "text-emerald-600";
                   let StatusIcon = CheckCircle2;
 
-                  // Ensure fallbacks for properties that might miss from real API structure
-                  const rate = provider.rate || provider.success_rate || 0;
-                  const name = provider.name || provider.provider_name || "Unknown";
-                  const tx = provider.tx || provider.total_transactions || 0;
-
-                  if (rate > 0 && rate <= 90) {
-                    statusColor = "bg-amber-100 text-amber-700";
-                    StatusIcon = Clock;
-                  } else if (rate < 75 && rate > 0) {
-                    statusColor = "bg-red-100 text-red-700";
+                  if (status === "poor") {
+                    statusTextColor = "text-red-500";
                     StatusIcon = XCircle;
-                  } else if (rate === 0) {
-                    statusColor = "bg-slate-100 text-slate-600";
-                    StatusIcon = Play;
+                  } else if (status === "average") {
+                    statusTextColor = "text-amber-500";
+                    StatusIcon = Clock;
                   }
 
                   return (
@@ -268,20 +261,19 @@ function Overview() {
                       key={idx}
                       className="hover:bg-slate-50 transition-colors"
                     >
-                      <td className="px-4 py-3 font-medium text-slate-900">
+                      <td className="px-4 py-3 font-medium text-slate-900 capitalize">
                         {name}
                       </td>
                       <td className="px-4 py-3 text-right text-slate-600">
                         {tx.toLocaleString()}
                       </td>
                       <td className="px-4 py-3 text-right font-medium text-slate-900">
-                        {rate > 0 ? `${rate}%` : "-"}
+                        {sr}
                       </td>
                       <td className="px-4 py-3 pb-3 text-center flex justify-center mt-1">
-                        <div
-                          className={`px-2 py-1 rounded inline-flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider ${statusColor}`}
-                        >
-                          <StatusIcon className="w-3 h-3" />
+                        <div className={`inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider ${statusTextColor}`}>
+                          <StatusIcon className="w-3.5 h-3.5" />
+                          {status}
                         </div>
                       </td>
                     </tr>
