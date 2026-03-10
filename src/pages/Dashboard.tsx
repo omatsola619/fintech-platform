@@ -192,6 +192,7 @@ function Dashboard() {
             <nav className="space-y-1">
               <Link
                 to="/docs"
+                target="_blank"
                 className="flex items-center gap-3 px-3 py-2 text-slate-600 font-medium rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer"
               >
                 <Code2 className="w-5 h-5 text-slate-400" /> Documentation
