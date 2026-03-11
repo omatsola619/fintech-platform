@@ -238,8 +238,8 @@ Selected Provider`}
         "message": "Hosted Link",
         "data": {
             "payment_url": "https://checkout-v2.dev-flutterwave.com/v3/hosted/pay/e66bc688e1ad2a8aa51f",
-            "access_code": "greatman009",
-            "reference": "greatman009",
+            "access_code": "kjk4j5kjkrjkj4k4434",
+            "reference": "kjdkj44jrjlklghjkdcccc88",
             "amount": "8000.00",
             "currency": "NGN",
             "metadata": {},
