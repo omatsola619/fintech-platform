@@ -23,13 +23,13 @@ import {
 } from "recharts";
 
 const chartData = [
-  { time: "00:00", rate: 94 },
-  { time: "04:00", rate: 96 },
-  { time: "08:00", rate: 95 },
-  { time: "12:00", rate: 92 },
-  { time: "16:00", rate: 97 },
-  { time: "20:00", rate: 98 },
-  { time: "24:00", rate: 96 },
+  { month: "Jan", success_rate: 94 },
+  { month: "Feb", success_rate: 96 },
+  { month: "Mar", success_rate: 95 },
+  { month: "Apr", success_rate: 92 },
+  { month: "May", success_rate: 97 },
+  { month: "Jun", success_rate: 98 },
+  { month: "Jul", success_rate: 96 },
 ];
 
 function Overview() {
@@ -64,7 +64,12 @@ function Overview() {
   };
 
   const { transactions, provider_performance, provider_success_graph } = overviewData;
-  const displayedChartData = provider_success_graph?.length ? provider_success_graph : chartData;
+  const displayedChartData = provider_success_graph?.length ? provider_success_graph.map((d: any) => ({
+    month: d.month || "Unknown",
+    success_rate: typeof d.success_rate === "string"
+      ? parseFloat(d.success_rate.replace("%", ""))
+      : (d.success_rate || 0)
+  })) : chartData;
 
   console.log("Raw API Response (overviewResponse):", overviewResponse);
   console.log("Extracted overviewData:", overviewData);
@@ -166,7 +171,7 @@ function Overview() {
         <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 flex flex-col h-[400px]">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-semibold text-slate-900 flex items-center gap-2">
-              <Activity className="w-5 h-5 text-blue-500" /> Success Rate Trend
+              <Activity className="w-5 h-5 text-blue-500" /> Success Rate Trend (Monthly)
             </h3>
           </div>
           <div className="flex-1 w-full relative">
@@ -181,7 +186,7 @@ function Overview() {
                   stroke="#e2e8f0"
                 />
                 <XAxis
-                  dataKey="time"
+                  dataKey="month"
                   axisLine={false}
                   tickLine={false}
                   tick={{ fill: "#64748b", fontSize: 12 }}
@@ -205,7 +210,7 @@ function Overview() {
                 />
                 <Line
                   type="monotone"
-                  dataKey="rate"
+                  dataKey="success_rate"
                   stroke="#2563eb"
                   strokeWidth={3}
                   dot={false}

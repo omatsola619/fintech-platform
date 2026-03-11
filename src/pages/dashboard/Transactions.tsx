@@ -20,6 +20,8 @@ function Transactions() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProvider, setSelectedProvider] = useState("All Providers");
   const [selectedStatus, setSelectedStatus] = useState("All Statuses");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const { data: transactionsResponse, isLoading } = useQuery({
     queryKey: ["transactions"],
@@ -50,7 +52,24 @@ function Transactions() {
     const statusFilter = selectedStatus.toLowerCase();
     const matchesStatus = selectedStatus === "All Statuses" || status === statusFilter;
 
-    return matchesSearch && matchesProvider && matchesStatus;
+    let matchesDate = true;
+    if (startDate || endDate) {
+      const txDate = new Date(tx.created_at);
+
+      if (startDate) {
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0); // Start of day
+        if (txDate < start) matchesDate = false;
+      }
+
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999); // End of day
+        if (txDate > end) matchesDate = false;
+      }
+    }
+
+    return matchesSearch && matchesProvider && matchesStatus && matchesDate;
   });
 
   const formatCurrency = (amount: string, currency: string) => {
@@ -119,7 +138,23 @@ function Transactions() {
               className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+              />
+              <span className="text-slate-500 text-sm">to</span>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                min={startDate}
+                className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+              />
+            </div>
             <select
               value={selectedProvider}
               onChange={(e) => setSelectedProvider(e.target.value)}
@@ -139,6 +174,20 @@ function Transactions() {
               <option value="Failed">Failed</option>
               <option value="Pending">Pending</option>
             </select>
+            {(startDate || endDate || selectedProvider !== "All Providers" || selectedStatus !== "All Statuses" || searchTerm) && (
+              <button
+                onClick={() => {
+                  setStartDate("");
+                  setEndDate("");
+                  setSearchTerm("");
+                  setSelectedProvider("All Providers");
+                  setSelectedStatus("All Statuses");
+                }}
+                className="px-3 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+              >
+                Clear Filters
+              </button>
+            )}
           </div>
         </div>
       </div>
