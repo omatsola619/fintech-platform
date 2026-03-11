@@ -26,9 +26,7 @@ function Installation() {
         https://api.fintechplatform.com/v1
       </div>
 
-      <p className="text-slate-600 mb-12">
-        Local development example:
-      </p>
+      <p className="text-slate-600 mb-12">Local development example:</p>
 
       <h2 className="font-['Outfit'] text-3xl font-bold mb-4 mt-8 border-b border-slate-200 pb-2 text-black">
         Authentication
@@ -38,21 +36,47 @@ function Installation() {
       </p>
 
       <h3 className="font-semibold text-slate-900 text-xl mb-3">Header</h3>
-      <div className="bg-slate-900 rounded-xl p-4 text-sm font-mono text-slate-300 mb-6 shadow-inner overflow-x-auto">
-        <span className="text-emerald-300">Client-Public-Key:</span> pit_pk_live_xxxxxxxx
+      <div className="bg-slate-900 rounded-xl p-4 text-sm font-mono text-slate-300 mb-6 shadow-inner overflow-x-auto space-y-2">
+        <div>
+          <span className="text-emerald-300">Client-Public-Key:</span>{" "}
+          pit_pk_live_xxxxxxxx
+        </div>
+        <div>
+          <span className="text-emerald-300">Client-Secret-Key:</span>{" "}
+          pit_sk_live_xxxxxxxx
+        </div>
       </div>
 
       <p className="text-slate-600 mb-3">Example</p>
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-8 overflow-x-auto shadow-inner leading-relaxed">
         <code>
-          curl --location <span className="text-amber-300">'http://payinfraterminal.onrender.com/v1/api/initiate-payment/'</span> \<br />
-          --header <span className="text-amber-300">'Client-Public-Key: pit_pk_live_76fd46870e7e8d3d'</span> \<br />
-          --header <span className="text-amber-300">'Client-Secret-Key: pit_sk_live_U2C8HtHdlHPRvHcjRBYBYn9DyZPJEf2o_xZqQkUFIf0'</span> \<br />
-          --header <span className="text-amber-300">'Content-Type: application/json'</span> \
+          curl --location{" "}
+          <span className="text-amber-300">
+            'http://payinfraterminal.onrender.com/v1/api/initiate-payment/'
+          </span>{" "}
+          \<br />
+          --header{" "}
+          <span className="text-amber-300">
+            'Client-Public-Key: pit_pk_live_76fd46870e7e8d3d'
+          </span>{" "}
+          \<br />
+          --header{" "}
+          <span className="text-amber-300">
+            'Client-Secret-Key:
+            pit_sk_live_U2C8HtHdlHPRvHcjRBYBYn9DyZPJEf2o_xZqQkUFIf0'
+          </span>{" "}
+          \<br />
+          --header{" "}
+          <span className="text-amber-300">
+            'Content-Type: application/json'
+          </span>{" "}
+          \
         </code>
       </div>
 
-      <p className="text-slate-600 mb-3">If authentication fails, the API will return:</p>
+      <p className="text-slate-600 mb-3">
+        If authentication fails, the API will return:
+      </p>
       <div className="bg-slate-900 rounded-xl p-4 text-sm font-mono text-blue-300 mb-12 shadow-inner overflow-x-auto">
         401 Unauthorized
       </div>
@@ -60,21 +84,21 @@ function Installation() {
       <h2 className="font-['Outfit'] text-3xl font-bold mb-4 mt-8 border-b border-slate-200 pb-2 text-black">
         Initiate Payment
       </h2>
-      <p className="text-slate-600 mb-6">
-        Creates a new payment transaction.
-      </p>
+      <p className="text-slate-600 mb-6">Creates a new payment transaction.</p>
 
       <h3 className="font-semibold text-slate-900 text-xl mb-3">Endpoint</h3>
       <div className="bg-slate-900 rounded-xl p-4 text-sm font-mono text-blue-300 mb-8 shadow-inner overflow-x-auto">
         POST /initiate-payment/
       </div>
 
-      <h3 className="font-semibold text-slate-900 text-lg mb-3">Request Body</h3>
+      <h3 className="font-semibold text-slate-900 text-lg mb-3">
+        Request Body
+      </h3>
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-8 overflow-x-auto shadow-inner leading-relaxed">
         <pre>
           {`{
   "provider": "flutterwave",
-  "email": "thegbolahanaaba+83@gmail.com",
+  "email": "myemail@mail.com",
   "amount": 8000,
   "currency": "ngn", # (Optional)
   "callback_url": "https://payflow.com/payments/", # (Optional)
@@ -96,7 +120,9 @@ function Installation() {
             <tr>
               <td className="px-6 py-4 font-mono text-amber-300">provider</td>
               <td className="px-6 py-4 text-blue-300">string</td>
-              <td className="px-6 py-4">Payment provider to route transaction to</td>
+              <td className="px-6 py-4">
+                Payment provider to route transaction to
+              </td>
             </tr>
             <tr>
               <td className="px-6 py-4 font-mono text-amber-300">email</td>
@@ -113,16 +139,25 @@ function Installation() {
               <td className="px-6 py-4 text-blue-300">string</td>
               <td className="px-6 py-4">Transaction currency</td>
             </tr>
+            <tr>
+              <td className="px-6 py-4 font-mono text-amber-300">
+                Callback url
+              </td>
+              <td className="px-6 py-4 text-blue-300">url</td>
+              <td className="px-6 py-4">Redirection url</td>
+            </tr>
+            <tr>
+              <td className="px-6 py-4 font-mono text-amber-300">Reference</td>
+              <td className="px-6 py-4 text-blue-300">string</td>
+              <td className="px-6 py-4">payment reference</td>
+            </tr>
           </tbody>
         </table>
       </div>
 
-      <ul className="space-y-2 mb-12 text-slate-600 list-none ml-2">
-        <li><strong>Callback url -url -</strong> Redirection url</li>
-        <li><strong>Reference - string -</strong> payment reference</li>
-      </ul>
-
-      <h3 className="font-semibold text-slate-900 text-lg mb-3">Supported Providers</h3>
+      <h3 className="font-semibold text-slate-900 text-lg mb-3">
+        Supported Providers
+      </h3>
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-12 shadow-inner">
         <div>paystack</div>
         <div>flutterwave</div>
@@ -133,7 +168,8 @@ function Installation() {
       </h2>
 
       <p className="text-slate-600 mb-4">
-        The current routing system uses <strong>explicit provider selection</strong>.
+        The current routing system uses{" "}
+        <strong>explicit provider selection</strong>.
       </p>
       <p className="text-slate-600 mb-6">
         The provider is specified directly in the request payload.
@@ -141,10 +177,13 @@ function Installation() {
 
       <p className="text-slate-600 mb-2">Example:</p>
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-8 shadow-inner">
-        <span className="text-blue-300">"provider"</span>: <span className="text-amber-300">"paystack"</span>
+        <span className="text-blue-300">"provider"</span>:{" "}
+        <span className="text-amber-300">"paystack"</span>
       </div>
 
-      <p className="text-slate-600 mb-2">The API routes the request to the specified provider.</p>
+      <p className="text-slate-600 mb-2">
+        The API routes the request to the specified provider.
+      </p>
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-8 overflow-x-auto shadow-inner leading-relaxed">
         <pre>
           {`Merchant Request
@@ -158,7 +197,8 @@ Selected Provider`}
       </div>
 
       <p className="text-slate-600 mb-4">
-        Future versions of the platform will support <strong>intelligent routing</strong> based on:
+        Future versions of the platform will support{" "}
+        <strong>intelligent routing</strong> based on:
       </p>
       <ul className="space-y-1 mb-8 text-slate-600 list-disc list-inside ml-2">
         <li>provider uptime</li>
@@ -168,7 +208,9 @@ Selected Provider`}
         <li>transaction type</li>
       </ul>
 
-      <p className="text-slate-900 font-bold text-lg mb-2 mt-8">Example Request</p>
+      <p className="text-slate-900 font-bold text-lg mb-2 mt-8">
+        Example Request
+      </p>
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-12 overflow-x-auto shadow-inner leading-relaxed">
         <pre>
           {`curl --location 'http://payinfraterminal.onrender.com/v1/api/initiate-payment/' \\
@@ -177,7 +219,7 @@ Selected Provider`}
 --header 'Content-Type: application/json' \\
 --data-raw '{
     "provider": "flutterwave",
-    "email": "thegbolahanaaba+83@gmail.com",
+    "email": "myemail@mail.com",
     "amount": 8000,
   }'`}
         </pre>
@@ -218,16 +260,20 @@ Selected Provider`}
         Unified Response Format
       </h2>
       <p className="text-slate-600 mb-4">
-        One of the core features of Fintech Platform is <strong>response normalization</strong>.
+        One of the core features of Fintech Platform is{" "}
+        <strong>response normalization</strong>.
       </p>
       <p className="text-slate-600 mb-4">
-        Different payment providers return completely different response structures.
+        Different payment providers return completely different response
+        structures.
       </p>
       <p className="text-slate-600 mb-8">
         The platform converts them into a standardized response format.
       </p>
 
-      <h3 className="font-semibold text-slate-900 text-xl mb-3">Standard Response Structure</h3>
+      <h3 className="font-semibold text-slate-900 text-xl mb-3">
+        Standard Response Structure
+      </h3>
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-8 overflow-x-auto shadow-inner leading-relaxed">
         <pre>
           {`status
@@ -247,18 +293,18 @@ data`}
         </pre>
       </div>
       <p className="text-slate-600 mb-12">
-        This allows developers to write <strong>one integration</strong> regardless of the underlying provider.
+        This allows developers to write <strong>one integration</strong>{" "}
+        regardless of the underlying provider.
       </p>
 
       <h2 className="font-['Outfit'] text-3xl font-bold mb-4 mt-8 border-b border-slate-200 pb-2 text-black">
         Transaction Tracking
       </h2>
       <p className="text-slate-600 mb-4">
-        All transactions created through the API are stored and tracked internally.
+        All transactions created through the API are stored and tracked
+        internally.
       </p>
-      <p className="text-slate-600 mb-3">
-        Transaction states include:
-      </p>
+      <p className="text-slate-600 mb-3">Transaction states include:</p>
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-amber-300 mb-12 overflow-x-auto shadow-inner leading-relaxed">
         <pre>
           {`pending
@@ -276,7 +322,9 @@ abandoned`}
         All API errors follow the same response format.
       </p>
 
-      <h3 className="font-semibold text-slate-900 text-xl mb-3">Example Error</h3>
+      <h3 className="font-semibold text-slate-900 text-xl mb-3">
+        Example Error
+      </h3>
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-12 overflow-x-auto shadow-inner leading-relaxed">
         <pre>
           {`{
@@ -309,7 +357,8 @@ abandoned`}
         <li>average latency</li>
       </ul>
       <p className="text-slate-600 mb-12">
-        These metrics will be used in future versions to power <strong>automatic routing decisions</strong>.
+        These metrics will be used in future versions to power{" "}
+        <strong>automatic routing decisions</strong>.
       </p>
 
       {/* Navigation Footer */}

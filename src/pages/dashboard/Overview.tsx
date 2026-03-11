@@ -36,7 +36,12 @@ function Overview() {
   console.log("🔥 Overview component rerendered! Checking logs...");
   const navigate = useNavigate();
 
-  const { data: overviewResponse, isLoading, error, isError } = useQuery({
+  const {
+    data: overviewResponse,
+    isLoading,
+    error,
+    isError,
+  } = useQuery({
     queryKey: ["overview"],
     queryFn: async () => {
       const token = localStorage.getItem("authToken");
@@ -51,25 +56,30 @@ function Overview() {
 
   console.log("Raw API Response (overviewResponse):", overviewResponse);
 
-  const overviewData = overviewResponse?.data || overviewResponse || {
-    transactions: {
-      total_transactions: 0,
-      successful_transactions: 0,
-      failed_transactions: 0,
-      success_rate: "0%",
-      total_value: 0
-    },
-    provider_performance: [],
-    provider_success_graph: []
-  };
+  const overviewData = overviewResponse?.data ||
+    overviewResponse || {
+      transactions: {
+        total_transactions: 0,
+        successful_transactions: 0,
+        failed_transactions: 0,
+        success_rate: "0%",
+        total_value: 0,
+      },
+      provider_performance: [],
+      provider_success_graph: [],
+    };
 
-  const { transactions, provider_performance, provider_success_graph } = overviewData;
-  const displayedChartData = provider_success_graph?.length ? provider_success_graph.map((d: any) => ({
-    month: d.month || "Unknown",
-    success_rate: typeof d.success_rate === "string"
-      ? parseFloat(d.success_rate.replace("%", ""))
-      : (d.success_rate || 0)
-  })) : chartData;
+  const { transactions, provider_performance, provider_success_graph } =
+    overviewData;
+  const displayedChartData = provider_success_graph?.length
+    ? provider_success_graph.map((d: any) => ({
+        month: d.month || "Unknown",
+        success_rate:
+          typeof d.success_rate === "string"
+            ? parseFloat(d.success_rate.replace("%", ""))
+            : d.success_rate || 0,
+      }))
+    : chartData;
 
   console.log("Raw API Response (overviewResponse):", overviewResponse);
   console.log("Extracted overviewData:", overviewData);
@@ -112,7 +122,8 @@ function Overview() {
           },
           {
             label: "Successful tx",
-            value: transactions.successful_transactions?.toLocaleString() || "0",
+            value:
+              transactions.successful_transactions?.toLocaleString() || "0",
             trend: "+0%",
             color: "text-emerald-600",
             up: true,
@@ -171,7 +182,8 @@ function Overview() {
         <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 flex flex-col h-[400px]">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-semibold text-slate-900 flex items-center gap-2">
-              <Activity className="w-5 h-5 text-blue-500" /> Success Rate Trend (Monthly)
+              <Activity className="w-5 h-5 text-blue-500" /> Success Rate Trend
+              (Monthly)
             </h3>
           </div>
           <div className="flex-1 w-full relative">
@@ -245,48 +257,59 @@ function Overview() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {provider_performance?.length > 0 ? provider_performance.map((provider: any, idx: number) => {
-                  const name = provider.provider || provider.provider_name || provider.name || "Unknown";
-                  const tx = provider.total_transactions ?? provider.tx ?? 0;
-                  const sr = provider.success_rate || provider.rate || "-";
-                  const status = (provider.status || "good").toLowerCase();
+                {provider_performance?.length > 0 ? (
+                  provider_performance.map((provider: any, idx: number) => {
+                    const name =
+                      provider.provider ||
+                      provider.provider_name ||
+                      provider.name ||
+                      "Unknown";
+                    const tx = provider.total_transactions ?? provider.tx ?? 0;
+                    const sr = provider.success_rate || provider.rate || "-";
+                    const status = (provider.status || "good").toLowerCase();
 
-                  let statusTextColor = "text-emerald-600";
-                  let StatusIcon = CheckCircle2;
+                    let statusTextColor = "text-emerald-600";
+                    let StatusIcon = CheckCircle2;
 
-                  if (status === "poor") {
-                    statusTextColor = "text-red-500";
-                    StatusIcon = XCircle;
-                  } else if (status === "average") {
-                    statusTextColor = "text-amber-500";
-                    StatusIcon = Clock;
-                  }
+                    if (status === "poor") {
+                      statusTextColor = "text-red-500";
+                      StatusIcon = XCircle;
+                    } else if (status === "average") {
+                      statusTextColor = "text-amber-500";
+                      StatusIcon = Clock;
+                    }
 
-                  return (
-                    <tr
-                      key={idx}
-                      className="hover:bg-slate-50 transition-colors"
-                    >
-                      <td className="px-4 py-3 font-medium text-slate-900 capitalize">
-                        {name}
-                      </td>
-                      <td className="px-4 py-3 text-right text-slate-600">
-                        {tx.toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3 text-right font-medium text-slate-900">
-                        {sr}
-                      </td>
-                      <td className="px-4 py-3 pb-3 text-center flex justify-center mt-1">
-                        <div className={`inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider ${statusTextColor}`}>
-                          <StatusIcon className="w-3.5 h-3.5" />
-                          {status}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                }) : (
+                    return (
+                      <tr
+                        key={idx}
+                        className="hover:bg-slate-50 transition-colors"
+                      >
+                        <td className="px-4 py-3 font-medium text-slate-900 capitalize">
+                          {name}
+                        </td>
+                        <td className="px-4 py-3 text-right text-slate-600">
+                          {tx.toLocaleString()}
+                        </td>
+                        <td className="px-4 py-3 text-right font-medium text-slate-900">
+                          {sr}
+                        </td>
+                        <td className="px-4 py-3 pb-3 text-center flex justify-center mt-1">
+                          <div
+                            className={`inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider ${statusTextColor}`}
+                          >
+                            <StatusIcon className="w-3.5 h-3.5" />
+                            {status}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-slate-500 text-sm">
+                    <td
+                      colSpan={4}
+                      className="px-4 py-8 text-center text-slate-500 text-sm"
+                    >
                       No provider data available.
                     </td>
                   </tr>

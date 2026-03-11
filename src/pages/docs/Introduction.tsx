@@ -1,4 +1,10 @@
-import { ArrowRight, Settings, Layers, ShieldCheck, FileJson } from "lucide-react";
+import {
+  ArrowRight,
+  Settings,
+  Layers,
+  ShieldCheck,
+  FileJson,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 function Introduction() {
@@ -16,13 +22,20 @@ function Introduction() {
 
       <div className="prose prose-slate max-w-none text-slate-600 leading-relaxed space-y-4 mb-10 text-lg">
         <p>
-          Payflow Platform is a <strong>Payment Intelligence & Infrastructure API</strong> that allows developers and businesses to integrate multiple payment providers through a <strong>single unified API</strong>.
+          Payflow Platform is a{" "}
+          <strong>Payment Intelligence & Infrastructure API</strong> that allows
+          developers and businesses to integrate multiple payment providers
+          through a <strong>single unified API</strong>.
         </p>
         <p>
-          Instead of integrating separately with providers such as Paystack, Flutterwave, or Moniepoint, developers integrate <strong>once</strong> with Fintech Platform. The platform then routes transactions to the appropriate provider.
+          Instead of integrating separately with providers such as Paystack,
+          Flutterwave, or Moniepoint, developers integrate <strong>once</strong>{" "}
+          with Fintech Platform. The platform then routes transactions to the
+          appropriate provider.
         </p>
         <p>
-          Our infrastructure is designed to simplify payment integration while enabling businesses to build resilient payment systems.
+          Our infrastructure is designed to simplify payment integration while
+          enabling businesses to build resilient payment systems.
         </p>
       </div>
 
@@ -44,13 +57,20 @@ function Introduction() {
       </h2>
 
       <p className="text-slate-600 mb-6">
-        Traditional payment integrations require developers to integrate and maintain multiple payment gateways individually.
+        Traditional payment integrations require developers to integrate and
+        maintain multiple payment gateways individually.
       </p>
 
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-6 overflow-x-auto shadow-inner leading-relaxed">
-        <div>Merchant → <span className="text-blue-400">Paystack</span></div>
-        <div>Merchant → <span className="text-emerald-400">Flutterwave</span></div>
-        <div>Merchant → <span className="text-amber-400">Moniepoint</span></div>
+        <div>
+          Merchant → <span className="text-blue-400">Paystack</span>
+        </div>
+        <div>
+          Merchant → <span className="text-emerald-400">Flutterwave</span>
+        </div>
+        <div>
+          Merchant → <span className="text-amber-400">Moniepoint</span>
+        </div>
       </div>
 
       <p className="text-slate-600 mb-4">Each provider has:</p>
@@ -62,11 +82,16 @@ function Introduction() {
       </ul>
 
       <p className="text-slate-600 mb-6">
-        Payflow Platform simplifies this with a <strong>single integration layer</strong>.
+        Payflow Platform simplifies this with a{" "}
+        <strong>single integration layer</strong>.
       </p>
 
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-12 overflow-x-auto shadow-inner">
-        <div>Merchant → <span className="text-indigo-400">Fintech Platform API</span> → <span className="text-blue-400">Payment Provider</span></div>
+        <div>
+          Merchant →{" "}
+          <span className="text-indigo-400">Fintech Platform API</span> →{" "}
+          <span className="text-blue-400">Payment Provider</span>
+        </div>
       </div>
 
       <h2 className="font-['Outfit'] text-2xl font-bold mb-4 mt-12 border-b border-slate-200 pb-2 text-black">
@@ -74,7 +99,8 @@ function Introduction() {
       </h2>
 
       <p className="text-slate-600 mb-6">
-        The platform acts as a <strong>middleware payment infrastructure layer</strong>.
+        The platform acts as a{" "}
+        <strong>middleware payment infrastructure layer</strong>.
       </p>
 
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-8 overflow-x-auto shadow-inner leading-relaxed">
@@ -92,14 +118,18 @@ Fintech Platform API
         </pre>
       </div>
 
-      <p className="text-slate-900 font-semibold mb-6 text-lg">Core components:</p>
+      <p className="text-slate-900 font-semibold mb-6 text-lg">
+        Core components:
+      </p>
 
       <div className="space-y-8 mb-12">
         <div>
           <h3 className="font-semibold text-slate-900 text-lg mb-2 flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-blue-500" /> API Gateway
           </h3>
-          <p className="text-slate-600 mb-2">Handles all merchant requests including:</p>
+          <p className="text-slate-600 mb-2">
+            Handles all merchant requests including:
+          </p>
           <ul className="list-disc list-inside text-slate-600 ml-2 space-y-1">
             <li>authentication</li>
             <li>request validation</li>
@@ -109,9 +139,12 @@ Fintech Platform API
 
         <div>
           <h3 className="font-semibold text-slate-900 text-lg mb-2 flex items-center gap-2">
-            <Layers className="w-5 h-5 text-indigo-500" /> Provider Adapter Layer
+            <Layers className="w-5 h-5 text-indigo-500" /> Provider Adapter
+            Layer
           </h3>
-          <p className="text-slate-600 mb-2">Each payment provider has its own adapter responsible for:</p>
+          <p className="text-slate-600 mb-2">
+            Each payment provider has its own adapter responsible for:
+          </p>
           <ul className="list-disc list-inside text-slate-600 ml-2 space-y-1">
             <li>request transformation</li>
             <li>API communication</li>
@@ -136,7 +169,8 @@ Fintech Platform API
             <FileJson className="w-5 h-5 text-amber-500" /> Response Normalizer
           </h3>
           <p className="text-slate-600">
-            All provider responses are converted into a <strong>standardized format</strong> returned to the merchant.
+            All provider responses are converted into a{" "}
+            <strong>standardized format</strong> returned to the merchant.
           </p>
         </div>
       </div>
@@ -148,10 +182,12 @@ Fintech Platform API
         Payment reliability is critical for digital businesses.
       </p>
       <p className="text-slate-600 mb-4">
-        Single-provider integrations create a <strong>single point of failure</strong>.
+        Single-provider integrations create a{" "}
+        <strong>single point of failure</strong>.
       </p>
       <p className="text-slate-600 mb-6">
-        Payflow Platform removes that risk by enabling <strong>multi-provider payment infrastructure through one API</strong>.
+        Payflow Platform removes that risk by enabling{" "}
+        <strong>multi-provider payment infrastructure through one API</strong>.
       </p>
       <p className="text-slate-900 font-semibold mb-2">Benefits:</p>
       <ul className="space-y-1 mb-12 text-slate-600 list-disc list-inside ml-2">
@@ -168,20 +204,34 @@ Fintech Platform API
 
       <div className="space-y-6 mb-12">
         <div>
-          <h3 className="font-semibold text-slate-900 text-lg mb-1">Startups</h3>
-          <p className="text-slate-600">Avoid building multiple PSP integrations.</p>
+          <h3 className="font-semibold text-slate-900 text-lg mb-1">
+            Startups
+          </h3>
+          <p className="text-slate-600">
+            Avoid building multiple PSP integrations.
+          </p>
         </div>
         <div>
-          <h3 className="font-semibold text-slate-900 text-lg mb-1">Marketplaces</h3>
+          <h3 className="font-semibold text-slate-900 text-lg mb-1">
+            Marketplaces
+          </h3>
           <p className="text-slate-600">Ensure high payment success rates.</p>
         </div>
         <div>
-          <h3 className="font-semibold text-slate-900 text-lg mb-1">High-volume businesses</h3>
-          <p className="text-slate-600">Automatically route transactions to the most reliable provider.</p>
+          <h3 className="font-semibold text-slate-900 text-lg mb-1">
+            High-volume businesses
+          </h3>
+          <p className="text-slate-600">
+            Automatically route transactions to the most reliable provider.
+          </p>
         </div>
         <div>
-          <h3 className="font-semibold text-slate-900 text-lg mb-1">Fintech companies</h3>
-          <p className="text-slate-600">Build payment orchestration infrastructure quickly.</p>
+          <h3 className="font-semibold text-slate-900 text-lg mb-1">
+            Fintech companies
+          </h3>
+          <p className="text-slate-600">
+            Build payment orchestration infrastructure quickly.
+          </p>
         </div>
       </div>
 
@@ -192,9 +242,12 @@ Fintech Platform API
         The current MVP supports <strong>manual provider routing</strong>.
       </p>
       <p className="text-slate-600 mb-6">
-        Future versions of the platform will introduce a <strong>Payment Intelligence Engine</strong>.
+        Future versions of the platform will introduce a{" "}
+        <strong>Payment Intelligence Engine</strong>.
       </p>
-      <h3 className="font-semibold text-slate-900 text-lg mb-3">Planned Features</h3>
+      <h3 className="font-semibold text-slate-900 text-lg mb-3">
+        Planned Features
+      </h3>
       <ul className="space-y-3 mb-8 text-slate-600 list-none ml-2">
         <li>Smart routing engine</li>
         <li>Automatic provider failover</li>

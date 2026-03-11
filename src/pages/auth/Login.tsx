@@ -33,7 +33,8 @@ function Login() {
 
       const kycStatus = data?.kyc_status || data?.user?.kyc_status || "pending";
 
-      const rawMerchantMode = data?.merchant_mode || data?.user?.merchant_mode || "sandbox";
+      const rawMerchantMode =
+        data?.merchant_mode || data?.user?.merchant_mode || "sandbox";
       const merchantMode = rawMerchantMode === "live" ? "live" : "test";
 
       login(token, fullName, kycStatus, merchantMode);

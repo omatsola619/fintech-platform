@@ -55,12 +55,6 @@ function DocsPage() {
 
           <div className="flex items-center gap-4 shrink-0">
             <Link
-              to="/auth/login"
-              className="hidden sm:block text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
-            >
-              Log in
-            </Link>
-            <Link
               to="/auth/signup"
               className="relative group inline-flex h-9 items-center justify-center rounded-md bg-black px-4 text-sm font-medium text-white shadow transition-colors hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 cursor-pointer"
             >
@@ -105,10 +99,8 @@ function DocsPage() {
                     Installation
                   </Link>
                 </li>
-
               </ul>
             </div>
-
 
             <div>
               <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
@@ -123,7 +115,6 @@ function DocsPage() {
                     Overview
                   </a>
                 </li>
-
               </ul>
             </div>
 

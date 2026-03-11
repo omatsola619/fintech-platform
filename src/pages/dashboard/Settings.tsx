@@ -41,7 +41,6 @@ type EnvModal = {
 
 const AVAILABLE_PROVIDERS = ["Paystack", "Flutterwave"];
 
-
 const DEFAULT_ENV_MODAL: EnvModal = {
   open: false,
   provider: AVAILABLE_PROVIDERS[0],
@@ -71,7 +70,9 @@ function Settings() {
     state: "",
     registration_number: "",
   });
-  const [businessSaveStatus, setBusinessSaveStatus] = useState<"idle" | "success" | "error">("idle");
+  const [businessSaveStatus, setBusinessSaveStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
 
   const { data: settingsResponse, isLoading } = useQuery({
     queryKey: ["settings"],
@@ -91,7 +92,9 @@ function Settings() {
   const settingsData = settingsRaw?.user || settingsRaw;
 
   const merchantsData = settingsRaw?.merchants;
-  const merchant = Array.isArray(merchantsData) ? merchantsData[0] : merchantsData;
+  const merchant = Array.isArray(merchantsData)
+    ? merchantsData[0]
+    : merchantsData;
 
   console.log("=== SETTINGS DATA ===", settingsData);
   console.log("=== PROFILE ===", settingsData?.profile);
@@ -184,10 +187,7 @@ function Settings() {
     useMutation({
       mutationFn: async (payload: typeof businessForm) => {
         const token = localStorage.getItem("authToken");
-        const merchantId =
-          merchant?.id ||
-          settingsData?.id ||
-          "";
+        const merchantId = merchant?.id || settingsData?.id || "";
         const response = await api.patch(
           `/merchants/merchant/${merchantId}/update/`,
           payload,
@@ -210,7 +210,7 @@ function Settings() {
     provider: string,
     environment: "sandbox" | "live",
     existingKey?: string,
-    isFixed?: boolean
+    isFixed?: boolean,
   ) => {
     setEnvModal({
       open: true,
@@ -230,9 +230,7 @@ function Settings() {
 
   const handleSaveEnvKey = async () => {
     const merchantId =
-      merchant?.merchant_id ||
-      settingsData?.merchant_id ||
-      "165714267";
+      merchant?.merchant_id || settingsData?.merchant_id || "165714267";
     try {
       await setupProvider({
         merchant_id: merchantId.toString(),
@@ -288,10 +286,11 @@ function Settings() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap cursor-pointer
-                                    ${activeTab === tab.id
-                    ? "bg-blue-50 text-blue-700"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                  }
+                                    ${
+                                      activeTab === tab.id
+                                        ? "bg-blue-50 text-blue-700"
+                                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                                    }
                                 `}
               >
                 <TabIcon
@@ -395,7 +394,12 @@ function Settings() {
                           <input
                             type="text"
                             value={businessForm.business_name}
-                            onChange={(e) => setBusinessForm({ ...businessForm, business_name: e.target.value })}
+                            onChange={(e) =>
+                              setBusinessForm({
+                                ...businessForm,
+                                business_name: e.target.value,
+                              })
+                            }
                             placeholder="Enter your business name"
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
@@ -407,7 +411,12 @@ function Settings() {
                           <input
                             type="email"
                             value={businessForm.business_email}
-                            onChange={(e) => setBusinessForm({ ...businessForm, business_email: e.target.value })}
+                            onChange={(e) =>
+                              setBusinessForm({
+                                ...businessForm,
+                                business_email: e.target.value,
+                              })
+                            }
                             placeholder="Enter your business email"
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
@@ -419,7 +428,12 @@ function Settings() {
                           <input
                             type="tel"
                             value={businessForm.business_phone}
-                            onChange={(e) => setBusinessForm({ ...businessForm, business_phone: e.target.value })}
+                            onChange={(e) =>
+                              setBusinessForm({
+                                ...businessForm,
+                                business_phone: e.target.value,
+                              })
+                            }
                             placeholder="Enter your business phone number"
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
@@ -431,7 +445,12 @@ function Settings() {
                           <input
                             type="text"
                             value={businessForm.business_type}
-                            onChange={(e) => setBusinessForm({ ...businessForm, business_type: e.target.value })}
+                            onChange={(e) =>
+                              setBusinessForm({
+                                ...businessForm,
+                                business_type: e.target.value,
+                              })
+                            }
                             placeholder="e.g. E-commerce, SaaS, LLC..."
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
@@ -443,7 +462,12 @@ function Settings() {
                           <input
                             type="url"
                             value={businessForm.website}
-                            onChange={(e) => setBusinessForm({ ...businessForm, website: e.target.value })}
+                            onChange={(e) =>
+                              setBusinessForm({
+                                ...businessForm,
+                                website: e.target.value,
+                              })
+                            }
                             placeholder="https://yourwebsite.com"
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
@@ -455,7 +479,12 @@ function Settings() {
                           <input
                             type="text"
                             value={businessForm.registration_number}
-                            onChange={(e) => setBusinessForm({ ...businessForm, registration_number: e.target.value })}
+                            onChange={(e) =>
+                              setBusinessForm({
+                                ...businessForm,
+                                registration_number: e.target.value,
+                              })
+                            }
                             placeholder="Enter your registration number"
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
@@ -467,7 +496,12 @@ function Settings() {
                           <input
                             type="text"
                             value={businessForm.address}
-                            onChange={(e) => setBusinessForm({ ...businessForm, address: e.target.value })}
+                            onChange={(e) =>
+                              setBusinessForm({
+                                ...businessForm,
+                                address: e.target.value,
+                              })
+                            }
                             placeholder="Enter your business address"
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
@@ -478,12 +512,19 @@ function Settings() {
                           </label>
                           <select
                             value={businessForm.country}
-                            onChange={(e) => setBusinessForm({ ...businessForm, country: e.target.value })}
+                            onChange={(e) =>
+                              setBusinessForm({
+                                ...businessForm,
+                                country: e.target.value,
+                              })
+                            }
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm appearance-none cursor-pointer"
                           >
                             <option value="">Select a country...</option>
                             {COUNTRIES.map((c) => (
-                              <option key={c} value={c}>{c}</option>
+                              <option key={c} value={c}>
+                                {c}
+                              </option>
                             ))}
                           </select>
                         </div>
@@ -494,7 +535,12 @@ function Settings() {
                           <input
                             type="text"
                             value={businessForm.state}
-                            onChange={(e) => setBusinessForm({ ...businessForm, state: e.target.value })}
+                            onChange={(e) =>
+                              setBusinessForm({
+                                ...businessForm,
+                                state: e.target.value,
+                              })
+                            }
                             placeholder="Enter your state or province"
                             className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors sm:text-sm"
                           />
@@ -544,7 +590,9 @@ function Settings() {
                         <FileText className="w-5 h-5 text-indigo-600" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-bold text-slate-900">KYC Documents</h3>
+                        <h3 className="text-sm font-bold text-slate-900">
+                          KYC Documents
+                        </h3>
                         <p className="text-xs text-slate-500 mt-0.5">
                           Business verification &amp; compliance documents.
                         </p>
@@ -560,7 +608,9 @@ function Settings() {
                         <span className="absolute -top-2 -right-2 flex h-6 w-6">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-50"></span>
                           <span className="relative inline-flex rounded-full h-6 w-6 bg-indigo-500 items-center justify-center">
-                            <span className="text-white text-[9px] font-bold">!</span>
+                            <span className="text-white text-[9px] font-bold">
+                              !
+                            </span>
                           </span>
                         </span>
                       </div>
@@ -573,16 +623,27 @@ function Settings() {
                         KYC Verification is on its way
                       </h4>
                       <p className="text-sm text-slate-500 max-w-sm leading-relaxed">
-                        We're building a seamless document verification flow. You'll soon be able to upload your business documents right here to unlock live payments.
+                        We're building a seamless document verification flow.
+                        You'll soon be able to upload your business documents
+                        right here to unlock live payments.
                       </p>
 
                       <div className="mt-8 grid grid-cols-3 gap-4 w-full max-w-sm">
-                        {["Certificate of Incorporation", "Director's ID", "Utility Bill"].map((doc) => (
-                          <div key={doc} className="flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                        {[
+                          "Certificate of Incorporation",
+                          "Director's ID",
+                          "Utility Bill",
+                        ].map((doc) => (
+                          <div
+                            key={doc}
+                            className="flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200"
+                          >
                             <div className="w-8 h-8 rounded-lg bg-slate-200 flex items-center justify-center">
                               <FileText className="w-4 h-4 text-slate-400" />
                             </div>
-                            <span className="text-[10px] font-medium text-slate-500 text-center leading-tight">{doc}</span>
+                            <span className="text-[10px] font-medium text-slate-500 text-center leading-tight">
+                              {doc}
+                            </span>
                           </div>
                         ))}
                       </div>
@@ -605,18 +666,18 @@ function Settings() {
                     </h3>
                     <p className="text-sm text-slate-500 max-w-sm">
                       {activeTab === "billing" ||
-                        activeTab === "security" ||
-                        activeTab === "notifications"
+                      activeTab === "security" ||
+                      activeTab === "notifications"
                         ? "We are currently building out this module. Check back later for updates!"
                         : "These configuration options would be connected to the backend API via your data provider."}
                     </p>
                     {(activeTab === "billing" ||
                       activeTab === "security" ||
                       activeTab === "notifications") && (
-                        <span className="mt-4 px-3 py-1 bg-blue-50 text-blue-600 border border-blue-200 text-xs font-semibold rounded-full uppercase tracking-wider">
-                          Coming Soon
-                        </span>
-                      )}
+                      <span className="mt-4 px-3 py-1 bg-blue-50 text-blue-600 border border-blue-200 text-xs font-semibold rounded-full uppercase tracking-wider">
+                        Coming Soon
+                      </span>
+                    )}
                   </div>
                 )}
 
@@ -630,15 +691,19 @@ function Settings() {
                           Provider Integrations
                         </h3>
                         <p className="text-xs text-slate-500 mt-1">
-                          Your API keys are highly encrypted, very safe, and secure.
+                          Your API keys are highly encrypted, very safe, and
+                          secure.
                         </p>
                       </div>
                       <button
                         onClick={() => {
-                          const configuredProviders = apiKeys.map((k) => k.provider);
+                          const configuredProviders = apiKeys.map(
+                            (k) => k.provider,
+                          );
                           const firstUnconfigured =
-                            AVAILABLE_PROVIDERS.find((p) => !configuredProviders.includes(p)) ||
-                            AVAILABLE_PROVIDERS[0];
+                            AVAILABLE_PROVIDERS.find(
+                              (p) => !configuredProviders.includes(p),
+                            ) || AVAILABLE_PROVIDERS[0];
                           openEnvModal(firstUnconfigured, "sandbox");
                         }}
                         disabled={apiKeys.length >= AVAILABLE_PROVIDERS.length}
@@ -705,7 +770,7 @@ function Settings() {
                                         openEnvModal(
                                           config.provider,
                                           "sandbox",
-                                          config.testSecretKey
+                                          config.testSecretKey,
                                         )
                                       }
                                       className="flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-blue-600 transition-colors cursor-pointer"
@@ -719,7 +784,7 @@ function Settings() {
                                           config.provider,
                                           "sandbox",
                                           undefined,
-                                          true
+                                          true,
                                         )
                                       }
                                       className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
@@ -755,7 +820,7 @@ function Settings() {
                                         openEnvModal(
                                           config.provider,
                                           "live",
-                                          config.liveSecretKey
+                                          config.liveSecretKey,
                                         )
                                       }
                                       className="flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-blue-600 transition-colors cursor-pointer"
@@ -769,7 +834,7 @@ function Settings() {
                                           config.provider,
                                           "live",
                                           undefined,
-                                          true
+                                          true,
                                         )
                                       }
                                       className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
@@ -820,7 +885,9 @@ function Settings() {
                       : "Add Provider"}
                 </h3>
                 {envModal.isEdit && (
-                  <p className="text-xs text-slate-500 mt-0.5">The new key will replace the existing one.</p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    The new key will replace the existing one.
+                  </p>
                 )}
               </div>
               <button
@@ -834,12 +901,16 @@ function Settings() {
             <div className="p-6 space-y-5">
               {/* Provider selector */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Provider</label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Provider
+                </label>
                 {envModal.isEdit || envModal.isFixed ? (
                   <div className="flex items-center gap-2 px-3 py-2.5 border border-slate-200 rounded-xl bg-slate-100 text-slate-700 text-sm">
                     <Key className="w-4 h-4 text-blue-600" />
                     <span className="font-medium">{envModal.provider}</span>
-                    <span className="ml-auto text-xs text-slate-400">Locked</span>
+                    <span className="ml-auto text-xs text-slate-400">
+                      Locked
+                    </span>
                   </div>
                 ) : (
                   <select
@@ -850,10 +921,13 @@ function Settings() {
                     className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors text-sm appearance-none cursor-pointer"
                   >
                     {AVAILABLE_PROVIDERS.map((p) => {
-                      const alreadyAdded = apiKeys.some((k) => k.provider === p);
+                      const alreadyAdded = apiKeys.some(
+                        (k) => k.provider === p,
+                      );
                       return (
                         <option key={p} value={p} disabled={alreadyAdded}>
-                          {p}{alreadyAdded ? " (already added)" : ""}
+                          {p}
+                          {alreadyAdded ? " (already added)" : ""}
                         </option>
                       );
                     })}
@@ -863,17 +937,23 @@ function Settings() {
 
               {/* Environment */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Environment</label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Environment
+                </label>
                 {envModal.isEdit || envModal.isFixed ? (
                   <div
-                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${envModal.environment === "sandbox"
-                      ? "bg-amber-100 text-amber-700"
-                      : "bg-emerald-100 text-emerald-700"
-                      }`}
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${
+                      envModal.environment === "sandbox"
+                        ? "bg-amber-100 text-amber-700"
+                        : "bg-emerald-100 text-emerald-700"
+                    }`}
                   >
                     <span
-                      className={`w-1.5 h-1.5 rounded-full ${envModal.environment === "sandbox" ? "bg-amber-500" : "bg-emerald-500"
-                        }`}
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        envModal.environment === "sandbox"
+                          ? "bg-amber-500"
+                          : "bg-emerald-500"
+                      }`}
                     />
                     {envModal.environment === "sandbox" ? "Sandbox" : "Live"}
                   </div>
@@ -881,7 +961,10 @@ function Settings() {
                   <select
                     value={envModal.environment}
                     onChange={(e) =>
-                      setEnvModal({ ...envModal, environment: e.target.value as "sandbox" | "live" })
+                      setEnvModal({
+                        ...envModal,
+                        environment: e.target.value as "sandbox" | "live",
+                      })
                     }
                     className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-slate-50 text-slate-900 transition-colors text-sm appearance-none cursor-pointer"
                   >
@@ -921,7 +1004,9 @@ function Settings() {
                       setEnvModal({ ...envModal, secretKey: e.target.value })
                     }
                     placeholder={
-                      envModal.environment === "sandbox" ? "sk_test_..." : "sk_live_..."
+                      envModal.environment === "sandbox"
+                        ? "sk_test_..."
+                        : "sk_live_..."
                     }
                     className="block w-full px-3 py-2.5 pr-10 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
                     autoFocus
@@ -941,7 +1026,8 @@ function Settings() {
                 </div>
                 {envModal.isEdit && (
                   <p className="mt-2 text-xs text-slate-400">
-                    Clear the field and enter a new key. Key must be more than 10 characters.
+                    Clear the field and enter a new key. Key must be more than
+                    10 characters.
                   </p>
                 )}
               </div>
@@ -959,7 +1045,8 @@ function Settings() {
                 disabled={
                   isSettingUpProvider ||
                   envModal.secretKey.length < 10 ||
-                  (envModal.isEdit && envModal.secretKey === envModal.originalKey)
+                  (envModal.isEdit &&
+                    envModal.secretKey === envModal.originalKey)
                 }
                 className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm shadow-blue-500/20 text-sm flex items-center gap-2"
               >

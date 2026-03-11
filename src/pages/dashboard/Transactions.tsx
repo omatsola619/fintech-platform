@@ -44,13 +44,19 @@ function Transactions() {
       tx.reference?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       tx.customer_email?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const provider = (tx.final_provider || tx.preferred_provider || "").toLowerCase();
+    const provider = (
+      tx.final_provider ||
+      tx.preferred_provider ||
+      ""
+    ).toLowerCase();
     const providerFilter = selectedProvider.toLowerCase();
-    const matchesProvider = selectedProvider === "All Providers" || provider === providerFilter;
+    const matchesProvider =
+      selectedProvider === "All Providers" || provider === providerFilter;
 
     const status = (tx.status || "").toLowerCase();
     const statusFilter = selectedStatus.toLowerCase();
-    const matchesStatus = selectedStatus === "All Statuses" || status === statusFilter;
+    const matchesStatus =
+      selectedStatus === "All Statuses" || status === statusFilter;
 
     let matchesDate = true;
     if (startDate || endDate) {
@@ -109,7 +115,8 @@ function Transactions() {
       );
     return (
       <span className="inline-flex items-center gap-1 text-[10px] font-bold tracking-wider text-amber-700 bg-amber-100 px-2 py-0.5 rounded uppercase">
-        <Clock className="w-3 h-3" /> {status ? status.charAt(0).toUpperCase() + status.slice(1) : "Pending"}
+        <Clock className="w-3 h-3" />{" "}
+        {status ? status.charAt(0).toUpperCase() + status.slice(1) : "Pending"}
       </span>
     );
   };
@@ -174,7 +181,11 @@ function Transactions() {
               <option value="Failed">Failed</option>
               <option value="Pending">Pending</option>
             </select>
-            {(startDate || endDate || selectedProvider !== "All Providers" || selectedStatus !== "All Statuses" || searchTerm) && (
+            {(startDate ||
+              endDate ||
+              selectedProvider !== "All Providers" ||
+              selectedStatus !== "All Statuses" ||
+              searchTerm) && (
               <button
                 onClick={() => {
                   setStartDate("");
@@ -214,43 +225,50 @@ function Transactions() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filteredTransactions.length > 0 ? filteredTransactions.map((tx: any) => (
-                  <tr
-                    key={tx.id}
-                    className="hover:bg-slate-50 transition-colors group"
-                  >
-                    <td className="px-6 py-4 font-mono text-xs text-blue-600 font-medium">
-                      {tx.transaction_id}
-                    </td>
-                    <td className="px-6 py-4 text-slate-900 flex items-center gap-2 font-medium capitalize">
-                      <Server className="w-3.5 h-3.5 text-slate-400" />{" "}
-                      {tx.final_provider || tx.preferred_provider || "-"}
-                    </td>
-                    <td className="px-6 py-4 text-slate-900 font-semibold">
-                      {formatCurrency(tx.amount, tx.currency)}
-                    </td>
-                    <td className="px-6 py-4 text-slate-600 capitalize">{tx.channel || "-"}</td>
-                    <td className="px-6 py-4">
-                      <StatusBadge status={tx.status} />
-                    </td>
-                    <td className="px-6 py-4 text-slate-500 text-xs">
-                      {tx.message || "-"}
-                    </td>
-                    <td className="px-6 py-4 text-slate-500 text-right whitespace-nowrap">
-                      {formatDate(tx.created_at)}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => setSelectedTx(tx)}
-                        className="text-xs font-medium text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer hover:underline"
-                      >
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                )) : (
+                {filteredTransactions.length > 0 ? (
+                  filteredTransactions.map((tx: any) => (
+                    <tr
+                      key={tx.id}
+                      className="hover:bg-slate-50 transition-colors group"
+                    >
+                      <td className="px-6 py-4 font-mono text-xs text-blue-600 font-medium">
+                        {tx.transaction_id}
+                      </td>
+                      <td className="px-6 py-4 text-slate-900 flex items-center gap-2 font-medium capitalize">
+                        <Server className="w-3.5 h-3.5 text-slate-400" />{" "}
+                        {tx.final_provider || tx.preferred_provider || "-"}
+                      </td>
+                      <td className="px-6 py-4 text-slate-900 font-semibold">
+                        {formatCurrency(tx.amount, tx.currency)}
+                      </td>
+                      <td className="px-6 py-4 text-slate-600 capitalize">
+                        {tx.channel || "-"}
+                      </td>
+                      <td className="px-6 py-4">
+                        <StatusBadge status={tx.status} />
+                      </td>
+                      <td className="px-6 py-4 text-slate-500 text-xs">
+                        {tx.message || "-"}
+                      </td>
+                      <td className="px-6 py-4 text-slate-500 text-right whitespace-nowrap">
+                        {formatDate(tx.created_at)}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          onClick={() => setSelectedTx(tx)}
+                          className="text-xs font-medium text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer hover:underline"
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
                   <tr>
-                    <td colSpan={8} className="px-6 py-8 text-center text-slate-500">
+                    <td
+                      colSpan={8}
+                      className="px-6 py-8 text-center text-slate-500"
+                    >
                       No transactions found.
                     </td>
                   </tr>
@@ -261,7 +279,8 @@ function Transactions() {
         </div>
         <div className="bg-slate-50 border-t border-slate-200 p-3 px-6 flex items-center justify-between shrink-0">
           <span className="text-xs text-slate-500">
-            Showing {filteredTransactions.length} of {transactions.length} transactions
+            Showing {filteredTransactions.length} of {transactions.length}{" "}
+            transactions
           </span>
           <div className="flex items-center gap-2">
             <button
@@ -333,7 +352,9 @@ function Transactions() {
                   <div>
                     <p className="text-slate-500 text-xs mb-1">Provider</p>
                     <p className="font-medium text-slate-900 capitalize">
-                      {selectedTx.final_provider || selectedTx.preferred_provider || "-"}
+                      {selectedTx.final_provider ||
+                        selectedTx.preferred_provider ||
+                        "-"}
                     </p>
                   </div>
                   <div>
@@ -343,15 +364,15 @@ function Transactions() {
                     </p>
                   </div>
                   <div>
-                    <p className="text-slate-500 text-xs mb-1">Customer Email</p>
+                    <p className="text-slate-500 text-xs mb-1">
+                      Customer Email
+                    </p>
                     <p className="font-medium text-slate-900 truncate">
                       {selectedTx.customer_email || "-"}
                     </p>
                   </div>
                   <div>
-                    <p className="text-slate-500 text-xs mb-1">
-                      Message
-                    </p>
+                    <p className="text-slate-500 text-xs mb-1">Message</p>
                     <p className="font-medium text-slate-900">
                       {selectedTx.message || "-"}
                     </p>
@@ -386,8 +407,8 @@ function Transactions() {
                         Provider Match
                       </p>
                       <p className="text-xs text-slate-500 mt-1 capitalize">
-                        Routed to {selectedTx.final_provider} Based on Merchant Request
-                        state
+                        Routed to {selectedTx.final_provider} Based on Merchant
+                        Request state
                       </p>
                     </div>
                   </div>
@@ -418,7 +439,18 @@ function Transactions() {
                   <h3 className="font-semibold text-slate-900 text-sm">
                     Provider Response (Raw)
                   </h3>
-                  <button onClick={() => navigator.clipboard.writeText(JSON.stringify(selectedTx.metadata || selectedTx, null, 2))} className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 font-medium cursor-pointer">
+                  <button
+                    onClick={() =>
+                      navigator.clipboard.writeText(
+                        JSON.stringify(
+                          selectedTx.metadata || selectedTx,
+                          null,
+                          2,
+                        ),
+                      )
+                    }
+                    className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 font-medium cursor-pointer"
+                  >
                     <Copy className="w-3 h-3" /> Copy JSON
                   </button>
                 </div>

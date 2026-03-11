@@ -20,7 +20,8 @@ import { api } from "../lib/api";
 function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout, userName, kycStatus, merchantMode, updateMerchantMode } = useAuth();
+  const { logout, userName, kycStatus, merchantMode, updateMerchantMode } =
+    useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isTogglingMode, setIsTogglingMode] = useState(false);
   const [showKycPopup, setShowKycPopup] = useState(false);
@@ -67,11 +68,15 @@ function Dashboard() {
     try {
       const token = localStorage.getItem("authToken");
       // Use PATCH since it's commonly used for partial updates, or POST if needed.
-      await api.patch("/merchants/switch/toggle-merchant-mode/", {
-        live_mode: wantsLive,
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.patch(
+        "/merchants/switch/toggle-merchant-mode/",
+        {
+          live_mode: wantsLive,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       // Mode transitioned successfully on the server
     } catch (error) {
       console.error("Failed to toggle mode:", error);
@@ -99,7 +104,9 @@ function Dashboard() {
             <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <ShieldCheck className="w-6 h-6 text-amber-600" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-2">Verification Required</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">
+              Verification Required
+            </h3>
             <p className="text-sm text-slate-500 mb-6">
               Please complete your KYC verification to toggle to live mode.
             </p>
@@ -245,27 +252,26 @@ function Dashboard() {
           <div className="ml-auto flex items-center gap-4 sm:gap-6">
             <div className="flex items-center gap-2 sm:gap-3 bg-slate-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-slate-200">
               <span
-                className={`text-[10px] sm:text-xs font-semibold transition-colors ${merchantMode === "test"
-                  ? "text-amber-600"
-                  : "text-slate-400"
-                  }`}
+                className={`text-[10px] sm:text-xs font-semibold transition-colors ${
+                  merchantMode === "test" ? "text-amber-600" : "text-slate-400"
+                }`}
               >
                 Test
               </span>
               <button
                 onClick={handleToggleMode}
                 disabled={isTogglingMode}
-                className={`relative inline-flex h-5 w-9 sm:h-6 sm:w-11 items-center rounded-full transition-colors ${isTogglingMode ? "cursor-wait opacity-80" : "cursor-pointer"} focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${merchantMode === "live"
-                  ? "bg-emerald-500"
-                  : "bg-amber-500"
-                  }`}
+                className={`relative inline-flex h-5 w-9 sm:h-6 sm:w-11 items-center rounded-full transition-colors ${isTogglingMode ? "cursor-wait opacity-80" : "cursor-pointer"} focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
+                  merchantMode === "live" ? "bg-emerald-500" : "bg-amber-500"
+                }`}
               >
                 <span className="sr-only">Toggle environment</span>
                 <span
-                  className={`flex h-3 w-3 sm:h-4 sm:w-4 transform rounded-full bg-white shadow-sm transition-transform items-center justify-center ${merchantMode === "live"
-                    ? "translate-x-5 sm:translate-x-6"
-                    : "translate-x-1"
-                    }`}
+                  className={`flex h-3 w-3 sm:h-4 sm:w-4 transform rounded-full bg-white shadow-sm transition-transform items-center justify-center ${
+                    merchantMode === "live"
+                      ? "translate-x-5 sm:translate-x-6"
+                      : "translate-x-1"
+                  }`}
                 >
                   {isTogglingMode && (
                     <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 border border-slate-200 border-t-slate-500 rounded-full animate-spin" />
@@ -273,10 +279,11 @@ function Dashboard() {
                 </span>
               </button>
               <span
-                className={`text-[10px] sm:text-xs font-semibold transition-colors ${merchantMode === "live"
-                  ? "text-emerald-600"
-                  : "text-slate-400"
-                  }`}
+                className={`text-[10px] sm:text-xs font-semibold transition-colors ${
+                  merchantMode === "live"
+                    ? "text-emerald-600"
+                    : "text-slate-400"
+                }`}
               >
                 Live
               </span>
@@ -296,7 +303,10 @@ function Dashboard() {
         {kycStatus === "pending" && (
           <div className="bg-blue-600 px-3 py-2 sm:px-4 sm:py-3 text-white text-[11px] sm:text-sm flex flex-row items-center justify-between sm:justify-center gap-2 sm:gap-4 shadow-sm z-20 shrink-0">
             <span className="font-medium truncate sm:whitespace-normal">
-              <span className="hidden sm:inline">Your account is pending verification. Please complete your KYC to unlock all features.</span>
+              <span className="hidden sm:inline">
+                Your account is pending verification. Please complete your KYC
+                to unlock all features.
+              </span>
               <span className="sm:hidden">KYC pending. Unlock features.</span>
             </span>
             <Link

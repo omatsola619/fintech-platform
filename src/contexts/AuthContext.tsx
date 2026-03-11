@@ -5,7 +5,12 @@ interface AuthContextType {
   userName: string;
   kycStatus: string;
   merchantMode: string;
-  login: (token: string, name?: string, kycStatus?: string, merchantMode?: string) => void;
+  login: (
+    token: string,
+    name?: string,
+    kycStatus?: string,
+    merchantMode?: string,
+  ) => void;
   logout: () => void;
   updateMerchantMode: (mode: string) => void;
 }
@@ -26,7 +31,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return localStorage.getItem("merchantMode") || "test";
   });
 
-  const login = (token: string, name?: string, kycStatus?: string, merchantMode?: string) => {
+  const login = (
+    token: string,
+    name?: string,
+    kycStatus?: string,
+    merchantMode?: string,
+  ) => {
     localStorage.setItem("authToken", token);
     if (name) {
       localStorage.setItem("userName", name);
@@ -60,7 +70,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userName, kycStatus, merchantMode, login, logout, updateMerchantMode }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        userName,
+        kycStatus,
+        merchantMode,
+        login,
+        logout,
+        updateMerchantMode,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
