@@ -191,6 +191,7 @@ function Overview() {
                   tickLine={false}
                   tick={{ fill: "#64748b", fontSize: 12 }}
                   dy={10}
+                  tickFormatter={(val) => val.substring(0, 3)}
                 />
                 <YAxis
                   axisLine={false}
