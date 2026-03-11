@@ -9,10 +9,12 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 function DocsPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
 
   const isActive = (path: string) => {
     return (
@@ -55,7 +57,7 @@ function DocsPage() {
 
           <div className="flex items-center gap-4 shrink-0">
             <Link
-              to="/auth/signup"
+              to={isAuthenticated ? "/dashboard" : "/auth/signup"}
               className="relative group inline-flex h-9 items-center justify-center rounded-md bg-black px-4 text-sm font-medium text-white shadow transition-colors hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 cursor-pointer"
             >
               <span className="relative z-10 flex items-center gap-1">
