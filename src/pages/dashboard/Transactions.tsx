@@ -337,7 +337,7 @@ function Transactions() {
                         Provider Match
                       </p>
                       <p className="text-xs text-slate-500 mt-1 capitalize">
-                        Routed to {selectedTx.final_provider} due to active healthy
+                        Routed to {selectedTx.final_provider} Based on Merchant Request
                         state
                       </p>
                     </div>
