@@ -1,7 +1,6 @@
 import {
   ArrowRight,
   BookOpen,
-  CreditCard,
   Menu,
   Shield,
   Webhook,
@@ -106,64 +105,10 @@ function DocsPage() {
                     Installation
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    to="/docs/authentication"
-                    className={`block text-sm font-medium ${isActive("/docs/authentication") ? "text-blue-600 cursor-default" : "text-slate-600 hover:text-blue-600 cursor-pointer"} transition-colors`}
-                  >
-                    Authentication
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
-                  >
-                    Test Keys
-                  </a>
-                </li>
+
               </ul>
             </div>
 
-            <div>
-              <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                <CreditCard className="w-4 h-4 text-blue-500" /> Payments API
-              </h4>
-              <ul className="space-y-2 border-l border-slate-200 ml-2 pl-4">
-                <li>
-                  <a
-                    href="#"
-                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
-                  >
-                    Create a Charge
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
-                  >
-                    Refunds
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
-                  >
-                    Smart Routing
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
-                  >
-                    Error Codes
-                  </a>
-                </li>
-              </ul>
-            </div>
 
             <div>
               <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
@@ -178,22 +123,7 @@ function DocsPage() {
                     Overview
                   </a>
                 </li>
-                <li>
-                  <a
-                    href="#"
-                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
-                  >
-                    Event Types
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
-                  >
-                    Verifying Signatures
-                  </a>
-                </li>
+
               </ul>
             </div>
 

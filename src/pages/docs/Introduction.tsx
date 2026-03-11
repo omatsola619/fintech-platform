@@ -1,4 +1,4 @@
-import { ArrowRight, Code2, Settings, Terminal, Zap } from "lucide-react";
+import { ArrowRight, Settings, Layers, ShieldCheck, FileJson } from "lucide-react";
 import { Link } from "react-router-dom";
 
 function Introduction() {
@@ -11,120 +11,216 @@ function Introduction() {
       </div>
 
       <h1 className="font-['Outfit'] text-4xl md:text-5xl font-bold mb-6 text-black">
-        Introduction
+        Overview
       </h1>
 
-      <p className="text-lg text-slate-600 leading-relaxed mb-8">
-        Welcome to the PayFlow documentation. PayFlow is the single unifying API
-        that connects you to Stripe, PayPal, Square, and over 50+ localized
-        payment methods globally. We handle the heavy lifting of routing,
-        reconciling, and standardizing payments so you can focus on building
-        your product.
+      <div className="prose prose-slate max-w-none text-slate-600 leading-relaxed space-y-4 mb-10 text-lg">
+        <p>
+          Payflow Platform is a <strong>Payment Intelligence & Infrastructure API</strong> that allows developers and businesses to integrate multiple payment providers through a <strong>single unified API</strong>.
+        </p>
+        <p>
+          Instead of integrating separately with providers such as Paystack, Flutterwave, or Moniepoint, developers integrate <strong>once</strong> with Fintech Platform. The platform then routes transactions to the appropriate provider.
+        </p>
+        <p>
+          Our infrastructure is designed to simplify payment integration while enabling businesses to build resilient payment systems.
+        </p>
+      </div>
+
+      <h2 className="font-['Outfit'] text-2xl font-bold mb-4 mt-12 border-b border-slate-200 pb-2 text-black">
+        Key Capabilities
+      </h2>
+
+      <ul className="space-y-3 mb-12 text-slate-600 list-disc list-inside ml-2">
+        <li>Single API for multiple payment providers</li>
+        <li>Unified transaction response format</li>
+        <li>Provider-based routing</li>
+        <li>Standardized payment initialization</li>
+        <li>Simplified integration for engineering teams</li>
+        <li>Extensible architecture for smart routing and failover</li>
+      </ul>
+
+      <h2 className="font-['Outfit'] text-2xl font-bold mb-4 mt-12 border-b border-slate-200 pb-2 text-black">
+        How It Works
+      </h2>
+
+      <p className="text-slate-600 mb-6">
+        Traditional payment integrations require developers to integrate and maintain multiple payment gateways individually.
       </p>
 
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 mb-10 shadow-sm">
-        <h3 className="text-xl font-semibold mb-3 flex items-center gap-2 text-slate-900">
-          <Code2 className="text-blue-500" /> Quick Start
-        </h3>
-        <p className="text-slate-600 mb-4">
-          Install the official PayFlow node SDK to get started immediately.
-        </p>
-        <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 font-mono text-sm text-slate-800 flex items-center justify-between shadow-inner">
-          <span>npm install @payflow/node</span>
-          <button className="text-slate-400 hover:text-blue-600 cursor-pointer transition-colors">
-            <Terminal className="w-4 h-4" />
-          </button>
+      <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-6 overflow-x-auto shadow-inner leading-relaxed">
+        <div>Merchant → <span className="text-blue-400">Paystack</span></div>
+        <div>Merchant → <span className="text-emerald-400">Flutterwave</span></div>
+        <div>Merchant → <span className="text-amber-400">Moniepoint</span></div>
+      </div>
+
+      <p className="text-slate-600 mb-4">Each provider has:</p>
+      <ul className="space-y-2 mb-8 text-slate-600 list-disc list-inside ml-2">
+        <li>Different APIs</li>
+        <li>Different authentication</li>
+        <li>Different response formats</li>
+        <li>Different failure behaviours</li>
+      </ul>
+
+      <p className="text-slate-600 mb-6">
+        Payflow Platform simplifies this with a <strong>single integration layer</strong>.
+      </p>
+
+      <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-12 overflow-x-auto shadow-inner">
+        <div>Merchant → <span className="text-indigo-400">Fintech Platform API</span> → <span className="text-blue-400">Payment Provider</span></div>
+      </div>
+
+      <h2 className="font-['Outfit'] text-2xl font-bold mb-4 mt-12 border-b border-slate-200 pb-2 text-black">
+        Architecture Overview
+      </h2>
+
+      <p className="text-slate-600 mb-6">
+        The platform acts as a <strong>middleware payment infrastructure layer</strong>.
+      </p>
+
+      <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-8 overflow-x-auto shadow-inner leading-relaxed">
+        <pre>
+          {`Client Application
+    |
+    |
+    ▼
+Fintech Platform API
+    |
+    |-- Paystack
+    |-- Flutterwave
+    |-- Moniepoint
+    └── Other Providers`}
+        </pre>
+      </div>
+
+      <p className="text-slate-900 font-semibold mb-6 text-lg">Core components:</p>
+
+      <div className="space-y-8 mb-12">
+        <div>
+          <h3 className="font-semibold text-slate-900 text-lg mb-2 flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-blue-500" /> API Gateway
+          </h3>
+          <p className="text-slate-600 mb-2">Handles all merchant requests including:</p>
+          <ul className="list-disc list-inside text-slate-600 ml-2 space-y-1">
+            <li>authentication</li>
+            <li>request validation</li>
+            <li>routing</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-slate-900 text-lg mb-2 flex items-center gap-2">
+            <Layers className="w-5 h-5 text-indigo-500" /> Provider Adapter Layer
+          </h3>
+          <p className="text-slate-600 mb-2">Each payment provider has its own adapter responsible for:</p>
+          <ul className="list-disc list-inside text-slate-600 ml-2 space-y-1">
+            <li>request transformation</li>
+            <li>API communication</li>
+            <li>response normalization</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-slate-900 text-lg mb-2 flex items-center gap-2">
+            <Settings className="w-5 h-5 text-emerald-500" /> Transaction Engine
+          </h3>
+          <p className="text-slate-600 mb-2">Responsible for:</p>
+          <ul className="list-disc list-inside text-slate-600 ml-2 space-y-1">
+            <li>recording transaction metadata</li>
+            <li>tracking payment state</li>
+            <li>storing provider response</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-slate-900 text-lg mb-2 flex items-center gap-2">
+            <FileJson className="w-5 h-5 text-amber-500" /> Response Normalizer
+          </h3>
+          <p className="text-slate-600">
+            All provider responses are converted into a <strong>standardized format</strong> returned to the merchant.
+          </p>
         </div>
       </div>
 
       <h2 className="font-['Outfit'] text-2xl font-bold mb-4 mt-12 border-b border-slate-200 pb-2 text-black">
-        Why PayFlow?
+        Why Payflow Platform
       </h2>
+      <p className="text-slate-600 mb-4">
+        Payment reliability is critical for digital businesses.
+      </p>
+      <p className="text-slate-600 mb-4">
+        Single-provider integrations create a <strong>single point of failure</strong>.
+      </p>
+      <p className="text-slate-600 mb-6">
+        Payflow Platform removes that risk by enabling <strong>multi-provider payment infrastructure through one API</strong>.
+      </p>
+      <p className="text-slate-900 font-semibold mb-2">Benefits:</p>
+      <ul className="space-y-1 mb-12 text-slate-600 list-disc list-inside ml-2">
+        <li>faster integration</li>
+        <li>improved payment reliability</li>
+        <li>simplified engineering maintenance</li>
+        <li>consistent developer experience</li>
+      </ul>
 
-      <div className="grid md:grid-cols-2 gap-6 mb-12">
-        <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:border-blue-300 transition-colors">
-          <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center mb-4 border border-blue-100">
-            <Settings className="w-5 h-5 text-blue-600" />
-          </div>
-          <h4 className="font-semibold text-slate-900 mb-2">
-            Zero Maintenance
-          </h4>
-          <p className="text-sm text-slate-600">
-            Never update API versions for individual providers again. PayFlow
-            abstracts provider updates entirely.
-          </p>
+      <h2 className="font-['Outfit'] text-2xl font-bold mb-4 mt-12 border-b border-slate-200 pb-2 text-black">
+        Use Cases
+      </h2>
+      <p className="text-slate-600 mb-6">Payflow Platform is ideal for:</p>
+
+      <div className="space-y-6 mb-12">
+        <div>
+          <h3 className="font-semibold text-slate-900 text-lg mb-1">Startups</h3>
+          <p className="text-slate-600">Avoid building multiple PSP integrations.</p>
         </div>
-        <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:border-blue-300 transition-colors">
-          <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center mb-4 border border-blue-100">
-            <Zap className="w-5 h-5 text-blue-600" />
-          </div>
-          <h4 className="font-semibold text-slate-900 mb-2">Smart Routing</h4>
-          <p className="text-sm text-slate-600">
-            Transactions are dynamically routed to the provider with the highest
-            success rate in the user's region.
-          </p>
+        <div>
+          <h3 className="font-semibold text-slate-900 text-lg mb-1">Marketplaces</h3>
+          <p className="text-slate-600">Ensure high payment success rates.</p>
+        </div>
+        <div>
+          <h3 className="font-semibold text-slate-900 text-lg mb-1">High-volume businesses</h3>
+          <p className="text-slate-600">Automatically route transactions to the most reliable provider.</p>
+        </div>
+        <div>
+          <h3 className="font-semibold text-slate-900 text-lg mb-1">Fintech companies</h3>
+          <p className="text-slate-600">Build payment orchestration infrastructure quickly.</p>
         </div>
       </div>
 
-      <h2 className="font-['Outfit'] text-2xl font-bold mb-4 mt-10 border-b border-slate-200 pb-2 text-black">
-        Creating your first charge
+      <h2 className="font-['Outfit'] text-2xl font-bold mb-4 mt-12 border-b border-slate-200 pb-2 text-black">
+        Roadmap
       </h2>
-      <p className="text-slate-600 mb-6">
-        The <code>create</code> method handles everything. We'll automatically
-        identify the card type, determine the best provider route, and process
-        the charge natively.
+      <p className="text-slate-600 mb-4">
+        The current MVP supports <strong>manual provider routing</strong>.
       </p>
-
-      <div className="relative rounded-2xl overflow-hidden mb-12 border border-slate-200 shadow-lg">
-        <div className="flex items-center gap-2 bg-slate-50 px-4 py-3 border-b border-slate-200">
-          <div className="w-3 h-3 rounded-full bg-red-400"></div>
-          <div className="w-3 h-3 rounded-full bg-amber-400"></div>
-          <div className="w-3 h-3 rounded-full bg-emerald-400"></div>
-          <div className="text-xs text-slate-500 ml-2 font-mono">charge.ts</div>
-        </div>
-        <pre className="text-sm font-mono text-slate-800 bg-white p-6 overflow-x-auto shadow-inner">
-          <code>
-            <span className="text-pink-600">import</span> &#123; PayFlow &#125;{" "}
-            <span className="text-pink-600">from</span>{" "}
-            <span className="text-blue-600">'@payflow/node'</span>;<br />
-            <br />
-            <span className="text-slate-400">
-              // Initialize with your secret key
-            </span>
-            <br />
-            <span className="text-blue-700">const</span> payflow ={" "}
-            <span className="text-pink-600">new</span>{" "}
-            <span className="text-amber-600">PayFlow</span>(
-            <span className="text-blue-600">
-              'pf_live_a1b2c3d4e5f6g7h8i9j0'
-            </span>
-            );
-            <br />
-            <br />
-            <span className="text-blue-700">const</span> charge ={" "}
-            <span className="text-pink-600">await</span> payflow.charges.
-            <span className="text-blue-500">create</span>(&#123;
-            <br />
-            &nbsp;&nbsp;amount: <span className="text-orange-600">2000</span>,
-            <br />
-            &nbsp;&nbsp;currency: <span className="text-blue-600">'usd'</span>,
-            <br />
-            &nbsp;&nbsp;provider: <span className="text-blue-600">'auto'</span>,
-            <br />
-            &nbsp;&nbsp;source:{" "}
-            <span className="text-blue-600">'tok_visa'</span>,<br />
-            &nbsp;&nbsp;description:{" "}
-            <span className="text-blue-600">
-              'Software development services'
-            </span>
-            <br />
-            &#125;);
-            <br />
-            <br />
-            console.<span className="text-blue-500">log</span>(charge.status);{" "}
-            <span className="text-slate-400">// 'succeeded'</span>
-          </code>
+      <p className="text-slate-600 mb-6">
+        Future versions of the platform will introduce a <strong>Payment Intelligence Engine</strong>.
+      </p>
+      <h3 className="font-semibold text-slate-900 text-lg mb-3">Planned Features</h3>
+      <ul className="space-y-3 mb-8 text-slate-600 list-none ml-2">
+        <li>Smart routing engine</li>
+        <li>Automatic provider failover</li>
+        <li>Latency-based routing</li>
+        <li>Cost optimization routing</li>
+        <li>Provider uptime monitoring</li>
+        <li>Dynamic retry logic</li>
+        <li>Provider performance scoring</li>
+        <li>Multi-provider fallback chains</li>
+      </ul>
+      <p className="text-slate-600 mb-3">Example future routing logic:</p>
+      <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-12 overflow-x-auto shadow-inner leading-relaxed">
+        <pre>
+          {`If Paystack fails → Retry Flutterwave
+If Flutterwave latency > threshold → Route to Moniepoint`}
         </pre>
+      </div>
+
+      <h2 className="font-['Outfit'] text-2xl font-bold mb-4 mt-12 border-b border-slate-200 pb-2 text-black">
+        Support
+      </h2>
+      <p className="text-slate-600 mb-4">
+        For integration support or partnership inquiries:
+      </p>
+      <div className="bg-slate-900 rounded-xl p-4 text-sm font-mono text-amber-200 mb-12 shadow-inner inline-block">
+        support@yourcompany.com
       </div>
 
       <div className="grid grid-cols-2 gap-4 items-center py-8 mt-16 border-t border-slate-200">
