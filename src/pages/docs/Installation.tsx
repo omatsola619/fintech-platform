@@ -141,7 +141,7 @@ function Installation() {
             </tr>
             <tr>
               <td className="px-6 py-4 font-mono text-amber-300">
-                Callback url
+                callback_url
               </td>
               <td className="px-6 py-4 text-blue-300">url</td>
               <td className="px-6 py-4">Redirection url</td>
