@@ -134,24 +134,24 @@ function DocsPage() {
 
             <div>
               <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                <Shield className="w-4 h-4 text-blue-500" /> Security
+                <Shield className="w-4 h-4 text-blue-500" /> Compliance & Privacy
               </h4>
               <ul className="space-y-2 border-l border-slate-200 ml-2 pl-4">
                 <li>
-                  <a
-                    href="#"
-                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+                  <Link
+                    to="/docs/pci-compliance"
+                    className={`block text-sm font-medium ${isActive("/docs/pci-compliance") ? "text-blue-600 cursor-default" : "text-slate-600 hover:text-blue-600 cursor-pointer"} transition-colors`}
                   >
                     PCI Compliance
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    className="block text-sm text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+                  <Link
+                    to="/docs/data-privacy"
+                    className={`block text-sm font-medium ${isActive("/docs/data-privacy") ? "text-blue-600 cursor-default" : "text-slate-600 hover:text-blue-600 cursor-pointer"} transition-colors`}
                   >
                     Data Privacy
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>

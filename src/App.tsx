@@ -22,6 +22,8 @@ import Authentication from "./pages/docs/Authentication";
 import Installation from "./pages/docs/Installation";
 import Introduction from "./pages/docs/Introduction";
 import InitiatePayment from "./pages/docs/InitiatePayment";
+import PCICompliance from "./pages/docs/PCICompliance";
+import DataPrivacy from "./pages/docs/DataPrivacy";
 import LandingPage from "./pages/LandingPage";
 
 const ScrollToTop = () => {
@@ -86,6 +88,8 @@ function App() {
               <Route path="installation" element={<Installation />} />
               <Route path="authentication" element={<Authentication />} />
               <Route path="initiate-payment" element={<InitiatePayment />} />
+              <Route path="pci-compliance" element={<PCICompliance />} />
+              <Route path="data-privacy" element={<DataPrivacy />} />
             </Route>
 
             <Route
