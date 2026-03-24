@@ -12,7 +12,7 @@ function Introduction() {
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 text-slate-900">
       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-200 bg-blue-50 mb-6 shadow-sm">
         <span className="text-xs font-medium text-blue-600 uppercase tracking-wider">
-          PayFlow v2.0 Docs
+          synchgate v2.0 Docs
         </span>
       </div>
 
@@ -22,7 +22,7 @@ function Introduction() {
 
       <div className="prose prose-slate max-w-none text-slate-600 leading-relaxed space-y-4 mb-10 text-lg">
         <p>
-          Payflow Platform is a{" "}
+          synchgate Platform is a{" "}
           <strong>Payment Intelligence & Infrastructure API</strong> that allows
           developers and businesses to integrate multiple payment providers
           through a <strong>single unified API</strong>.
@@ -30,7 +30,7 @@ function Introduction() {
         <p>
           Instead of integrating separately with providers such as Paystack,
           Flutterwave, or Moniepoint, developers integrate <strong>once</strong>{" "}
-          with Fintech Platform. The platform then routes transactions to the
+          with synchgate. The platform then routes transactions to the
           appropriate provider.
         </p>
         <p>
@@ -82,14 +82,14 @@ function Introduction() {
       </ul>
 
       <p className="text-slate-600 mb-6">
-        Payflow Platform simplifies this with a{" "}
+        synchgate Platform simplifies this with a{" "}
         <strong>single integration layer</strong>.
       </p>
 
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-12 overflow-x-auto shadow-inner">
         <div>
           Merchant →{" "}
-          <span className="text-indigo-400">Fintech Platform API</span> →{" "}
+          <span className="text-indigo-400">synchgate API</span> →{" "}
           <span className="text-blue-400">Payment Provider</span>
         </div>
       </div>
@@ -109,7 +109,7 @@ function Introduction() {
     |
     |
     ▼
-Fintech Platform API
+synchgate API
     |
     |-- Paystack
     |-- Flutterwave
@@ -176,7 +176,7 @@ Fintech Platform API
       </div>
 
       <h2 className="font-['Outfit'] text-2xl font-bold mb-4 mt-12 border-b border-slate-200 pb-2 text-black">
-        Why Payflow Platform
+        Why synchgate Platform
       </h2>
       <p className="text-slate-600 mb-4">
         Payment reliability is critical for digital businesses.
@@ -186,7 +186,7 @@ Fintech Platform API
         <strong>single point of failure</strong>.
       </p>
       <p className="text-slate-600 mb-6">
-        Payflow Platform removes that risk by enabling{" "}
+        synchgate Platform removes that risk by enabling{" "}
         <strong>multi-provider payment infrastructure through one API</strong>.
       </p>
       <p className="text-slate-900 font-semibold mb-2">Benefits:</p>
@@ -200,7 +200,7 @@ Fintech Platform API
       <h2 className="font-['Outfit'] text-2xl font-bold mb-4 mt-12 border-b border-slate-200 pb-2 text-black">
         Use Cases
       </h2>
-      <p className="text-slate-600 mb-6">Payflow Platform is ideal for:</p>
+      <p className="text-slate-600 mb-6">synchgate Platform is ideal for:</p>
 
       <div className="space-y-6 mb-12">
         <div>

@@ -394,7 +394,7 @@ function Transactions() {
                         Request Initiated
                       </p>
                       <p className="text-xs text-slate-500 mt-1">
-                        PayFlow engine receives standard /charge payload
+                        synchgate engine receives standard /charge payload
                       </p>
                     </div>
                   </div>

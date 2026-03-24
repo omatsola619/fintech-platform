@@ -5,7 +5,6 @@ import {
   Shield,
   Webhook,
   X,
-  Zap,
 } from "lucide-react";
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
@@ -40,11 +39,8 @@ function DocsPage() {
               )}
             </button>
             <Link to="/" className="flex items-center gap-2 cursor-pointer">
-              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-md shadow-blue-500/20">
-                <Zap className="w-5 h-5 text-white" />
-              </div>
               <span className="font-['Outfit'] font-bold text-xl tracking-tight hidden sm:block">
-                PayFlow
+                synchgate
               </span>
             </Link>
             <span className="hidden sm:block text-slate-300 font-medium">

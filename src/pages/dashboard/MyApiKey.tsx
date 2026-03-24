@@ -272,7 +272,7 @@ function MyApiKey() {
           My API Keys
         </h1>
         <p className="text-slate-600 text-sm">
-          Use these keys to authenticate your requests to the PayFlow API.
+          Use these keys to authenticate your requests to the synchgate API.
         </p>
       </div>
 
@@ -423,7 +423,7 @@ function MyApiKey() {
                   type="url"
                   value={webhookUrlLive}
                   onChange={(e) => setWebhookUrlLive(e.target.value)}
-                  placeholder="https://yourdomain.com/webhooks/payflow/live"
+                  placeholder="https://yourdomain.com/webhooks/synchgate/live"
                   className="block w-full pl-4 pr-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all placeholder:text-slate-400"
                 />
               </div>
@@ -469,7 +469,7 @@ function MyApiKey() {
                   type="url"
                   value={webhookUrlTest}
                   onChange={(e) => setWebhookUrlTest(e.target.value)}
-                  placeholder="https://yourdomain.com/webhooks/payflow/test"
+                  placeholder="https://yourdomain.com/webhooks/synchgate/test"
                   className="block w-full pl-4 pr-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all placeholder:text-slate-400"
                 />
               </div>

@@ -1,4 +1,4 @@
-import { ShieldCheck, Zap } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { Link, Outlet } from "react-router-dom";
 
 function AuthLayout() {
@@ -16,11 +16,8 @@ function AuthLayout() {
             to="/"
             className="flex items-center gap-3 w-fit hover:opacity-90 transition-opacity"
           >
-            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg">
-              <Zap className="w-6 h-6 text-blue-600" />
-            </div>
             <span className="font-['Outfit'] font-bold text-2xl tracking-tight text-white">
-              PayFlow
+              synchgate
             </span>
           </Link>
         </div>
@@ -46,11 +43,8 @@ function AuthLayout() {
         {/* Mobile Header */}
         <header className="md:hidden p-6 border-b border-slate-100 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
             <span className="font-['Outfit'] font-bold text-xl tracking-tight text-black">
-              PayFlow
+              synchgate
             </span>
           </Link>
         </header>

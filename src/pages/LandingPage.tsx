@@ -8,7 +8,6 @@ import {
   Layers,
   ShieldCheck,
   Terminal,
-  Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -43,11 +42,8 @@ function LandingPage() {
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-md shadow-blue-500/20">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
             <span className="font-['Outfit'] font-bold text-xl tracking-tight text-black">
-              PayFlow
+              synchgate
             </span>
           </div>
 
@@ -174,14 +170,14 @@ function LandingPage() {
                   <pre className="text-xs sm:text-sm font-mono text-slate-300 overflow-x-auto pb-4 max-w-full">
                     <code>
                       <span className="text-pink-400">import</span> &#123;
-                      PayFlow &#125; <span className="text-pink-400">from</span>{" "}
-                      <span className="text-emerald-300">'@payflow/node'</span>;
+                      synchgate &#125; <span className="text-pink-400">from</span>{" "}
+                      <span className="text-emerald-300">'@synchgate/node'</span>;
                       <br />
                       <br />
-                      <span className="text-blue-400">const</span> payflow ={" "}
+                      <span className="text-blue-400">const</span> synchgate ={" "}
                       <span className="text-pink-400">new</span>{" "}
-                      <span className="text-yellow-200">PayFlow</span>
-                      (process.env.PAYFLOW_KEY);
+                      <span className="text-yellow-200">synchgate</span>
+                      (process.env.SYNCHGATE_KEY);
                       <br />
                       <br />
                       <span className="text-slate-500">
@@ -190,7 +186,7 @@ function LandingPage() {
                       <br />
                       <span className="text-blue-400">const</span> charge ={" "}
                       <span className="text-pink-400">await</span>{" "}
-                      payflow.charges.
+                      synchgate.charges.
                       <span className="text-blue-300">create</span>(&#123;
                       <br />
                       &nbsp;&nbsp;amount:{" "}
@@ -220,7 +216,7 @@ function LandingPage() {
                 <p className="text-slate-600 text-lg mb-8 leading-relaxed">
                   Building payment infrastructure is hard. Maintaining 3
                   distinct API integrations, harmonizing webhooks, and
-                  reconciling payouts is a nightmare. PayFlow abstracts the
+                  reconciling payouts is a nightmare. synchgate abstracts the
                   complexity away.
                 </p>
 
@@ -277,7 +273,7 @@ function LandingPage() {
                 Ready to simplify?
               </h2>
               <p className="text-slate-600 text-lg md:text-xl mb-10 max-w-2xl mx-auto relative z-10">
-                Join hundreds of engineering teams building on PayFlow. Create
+                Join hundreds of engineering teams building on synchgate. Create
                 an account, get your API keys, and make your first charge in
                 minutes.
               </p>
@@ -308,11 +304,8 @@ function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
             <div className="col-span-2">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-6 h-6 rounded bg-blue-600 flex items-center justify-center">
-                  <Zap className="w-3 h-3 text-white" />
-                </div>
                 <span className="font-['Outfit'] font-bold text-lg tracking-tight text-black">
-                  PayFlow
+                  synchgate
                 </span>
               </div>
               <p className="text-slate-600 text-sm max-w-xs mb-6">
@@ -384,7 +377,7 @@ function LandingPage() {
 
           <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-slate-200">
             <p className="text-slate-500 text-sm mb-4 md:mb-0">
-              © 2026 PayFlow Inc. All rights reserved.
+              © 2026 synchgate Inc. All rights reserved.
             </p>
             <div className="flex gap-4">
               <a

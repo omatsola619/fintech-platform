@@ -92,7 +92,7 @@ function Installation() {
   "email": "myemail@mail.com",
   "amount": 8000,
   "currency": "ngn", # (Optional)
-  "callback_url": "https://payflow.com/payments/", # (Optional)
+  "callback_url": "https://synchgate.com/payments/", # (Optional)
   "reference": "greatman009" # (Optional)
 }`}
         </pre>
@@ -234,7 +234,7 @@ Selected Provider`}
             "currency": "NGN",
             "metadata": {},
             "provider": "flutterwave",
-            "redirect_url": "https://payflow.com/payments/",
+            "redirect_url": "https://synchgate.com/payments/",
             "status": "success"
         }
     },

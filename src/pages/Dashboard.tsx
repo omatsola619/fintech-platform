@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   Terminal,
   X,
-  Zap,
 } from "lucide-react";
 import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -143,11 +142,8 @@ function Dashboard() {
             to="/"
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-md shadow-blue-500/20">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
             <span className="font-['Outfit'] font-bold text-xl tracking-tight text-black">
-              PayFlow
+              synchgate
             </span>
           </Link>
           <button
