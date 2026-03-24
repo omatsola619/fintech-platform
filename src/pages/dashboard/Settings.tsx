@@ -37,9 +37,13 @@ type EnvModal = {
   originalKey: string;
   isEdit: boolean;
   isFixed?: boolean;
+  grantType?: string;
+  clientId?: string;
+  clientSecret?: string;
+  accountId?: string;
 };
 
-const AVAILABLE_PROVIDERS = ["Paystack", "Flutterwave"];
+const AVAILABLE_PROVIDERS = ["Paystack", "Flutterwave", "Nomba"];
 
 const DEFAULT_ENV_MODAL: EnvModal = {
   open: false,
@@ -49,6 +53,10 @@ const DEFAULT_ENV_MODAL: EnvModal = {
   originalKey: "",
   isEdit: false,
   isFixed: false,
+  grantType: "",
+  clientId: "",
+  clientSecret: "",
+  accountId: "",
 };
 
 function Settings() {
@@ -220,6 +228,10 @@ function Settings() {
       originalKey: existingKey || "",
       isEdit: !!existingKey,
       isFixed: !!isFixed,
+      grantType: "",
+      clientId: "",
+      clientSecret: "",
+      accountId: "",
     });
   };
 
@@ -232,14 +244,24 @@ function Settings() {
     const merchantId =
       merchant?.merchant_id || settingsData?.merchant_id || "165714267";
     try {
+      const credentials =
+        envModal.provider === "Nomba"
+          ? {
+              grant_type: envModal.grantType,
+              client_id: envModal.clientId,
+              client_secret: envModal.clientSecret,
+              accountId: envModal.accountId,
+            }
+          : {
+              secret_key: envModal.secretKey,
+            };
+
       await setupProvider({
         merchant_id: merchantId.toString(),
         environment: envModal.environment,
         provider: envModal.provider.toLowerCase(),
         credential_type: "api_key",
-        credentials: {
-          secret_key: envModal.secretKey,
-        },
+        credentials,
       });
       await queryClient.invalidateQueries({ queryKey: ["settings"] });
       closeEnvModal();
@@ -974,63 +996,142 @@ function Settings() {
                 )}
               </div>
 
-              {/* Secret key input */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Secret Key
-                </label>
-                <div className="relative">
-                  <input
-                    type={showKey ? "text" : "password"}
-                    value={envModal.secretKey}
-                    onKeyDown={(e) => {
-                      // If the field still holds the original masked value,
-                      // clear it entirely on the first backspace/delete or printable key
-                      if (
-                        envModal.isEdit &&
-                        envModal.secretKey === envModal.originalKey
-                      ) {
-                        if (
-                          e.key === "Backspace" ||
-                          e.key === "Delete" ||
-                          e.key.length === 1
-                        ) {
-                          e.preventDefault();
-                          setEnvModal({ ...envModal, secretKey: "" });
-                        }
+              {/* Conditionally reveal fields for Nomba */}
+              {envModal.provider === "Nomba" ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Grant Type
+                    </label>
+                    <input
+                      type="text"
+                      value={envModal.grantType}
+                      onChange={(e) =>
+                        setEnvModal({ ...envModal, grantType: e.target.value })
                       }
-                    }}
-                    onChange={(e) =>
-                      setEnvModal({ ...envModal, secretKey: e.target.value })
-                    }
-                    placeholder={
-                      envModal.environment === "sandbox"
-                        ? "sk_test_..."
-                        : "sk_live_..."
-                    }
-                    className="block w-full px-3 py-2.5 pr-10 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
-                    autoFocus
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowKey(!showKey)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
-                    tabIndex={-1}
-                  >
-                    {showKey ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
+                      placeholder="e.g. client_credentials"
+                      className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Client ID
+                    </label>
+                    <input
+                      type="text"
+                      value={envModal.clientId}
+                      onChange={(e) =>
+                        setEnvModal({ ...envModal, clientId: e.target.value })
+                      }
+                      placeholder="Enter Client ID"
+                      className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Client Secret
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showKey ? "text" : "password"}
+                        value={envModal.clientSecret}
+                        onChange={(e) =>
+                          setEnvModal({
+                            ...envModal,
+                            clientSecret: e.target.value,
+                          })
+                        }
+                        placeholder="Enter Client Secret"
+                        className="block w-full px-3 py-2.5 pr-10 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowKey(!showKey)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                        tabIndex={-1}
+                      >
+                        {showKey ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Account ID
+                    </label>
+                    <input
+                      type="text"
+                      value={envModal.accountId}
+                      onChange={(e) =>
+                        setEnvModal({ ...envModal, accountId: e.target.value })
+                      }
+                      placeholder="Enter Account ID"
+                      className="block w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
+                    />
+                  </div>
                 </div>
-                {envModal.isEdit && (
-                  <p className="mt-2 text-xs text-slate-400">
-                    Clear the field and enter a new key. Key must be more than
-                    10 characters.
-                  </p>
-                )}
-              </div>
+              ) : (
+                /* Existing Secret key input for other providers */
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Secret Key
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showKey ? "text" : "password"}
+                      value={envModal.secretKey}
+                      onKeyDown={(e) => {
+                        // If the field still holds the original masked value,
+                        // clear it entirely on the first backspace/delete or printable key
+                        if (
+                          envModal.isEdit &&
+                          envModal.secretKey === envModal.originalKey
+                        ) {
+                          if (
+                            e.key === "Backspace" ||
+                            e.key === "Delete" ||
+                            e.key.length === 1
+                          ) {
+                            e.preventDefault();
+                            setEnvModal({ ...envModal, secretKey: "" });
+                          }
+                        }
+                      }}
+                      onChange={(e) =>
+                        setEnvModal({ ...envModal, secretKey: e.target.value })
+                      }
+                      placeholder={
+                        envModal.environment === "sandbox"
+                          ? "sk_test_..."
+                          : "sk_live_..."
+                      }
+                      className="block w-full px-3 py-2.5 pr-10 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-900 sm:text-sm"
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowKey(!showKey)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                      tabIndex={-1}
+                    >
+                      {showKey ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                  {envModal.isEdit && (
+                    <p className="mt-2 text-xs text-slate-400">
+                      Clear the field and enter a new key. Key must be more than
+                      10 characters.
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3 rounded-b-2xl">
@@ -1044,9 +1145,14 @@ function Settings() {
                 onClick={handleSaveEnvKey}
                 disabled={
                   isSettingUpProvider ||
-                  envModal.secretKey.length < 10 ||
-                  (envModal.isEdit &&
-                    envModal.secretKey === envModal.originalKey)
+                  (envModal.provider === "Nomba"
+                    ? !envModal.grantType ||
+                      !envModal.clientId ||
+                      !envModal.clientSecret ||
+                      !envModal.accountId
+                    : envModal.secretKey.length < 10 ||
+                      (envModal.isEdit &&
+                        envModal.secretKey === envModal.originalKey))
                 }
                 className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm shadow-blue-500/20 text-sm flex items-center gap-2"
               >

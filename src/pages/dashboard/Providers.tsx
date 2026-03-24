@@ -38,6 +38,16 @@ const PROVIDERS_DATA = [
     latency: "-",
     degradation: false,
   },
+  {
+    id: 4,
+    name: "Nomba",
+    connected: false,
+    lastSync: "Never",
+    txWeek: "0",
+    rateWeek: 0,
+    latency: "-",
+    degradation: false,
+  },
 ];
 
 function Providers() {

@@ -32,15 +32,11 @@ function Installation() {
         Authentication
       </h2>
       <p className="text-slate-600 mb-6">
-        All requests must include your <strong>Client Public Key</strong>.
+        All requests must include your <strong>Client Secret Key</strong>.
       </p>
 
       <h3 className="font-semibold text-slate-900 text-xl mb-3">Header</h3>
       <div className="bg-slate-900 rounded-xl p-4 text-sm font-mono text-slate-300 mb-6 shadow-inner overflow-x-auto space-y-2">
-        <div>
-          <span className="text-emerald-300">Client-Public-Key:</span>{" "}
-          pit_pk_live_xxxxxxxx
-        </div>
         <div>
           <span className="text-emerald-300">Client-Secret-Key:</span>{" "}
           pit_sk_live_xxxxxxxx
@@ -53,11 +49,6 @@ function Installation() {
           curl --location{" "}
           <span className="text-amber-300">
             'http://payinfraterminal.onrender.com/v1/api/initiate-payment/'
-          </span>{" "}
-          \<br />
-          --header{" "}
-          <span className="text-amber-300">
-            'Client-Public-Key: pit_pk_live_76fd46870e7e8d3d'
           </span>{" "}
           \<br />
           --header{" "}
@@ -214,7 +205,6 @@ Selected Provider`}
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-12 overflow-x-auto shadow-inner leading-relaxed">
         <pre>
           {`curl --location 'http://payinfraterminal.onrender.com/v1/api/initiate-payment/' \\
---header 'Client-Public-Key: pit_pk_live_76fd46870e7e8d3d' \\
 --header 'Client-Secret-Key: pit_sk_live_U2C8HtHdlHPRvHcjRBYBYn9DyZPJEf2o_xZqQkUFIf0' \\
 --header 'Content-Type: application/json' \\
 --data-raw '{
@@ -329,11 +319,11 @@ abandoned`}
         <pre>
           {`{
     "status": "error",
-    "message": "Invalid client public key.",
+    "message": "Invalid client secret key.",
     "error": {
         "code": "authentication_failed",
         "details": {
-            "detail": "Invalid client public key."
+            "detail": "Invalid client secret key."
         }
     },
     "meta": {
