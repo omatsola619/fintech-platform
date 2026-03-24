@@ -1,4 +1,4 @@
-import { type ReactNode, createContext, useContext, useState } from "react";
+import { type ReactNode, createContext, useContext, useState, useEffect } from "react";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -31,6 +31,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return localStorage.getItem("merchantMode") || "test";
   });
 
+  useEffect(() => {
+    const checkExpiration = () => {
+      const authTimestamp = localStorage.getItem("authTimestamp");
+      if (authTimestamp && isAuthenticated) {
+        const loginTime = parseInt(authTimestamp, 10);
+        const currentTime = Date.now();
+        const TWENTY_THREE_HOURS = 23 * 60 * 60 * 1000;
+
+        if (currentTime - loginTime >= TWENTY_THREE_HOURS) {
+          logout();
+          return true;
+        }
+        
+        // Schedule next check/logout
+        const remainingTime = (loginTime + TWENTY_THREE_HOURS) - currentTime;
+        const timer = setTimeout(() => {
+          logout();
+        }, remainingTime);
+        
+        return () => clearTimeout(timer);
+      }
+    };
+
+    const cleanup = checkExpiration();
+    if (typeof cleanup === "function") return cleanup;
+  }, [isAuthenticated]);
+
   const login = (
     token: string,
     name?: string,
@@ -38,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     merchantMode?: string,
   ) => {
     localStorage.setItem("authToken", token);
+    localStorage.setItem("authTimestamp", Date.now().toString());
     if (name) {
       localStorage.setItem("userName", name);
       setUserName(name);
@@ -63,6 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("userName");
     localStorage.removeItem("kycStatus");
     localStorage.removeItem("merchantMode");
+    localStorage.removeItem("authTimestamp");
     setIsAuthenticated(false);
     setUserName("");
     setKycStatus("");
