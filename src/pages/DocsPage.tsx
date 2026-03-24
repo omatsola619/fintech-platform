@@ -102,6 +102,22 @@ function DocsPage() {
 
             <div>
               <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                <Shield className="w-4 h-4 text-blue-500" /> API
+              </h4>
+              <ul className="space-y-2 border-l border-slate-200 ml-2 pl-4">
+                <li>
+                  <Link
+                    to="/docs/initiate-payment"
+                    className={`block text-sm font-medium ${isActive("/docs/initiate-payment") ? "text-blue-600 cursor-default" : "text-slate-600 hover:text-blue-600 cursor-pointer"} transition-colors`}
+                  >
+                    Initiate Payment
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
                 <Webhook className="w-4 h-4 text-blue-500" /> Webhooks
               </h4>
               <ul className="space-y-2 border-l border-slate-200 ml-2 pl-4">

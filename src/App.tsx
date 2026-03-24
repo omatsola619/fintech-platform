@@ -20,6 +20,7 @@ import DocsPage from "./pages/DocsPage";
 import Authentication from "./pages/docs/Authentication";
 import Installation from "./pages/docs/Installation";
 import Introduction from "./pages/docs/Introduction";
+import InitiatePayment from "./pages/docs/InitiatePayment";
 import LandingPage from "./pages/LandingPage";
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
@@ -72,6 +73,7 @@ function App() {
               />
               <Route path="installation" element={<Installation />} />
               <Route path="authentication" element={<Authentication />} />
+              <Route path="initiate-payment" element={<InitiatePayment />} />
             </Route>
 
             <Route
