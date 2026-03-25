@@ -40,7 +40,7 @@ function DocsPage() {
             </button>
             <Link to="/" className="flex items-center gap-2 cursor-pointer">
               <span className="font-['Outfit'] font-bold text-xl tracking-tight hidden sm:block">
-                synchgate
+                SynchGate
               </span>
             </Link>
             <span className="hidden sm:block text-slate-300 font-medium">

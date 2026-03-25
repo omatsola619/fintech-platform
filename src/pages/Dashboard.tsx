@@ -143,7 +143,7 @@ function Dashboard() {
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
             <span className="font-['Outfit'] font-bold text-xl tracking-tight text-black">
-              synchgate
+              SynchGate
             </span>
           </Link>
           <button
@@ -248,26 +248,23 @@ function Dashboard() {
           <div className="ml-auto flex items-center gap-4 sm:gap-6">
             <div className="flex items-center gap-2 sm:gap-3 bg-slate-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-slate-200">
               <span
-                className={`text-[10px] sm:text-xs font-semibold transition-colors ${
-                  merchantMode === "test" ? "text-amber-600" : "text-slate-400"
-                }`}
+                className={`text-[10px] sm:text-xs font-semibold transition-colors ${merchantMode === "test" ? "text-amber-600" : "text-slate-400"
+                  }`}
               >
                 Test
               </span>
               <button
                 onClick={handleToggleMode}
                 disabled={isTogglingMode}
-                className={`relative inline-flex h-5 w-9 sm:h-6 sm:w-11 items-center rounded-full transition-colors ${isTogglingMode ? "cursor-wait opacity-80" : "cursor-pointer"} focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
-                  merchantMode === "live" ? "bg-emerald-500" : "bg-amber-500"
-                }`}
+                className={`relative inline-flex h-5 w-9 sm:h-6 sm:w-11 items-center rounded-full transition-colors ${isTogglingMode ? "cursor-wait opacity-80" : "cursor-pointer"} focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${merchantMode === "live" ? "bg-emerald-500" : "bg-amber-500"
+                  }`}
               >
                 <span className="sr-only">Toggle environment</span>
                 <span
-                  className={`flex h-3 w-3 sm:h-4 sm:w-4 transform rounded-full bg-white shadow-sm transition-transform items-center justify-center ${
-                    merchantMode === "live"
+                  className={`flex h-3 w-3 sm:h-4 sm:w-4 transform rounded-full bg-white shadow-sm transition-transform items-center justify-center ${merchantMode === "live"
                       ? "translate-x-5 sm:translate-x-6"
                       : "translate-x-1"
-                  }`}
+                    }`}
                 >
                   {isTogglingMode && (
                     <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 border border-slate-200 border-t-slate-500 rounded-full animate-spin" />
@@ -275,11 +272,10 @@ function Dashboard() {
                 </span>
               </button>
               <span
-                className={`text-[10px] sm:text-xs font-semibold transition-colors ${
-                  merchantMode === "live"
+                className={`text-[10px] sm:text-xs font-semibold transition-colors ${merchantMode === "live"
                     ? "text-emerald-600"
                     : "text-slate-400"
-                }`}
+                  }`}
               >
                 Live
               </span>

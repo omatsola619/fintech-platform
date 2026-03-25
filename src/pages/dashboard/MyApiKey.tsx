@@ -272,7 +272,7 @@ function MyApiKey() {
           My API Keys
         </h1>
         <p className="text-slate-600 text-sm">
-          Use these keys to authenticate your requests to the synchgate API.
+          Use these keys to authenticate your requests to the SynchGate API.
         </p>
       </div>
 
@@ -423,7 +423,7 @@ function MyApiKey() {
                   type="url"
                   value={webhookUrlLive}
                   onChange={(e) => setWebhookUrlLive(e.target.value)}
-                  placeholder="https://yourdomain.com/webhooks/synchgate/live"
+                  placeholder="https://yourdomain.com/webhooks/SynchGate/live"
                   className="block w-full pl-4 pr-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all placeholder:text-slate-400"
                 />
               </div>
@@ -469,7 +469,7 @@ function MyApiKey() {
                   type="url"
                   value={webhookUrlTest}
                   onChange={(e) => setWebhookUrlTest(e.target.value)}
-                  placeholder="https://yourdomain.com/webhooks/synchgate/test"
+                  placeholder="https://yourdomain.com/webhooks/SynchGate/test"
                   className="block w-full pl-4 pr-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all placeholder:text-slate-400"
                 />
               </div>
@@ -594,11 +594,10 @@ function MyApiKey() {
       {notification && (
         <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
           <div
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border ${
-              notification.type === "success"
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border ${notification.type === "success"
                 ? "bg-emerald-50 border-emerald-200 text-emerald-800"
                 : "bg-red-50 border-red-200 text-red-800"
-            }`}
+              }`}
           >
             {notification.type === "success" ? (
               <CheckCircle2 className="w-5 h-5 text-emerald-600" />
@@ -608,11 +607,10 @@ function MyApiKey() {
             <p className="text-sm font-medium">{notification.message}</p>
             <button
               onClick={() => setNotification(null)}
-              className={`ml-2 p-1 rounded-md transition-colors cursor-pointer ${
-                notification.type === "success"
+              className={`ml-2 p-1 rounded-md transition-colors cursor-pointer ${notification.type === "success"
                   ? "hover:bg-emerald-100/80 text-emerald-600"
                   : "hover:bg-red-100/80 text-red-600"
-              }`}
+                }`}
             >
               <X className="w-4 h-4" />
             </button>

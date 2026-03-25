@@ -17,7 +17,7 @@ function AuthLayout() {
             className="flex items-center gap-3 w-fit hover:opacity-90 transition-opacity"
           >
             <span className="font-['Outfit'] font-bold text-2xl tracking-tight text-white">
-              synchgate
+              SynchGate
             </span>
           </Link>
         </div>
@@ -44,7 +44,7 @@ function AuthLayout() {
         <header className="md:hidden p-6 border-b border-slate-100 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <span className="font-['Outfit'] font-bold text-xl tracking-tight text-black">
-              synchgate
+              SynchGate
             </span>
           </Link>
         </header>

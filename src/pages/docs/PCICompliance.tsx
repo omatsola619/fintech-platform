@@ -48,7 +48,7 @@ function PCICompliance() {
         Our Approach to PCI Compliance
       </h2>
       <p className="text-lg text-slate-600 leading-relaxed mb-6">
-        synchgate is built to minimize exposure to sensitive cardholder data. In most payment flows, card information is collected directly by the payment provider through their secure hosted payment pages.
+        SynchGate is built to minimize exposure to sensitive cardholder data. In most payment flows, card information is collected directly by the payment provider through their secure hosted payment pages.
       </p>
 
       <div className="bg-slate-50 rounded-2xl p-8 mb-12 border border-slate-200 shadow-sm">
@@ -56,7 +56,7 @@ function PCICompliance() {
         <ul className="space-y-4">
           {[
             "Card data does not pass through merchant servers",
-            "Card details are not stored within synchgate systems",
+            "Card details are not stored within SynchGate systems",
             "Payment providers handle PCI-sensitive processing"
           ].map((benefit, i) => (
             <li key={i} className="flex items-start gap-3 text-slate-700">
@@ -76,7 +76,7 @@ function PCICompliance() {
         Secure Provider Integrations
       </h2>
       <p className="text-lg text-slate-600 leading-relaxed mb-6">
-        synchgate integrates with established payment providers that maintain their own PCI DSS compliant infrastructure. Supported providers include **Paystack**, **Flutterwave**, and **Stripe**.
+        SynchGate integrates with established payment providers that maintain their own PCI DSS compliant infrastructure. Supported providers include **Paystack**, **Flutterwave**, and **Stripe**.
       </p>
 
       <h2 className="font-['Outfit'] text-3xl font-bold mb-6 mt-12 border-b border-slate-200 pb-2 text-black">
@@ -91,8 +91,8 @@ function PCICompliance() {
           "Rate limiting and abuse protection"
         ].map((control, i) => (
           <li key={i} className="flex items-center gap-3 text-slate-600 py-2 border-b border-slate-100 last:border-0">
-             <ArrowRight className="w-4 h-4 text-blue-500" />
-             <span className="text-lg">{control}</span>
+            <ArrowRight className="w-4 h-4 text-blue-500" />
+            <span className="text-lg">{control}</span>
           </li>
         ))}
       </ul>
@@ -101,7 +101,7 @@ function PCICompliance() {
         Future Compliance Roadmap
       </h2>
       <p className="text-lg text-slate-600 leading-relaxed mb-6">
-        As synchgate grows, we plan to strengthen our compliance posture through:
+        As SynchGate grows, we plan to strengthen our compliance posture through:
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-16">
         {[
@@ -120,7 +120,7 @@ function PCICompliance() {
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 rounded-full -mr-32 -mt-32 blur-3xl" />
         <h2 className="font-['Outfit'] text-3xl font-bold mb-6 relative z-10">Shared Responsibility</h2>
         <p className="text-slate-300 text-lg leading-relaxed mb-6 relative z-10">
-          Security in payment systems is a shared responsibility between the merchant, the payment provider, and synchgate.
+          Security in payment systems is a shared responsibility between the merchant, the payment provider, and SynchGate.
         </p>
         <p className="text-slate-300 text-lg leading-relaxed relative z-10">
           Merchants integrating with our API should ensure their own systems follow best practices for protecting customer data.

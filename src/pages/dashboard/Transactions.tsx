@@ -186,19 +186,19 @@ function Transactions() {
               selectedProvider !== "All Providers" ||
               selectedStatus !== "All Statuses" ||
               searchTerm) && (
-              <button
-                onClick={() => {
-                  setStartDate("");
-                  setEndDate("");
-                  setSearchTerm("");
-                  setSelectedProvider("All Providers");
-                  setSelectedStatus("All Statuses");
-                }}
-                className="px-3 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
-              >
-                Clear Filters
-              </button>
-            )}
+                <button
+                  onClick={() => {
+                    setStartDate("");
+                    setEndDate("");
+                    setSearchTerm("");
+                    setSelectedProvider("All Providers");
+                    setSelectedStatus("All Statuses");
+                  }}
+                  className="px-3 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  Clear Filters
+                </button>
+              )}
           </div>
         </div>
       </div>
@@ -394,7 +394,7 @@ function Transactions() {
                         Request Initiated
                       </p>
                       <p className="text-xs text-slate-500 mt-1">
-                        synchgate engine receives standard /charge payload
+                        SynchGate engine receives standard /charge payload
                       </p>
                     </div>
                   </div>

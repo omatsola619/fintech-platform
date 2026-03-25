@@ -14,7 +14,7 @@ function Installation() {
   ];
 
   const codeSnippets: Record<string, string> = {
-    javascript: `const response = await fetch('https://api.synchgate.com/v1/initiate-payment/', {
+    javascript: `const response = await fetch('https://api.SynchGate.com/v1/initiate-payment/', {
   method: 'POST',
   headers: {
     'Client-Secret-Key': 'sk_live_your_key',
@@ -31,7 +31,7 @@ const data = await response.json();
 console.log(data);`,
     python: `import requests
 
-url = "https://api.synchgate.com/v1/initiate-payment/"
+url = "https://api.SynchGate.com/v1/initiate-payment/"
 payload = {
     "provider": "paystack",
     "amount": 5000,
@@ -48,7 +48,7 @@ print(response.json())`,
 $curl = curl_init();
 
 curl_setopt_array($curl, [
-  CURLOPT_URL => "https://api.synchgate.com/v1/initiate-payment/",
+  CURLOPT_URL => "https://api.SynchGate.com/v1/initiate-payment/",
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_POST => true,
   CURLOPT_POSTFIELDS => json_encode([
@@ -68,7 +68,7 @@ echo $response;`,
     ruby: `require 'net/http'
 require 'json'
 
-uri = URI('https://api.synchgate.com/v1/initiate-payment/')
+uri = URI('https://api.SynchGate.com/v1/initiate-payment/')
 req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
 req['Client-Secret-Key'] = 'sk_live_your_key'
 req.body = {
@@ -89,7 +89,7 @@ import java.net.http.HttpResponse;
 
 HttpClient client = HttpClient.newHttpClient();
 HttpRequest request = HttpRequest.newBuilder()
-    .uri(URI.create("https://api.synchgate.com/v1/initiate-payment/"))
+    .uri(URI.create("https://api.SynchGate.com/v1/initiate-payment/"))
     .header("Client-Secret-Key", "sk_live_your_key")
     .header("Content-Type", "application/json")
     .POST(HttpRequest.BodyPublishers.ofString(
@@ -109,7 +109,7 @@ client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
       </h1>
 
       <p className="text-lg text-slate-600 leading-relaxed mb-6">
-        To begin using the synchgate API:
+        To begin using the SynchGate API:
       </p>
 
       <ol className="list-decimal list-inside space-y-3 mb-12 text-slate-600 text-lg ml-2">
@@ -123,7 +123,7 @@ client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
       </h2>
 
       <div className="bg-slate-900 rounded-xl p-4 text-sm font-mono text-amber-200 mb-6 shadow-inner overflow-x-auto">
-        https://api.synchgate.com/v1
+        https://api.SynchGate.com/v1
       </div>
 
       <p className="text-slate-600 mb-12">Local development example:</p>
@@ -164,7 +164,7 @@ client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
       <h2 className="font-['Outfit'] text-3xl font-bold mb-6 mt-12 border-b border-slate-200 pb-2 text-black">
         Simple Example
       </h2>
-      
+
       <p className="text-lg text-slate-600 leading-relaxed mb-8">
         Get started quickly by implementing our API in your preferred language. Select a tab below to see the implementation details.
       </p>
@@ -177,11 +177,10 @@ client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
             <button
               key={lang.id}
               onClick={() => setActiveTab(lang.id)}
-              className={`px-4 py-2.5 text-sm font-medium transition-all relative whitespace-nowrap ${
-                activeTab === lang.id
+              className={`px-4 py-2.5 text-sm font-medium transition-all relative whitespace-nowrap ${activeTab === lang.id
                   ? "text-blue-400"
                   : "text-slate-400 hover:text-slate-200"
-              }`}
+                }`}
             >
               {lang.label}
               {activeTab === lang.id && (
@@ -212,7 +211,7 @@ client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
             </span>
           </div>
           <div className="ml-auto flex items-center gap-3">
-             <Code2 className="w-3.5 h-3.5 text-slate-600" />
+            <Code2 className="w-3.5 h-3.5 text-slate-600" />
           </div>
         </div>
       </div>

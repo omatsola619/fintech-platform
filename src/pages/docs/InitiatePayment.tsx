@@ -35,7 +35,7 @@ function InitiatePayment() {
   "email": "customer@example.com",
   "amount": 8000,
   "currency": "NGN",
-  "callback_url": "https://synchgate.com/payments/",
+  "callback_url": "https://SynchGate.com/payments/",
   "reference": "unique_tx_ref_001"
 }`}
         </pre>
@@ -66,24 +66,24 @@ function InitiatePayment() {
             <tr>
               <td className="px-6 py-4 font-mono text-amber-300">amount</td>
               <td className="px-6 py-4 text-emerald-300">integer</td>
-              <td className="px-6 py-4">Amount to charge (in minor units, e.g., Kobo/Cents).</td>
+              <td className="px-6 py-4">Amount to charge</td>
             </tr>
             <tr>
               <td className="px-6 py-4 font-mono text-amber-300">currency</td>
               <td className="px-6 py-4 text-blue-300">string</td>
-              <td className="px-6 py-4">Transaction currency (e.g., NGN, USD).</td>
+              <td className="px-6 py-4">Transaction currency (e.g., NGN, USD, optional but defaults to NGN)</td>
             </tr>
             <tr>
               <td className="px-6 py-4 font-mono text-amber-300">
                 callback_url
               </td>
               <td className="px-6 py-4 text-blue-300">url</td>
-              <td className="px-6 py-4">The URL to redirect the customer after payment.</td>
+              <td className="px-6 py-4">The URL to redirect the customer after payment (optional)</td>
             </tr>
             <tr>
               <td className="px-6 py-4 font-mono text-amber-300">reference</td>
               <td className="px-6 py-4 text-blue-300">string</td>
-              <td className="px-6 py-4">Unique transaction reference.</td>
+              <td className="px-6 py-4">Unique transaction reference (optional)</td>
             </tr>
           </tbody>
         </table>
@@ -95,6 +95,7 @@ function InitiatePayment() {
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-12 shadow-inner border border-white/10">
         <div>paystack</div>
         <div>flutterwave</div>
+        <div>nomba</div>
       </div>
 
       <h2 className="font-['Outfit'] text-3xl font-bold mb-4 mt-8 border-b border-slate-200 pb-2 text-black">
@@ -114,7 +115,7 @@ function InitiatePayment() {
       </p>
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-12 overflow-x-auto shadow-inner leading-relaxed border border-white/10">
         <pre>
-          {`curl --location 'https://api.synchgate.com/v1/initiate-payment/' \\
+          {`curl --location 'https://api.SynchGate.com/v1/initiate-payment/' \\
 --header 'Client-Secret-Key: sk_live_your_key_here' \\
 --header 'Content-Type: application/json' \\
 --data-raw '{
@@ -135,16 +136,31 @@ function InitiatePayment() {
     "status": "success",
     "message": "Payment initiated successfully",
     "data": {
-        "payment_url": "https://checkout.synchgate.com/pay/e66bc688e1ad2a8aa51f",
-        "reference": "unique_tx_ref_001",
-        "amount": "8000.00",
-        "currency": "NGN",
-        "provider": "flutterwave",
-        "status": "pending"
+        "cleaned_data": {
+            "payment_url": "https://checkout-v2.dev-flutterwave.com/v3/hosted/pay/b27556da90c41b410111",
+            "amount": "10000.00",
+            "currency": "NGN",
+            "reference": "hdjdjfkfkjdjdj",
+            "status": "success",
+            "provider": "flutterwave"
+        },
+        "provider_data": {
+            "data": {
+                "status": "success",
+                "message": "Hosted Link",
+                "data": {
+                    "link": "https://checkout-v2.dev-flutterwave.com/v3/hosted/pay/b27556da90c41b410111",
+                    "tx_ref": "hdjdjfkfkjdjdj",
+                    "amount": "10000.00",
+                    "currency": "NGN",
+                    "redirect_url": "https://fintech-platform-weld.vercel.app/"
+                }
+            }
+        }
     },
     "meta": {
-        "request_id": "e279196d-6d1e-4c93-bbf5-49ad2897a951",
-        "timestamp": "2026-03-24T11:20:40Z"
+        "request_id": "41e97272-03b2-485c-a150-8e7c30737f3c",
+        "timestamp": "2026-03-24T11:44:41.828466Z"
     }
 }`}
         </pre>

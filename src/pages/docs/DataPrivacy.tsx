@@ -9,14 +9,14 @@ function DataPrivacy() {
       </h1>
 
       <p className="text-lg text-slate-600 leading-relaxed mb-8">
-        synchgate respects the privacy of users and businesses that interact with our platform. This page describes how we collect, use, and protect data when our services are used.
+        SynchGate respects the privacy of users and businesses that interact with our platform. This page describes how we collect, use, and protect data when our services are used.
       </p>
 
       <h2 className="font-['Outfit'] text-3xl font-bold mb-6 mt-12 border-b border-slate-200 pb-2 text-black">
         Data We Collect
       </h2>
       <p className="text-lg text-slate-600 leading-relaxed mb-6">
-        When merchants integrate with synchgate, certain information is processed in order to facilitate payment transactions and platform functionality.
+        When merchants integrate with SynchGate, certain information is processed in order to facilitate payment transactions and platform functionality.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -58,14 +58,14 @@ function DataPrivacy() {
 
       <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl mb-12 flex gap-4 text-amber-800 shadow-sm">
         <Lock className="w-6 h-6 shrink-0 mt-0.5" />
-        <p className="font-medium">synchgate does not store raw card details.</p>
+        <p className="font-medium">SynchGate does not store raw card details.</p>
       </div>
 
       <h2 className="font-['Outfit'] text-3xl font-bold mb-6 mt-12 border-b border-slate-200 pb-2 text-black">
         How Data Is Used
       </h2>
       <p className="text-lg text-slate-600 leading-relaxed mb-6">
-        The data processed by synchgate is used strictly for platform operations and service delivery. Primary purposes include:
+        The data processed by SynchGate is used strictly for platform operations and service delivery. Primary purposes include:
       </p>
       <ul className="space-y-4 mb-12">
         {[
@@ -77,7 +77,7 @@ function DataPrivacy() {
         ].map((purpose, i) => (
           <li key={i} className="flex items-center gap-3 text-slate-700 text-lg">
             <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-               <div className="w-2 h-2 rounded-full bg-blue-500" />
+              <div className="w-2 h-2 rounded-full bg-blue-500" />
             </div>
             {purpose}
           </li>
@@ -118,8 +118,8 @@ function DataPrivacy() {
       <div className="bg-slate-50 border border-slate-200 rounded-3xl p-10 mb-16 text-center">
         <h3 className="font-['Outfit'] text-2xl font-bold mb-4 text-black text-center">Contact Us</h3>
         <p className="text-slate-600 text-lg mb-6">For questions regarding privacy or data protection:</p>
-        <a href="mailto:support@synchgate.com" className="text-blue-600 text-2xl font-bold hover:underline">
-          support@synchgate.com
+        <a href="mailto:support@SynchGate.com" className="text-blue-600 text-2xl font-bold hover:underline">
+          support@SynchGate.com
         </a>
       </div>
 
