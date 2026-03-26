@@ -384,7 +384,7 @@ function Transactions() {
                 <h3 className="font-semibold text-slate-900 text-sm border-b border-slate-100 pb-2">
                   Timeline
                 </h3>
-                <div className="space-y-4 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
+                <div className="space-y-4 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-linear-to-b before:from-transparent before:via-slate-200 before:to-transparent">
                   <div className="relative flex items-start gap-4 text-sm z-10">
                     <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 border border-white ring-4 ring-white shadow-sm mt-0.5">
                       <ArrowRight className="w-3 h-3" />

@@ -14,7 +14,7 @@ function Installation() {
   ];
 
   const codeSnippets: Record<string, string> = {
-    javascript: `const response = await fetch('https://api.SynchGate.com/v1/initiate-payment/', {
+    javascript: `const response = await fetch('https://api.synchgate.com/v1/initiate-payment/', {
   method: 'POST',
   headers: {
     'Client-Secret-Key': 'sk_live_your_key',
@@ -31,7 +31,7 @@ const data = await response.json();
 console.log(data);`,
     python: `import requests
 
-url = "https://api.SynchGate.com/v1/initiate-payment/"
+url = "https://api.synchgate.com/v1/initiate-payment/"
 payload = {
     "provider": "paystack",
     "amount": 5000,
@@ -48,7 +48,7 @@ print(response.json())`,
 $curl = curl_init();
 
 curl_setopt_array($curl, [
-  CURLOPT_URL => "https://api.SynchGate.com/v1/initiate-payment/",
+  CURLOPT_URL => "https://api.synchgate.com/v1/initiate-payment/",
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_POST => true,
   CURLOPT_POSTFIELDS => json_encode([
@@ -68,7 +68,7 @@ echo $response;`,
     ruby: `require 'net/http'
 require 'json'
 
-uri = URI('https://api.SynchGate.com/v1/initiate-payment/')
+uri = URI('https://api.synchgate.com/v1/initiate-payment/')
 req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
 req['Client-Secret-Key'] = 'sk_live_your_key'
 req.body = {
@@ -89,7 +89,7 @@ import java.net.http.HttpResponse;
 
 HttpClient client = HttpClient.newHttpClient();
 HttpRequest request = HttpRequest.newBuilder()
-    .uri(URI.create("https://api.SynchGate.com/v1/initiate-payment/"))
+    .uri(URI.create("https://api.synchgate.com/v1/initiate-payment/"))
     .header("Client-Secret-Key", "sk_live_your_key")
     .header("Content-Type", "application/json")
     .POST(HttpRequest.BodyPublishers.ofString(
@@ -123,7 +123,7 @@ client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
       </h2>
 
       <div className="bg-slate-900 rounded-xl p-4 text-sm font-mono text-amber-200 mb-6 shadow-inner overflow-x-auto">
-        https://api.SynchGate.com/v1
+        https://api.synchgate.com/v1
       </div>
 
       <p className="text-slate-600 mb-12">Local development example:</p>

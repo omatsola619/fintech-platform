@@ -170,7 +170,7 @@ function LandingPage() {
                     <code>
                       <span className="text-pink-400">import</span> &#123;
                       SynchGate &#125; <span className="text-pink-400">from</span>{" "}
-                      <span className="text-emerald-300">'@SynchGate/node'</span>;
+                      <span className="text-emerald-300">'@synchgate/node'</span>;
                       <br />
                       <br />
                       <span className="text-blue-400">const</span> SynchGate ={" "}

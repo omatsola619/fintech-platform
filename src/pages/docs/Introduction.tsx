@@ -89,7 +89,7 @@ function Introduction() {
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-12 overflow-x-auto shadow-inner">
         <div>
           Merchant →{" "}
-          <span className="text-indigo-400">SynchGate API</span> →{" "}
+          <span className="text-indigo-400">synchgate API</span> →{" "}
           <span className="text-blue-400">Payment Provider</span>
         </div>
       </div>
@@ -273,7 +273,7 @@ If Flutterwave latency > threshold → Route to Nomba`}
         For integration support or partnership inquiries:
       </p>
       <div className="bg-slate-900 rounded-xl p-4 text-sm font-mono text-amber-200 mb-12 shadow-inner inline-block">
-        support@yourcompany.com
+        support@synchgate.com
       </div>
 
       <div className="grid grid-cols-2 gap-4 items-center py-8 mt-16 border-t border-slate-200">

@@ -24,6 +24,7 @@ function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isTogglingMode, setIsTogglingMode] = useState(false);
   const [showKycPopup, setShowKycPopup] = useState(false);
+  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
 
   const isActive = (path: string) => {
     return (
@@ -42,6 +43,10 @@ function Dashboard() {
   };
 
   const handleLogout = () => {
+    setShowLogoutPopup(true);
+  };
+
+  const confirmLogout = () => {
     logout();
     navigate("/auth/login");
   };
@@ -124,6 +129,37 @@ function Dashboard() {
               >
                 Complete KYC
               </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Logout Confirmation Popup */}
+      {showLogoutPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 text-center animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <LogOut className="w-6 h-6 text-red-600" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">
+              Sign Out
+            </h3>
+            <p className="text-sm text-slate-500 mb-6">
+              Are you sure you want to sign out?
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => setShowLogoutPopup(false)}
+                className="flex-1 px-4 py-2 bg-slate-100 text-slate-700 font-medium rounded-lg hover:bg-slate-200 transition-colors cursor-pointer text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="flex-1 px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors shadow-sm cursor-pointer text-sm"
+              >
+                Sign Out
+              </button>
             </div>
           </div>
         </div>
@@ -286,7 +322,7 @@ function Dashboard() {
               <span className="absolute top-0 right-0 w-2 h-2 bg-blue-600 rounded-full border border-white"></span>
             </button>
 
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-sm font-semibold cursor-pointer shadow-sm">
+            <div className="w-8 h-8 rounded-full bg-linear-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-sm font-semibold cursor-pointer shadow-sm">
               {getInitials(userName)}
             </div>
           </div>
@@ -304,7 +340,7 @@ function Dashboard() {
             <Link
               to="/dashboard/settings"
               state={{ tab: "kyc" }}
-              className="bg-white text-blue-600 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full font-semibold hover:bg-blue-50 transition-colors text-[10px] sm:text-xs whitespace-nowrap shadow-sm flex-shrink-0"
+              className="bg-white text-blue-600 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full font-semibold hover:bg-blue-50 transition-colors text-[10px] sm:text-xs whitespace-nowrap shadow-sm shrink-0"
             >
               Complete KYC
             </Link>

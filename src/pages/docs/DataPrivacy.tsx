@@ -118,8 +118,8 @@ function DataPrivacy() {
       <div className="bg-slate-50 border border-slate-200 rounded-3xl p-10 mb-16 text-center">
         <h3 className="font-['Outfit'] text-2xl font-bold mb-4 text-black text-center">Contact Us</h3>
         <p className="text-slate-600 text-lg mb-6">For questions regarding privacy or data protection:</p>
-        <a href="mailto:support@SynchGate.com" className="text-blue-600 text-2xl font-bold hover:underline">
-          support@SynchGate.com
+        <a href="mailto:support@synchgate.com" className="text-blue-600 text-2xl font-bold hover:underline">
+          support@synchgate.com
         </a>
       </div>
 

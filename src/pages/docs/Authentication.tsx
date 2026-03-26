@@ -46,7 +46,7 @@ function Authentication() {
           <code>
             <span className="text-pink-600">import</span> &#123; SynchGate &#125;{" "}
             <span className="text-pink-600">from</span>{" "}
-            <span className="text-blue-600">'@SynchGate/node'</span>;<br />
+            <span className="text-blue-600">'@synchgate/node'</span>;<br />
             <br />
             <span className="text-slate-400">
               // Initialize with your secret key
