@@ -115,7 +115,7 @@ function InitiatePayment() {
       </p>
       <div className="bg-slate-900 rounded-xl p-6 text-sm font-mono text-slate-300 mb-12 overflow-x-auto shadow-inner leading-relaxed border border-white/10">
         <pre>
-          {`curl --location 'https://api.synchgate.com/v1/initiate-payment/' \\
+          {`curl --location 'https://api.synchgate.com/v1/api/initiate-payment/' \\
 --header 'Client-Secret-Key: sk_live_your_key_here' \\
 --header 'Content-Type: application/json' \\
 --data-raw '{
